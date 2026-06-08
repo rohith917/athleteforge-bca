@@ -32,8 +32,8 @@ export default function Landing() {
       <section className="landing-hero">
         <div className="landing-hero-glow" />
         <div className="container landing-hero-content animate-in">
-          <div className="row align-items-center g-5">
-            <div className="col-lg-7 landing-hero-text">
+          <div className="row align-items-center g-4 g-lg-5">
+            <div className="col-12 col-lg-7 landing-hero-text order-1">
               <h1 className="landing-headline">
                 Train Smarter.<br />
                 <span className="gold-text">Recover Faster.</span><br />
@@ -53,7 +53,7 @@ export default function Landing() {
                 </Link>
               </div>
             </div>
-            <div className="col-lg-5">
+            <div className="col-12 col-lg-5 order-2">
               <div className="landing-hero-card">
                 <Logo size="lg" showTagline />
                 <div className="landing-stats-row">
@@ -125,13 +125,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <div className="landing-footer-wrap">
-        <div className="container landing-footer-brand">
-          <span className="footer-brand">ATHLETEFORGE</span>
-          <span className="footer-tag">Track. Recover. Perform.</span>
-        </div>
-        <PublicFooter />
-      </div>
+      <PublicFooter />
     </div>
   )
 }
