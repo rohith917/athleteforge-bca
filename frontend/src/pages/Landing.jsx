@@ -4,11 +4,11 @@
 import { Link } from 'react-router-dom'
 import {
   FaChartLine, FaBandAid, FaUsers, FaTrophy, FaBrain,
-  FaClipboardCheck, FaArrowRight, FaUserTie
+  FaClipboardCheck, FaArrowRight
 } from 'react-icons/fa'
 import PublicNavbar from '../components/PublicNavbar'
+import PublicFooter from '../components/PublicFooter'
 import Logo from '../components/Logo'
-import { FounderBadge } from '../components/FounderCredit'
 
 const features = [
   { icon: FaUsers, title: 'Athlete Management', desc: 'Complete profiles, photos, and team organization.' },
@@ -29,13 +29,11 @@ export default function Landing() {
     <div className="landing-page">
       <PublicNavbar />
 
-      {/* Hero */}
       <section className="landing-hero">
         <div className="landing-hero-glow" />
         <div className="container landing-hero-content animate-in">
           <div className="row align-items-center g-5">
-            <div className="col-lg-7">
-              <FounderBadge className="landing-founder-badge" />
+            <div className="col-lg-7 landing-hero-text">
               <h1 className="landing-headline">
                 Train Smarter.<br />
                 <span className="gold-text">Recover Faster.</span><br />
@@ -72,13 +70,6 @@ export default function Landing() {
                     <span className="lbl">Access</span>
                   </div>
                 </div>
-                <div className="landing-founder-card">
-                  <div className="landing-founder-avatar"><FaUserTie /></div>
-                  <div>
-                    <span className="landing-founder-label">Founder</span>
-                    <strong className="landing-founder-name">Rohith Gowda V</strong>
-                  </div>
-                </div>
                 <p className="landing-hero-note">
                   Role-based dashboards for coaches, admins, and athletes — secure and professional.
                 </p>
@@ -88,7 +79,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Features */}
       <section className="landing-section">
         <div className="container">
           <h2 className="landing-section-title">Everything You Need</h2>
@@ -107,7 +97,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Roles */}
       <section className="landing-section landing-section-dark">
         <div className="container">
           <h2 className="landing-section-title">Built for Every Role</h2>
@@ -125,7 +114,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="landing-cta-section">
         <div className="container text-center">
           <h2 className="landing-section-title mb-3">Ready to Get Started?</h2>
@@ -137,14 +125,13 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="landing-footer">
-        <div className="container">
+      <div className="landing-footer-wrap">
+        <div className="container landing-footer-brand">
           <span className="footer-brand">ATHLETEFORGE</span>
           <span className="footer-tag">Track. Recover. Perform.</span>
-          <span className="footer-founder">Founder — Rohith Gowda V</span>
-          <span className="footer-copy">© 2026 AthleteForge. All rights reserved.</span>
         </div>
-      </footer>
+        <PublicFooter />
+      </div>
     </div>
   )
 }

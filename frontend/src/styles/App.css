@@ -71,6 +71,11 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   font-family: 'Inter', -apple-system, sans-serif;
   background: var(--bg-page);
@@ -535,22 +540,43 @@ body {
 .toast-error { background: var(--af-card); color: var(--af-danger); border-color: var(--af-danger); }
 .toast-info { background: var(--af-card); color: var(--af-gold); border-color: var(--af-gold); }
 
-/* ---- Footer ---- */
+/* ---- Footer & Credits ---- */
 .app-footer {
   background: var(--af-dark);
   border-top: 1px solid var(--border-color);
-  padding: 18px 28px;
+  padding: 16px 20px 20px;
+  text-align: center;
 }
 .footer-inner {
   display: flex; align-items: center; justify-content: center;
-  gap: 12px; flex-wrap: wrap;
+  gap: 10px; flex-wrap: wrap;
   font-size: 0.78rem; color: var(--text-muted);
+  margin-bottom: 8px;
 }
 .footer-brand { font-family: 'Oswald', sans-serif; font-weight: 600; color: var(--af-gold); letter-spacing: 1px; }
 .footer-tag { color: var(--text-secondary); }
-.footer-founder {
-  font-size: 0.78rem; color: var(--af-gold); font-weight: 600; letter-spacing: 0.3px;
+.footer-copy-line { margin: 6px 0 0; font-size: 0.72rem; color: var(--text-muted); }
+
+.site-footer {
+  padding: 20px 16px 28px;
+  border-top: 1px solid var(--af-border);
+  text-align: center;
+  background: var(--af-black);
 }
+.site-credits {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+.site-credits strong { color: var(--af-gold); font-weight: 700; }
+.site-credits-sep { color: var(--text-muted); opacity: 0.6; }
+.footer-credits { margin-top: 4px; }
 
 /* ---- Reports ---- */
 .report-card {
@@ -607,11 +633,144 @@ body {
   .mobile-menu-btn { display: block; }
   .page-content { padding: 20px 16px; }
   .profile-hero { flex-direction: column; text-align: center; }
+
+  .landing-hero-text { text-align: center; }
+  .landing-lead { margin-left: auto; margin-right: auto; }
+  .landing-cta-group { justify-content: center; }
+  .page-header { align-items: stretch; }
 }
+
+@media (max-width: 768px) {
+  .public-navbar-inner {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+  .public-nav-links {
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .public-nav-links a { font-size: 0.8rem; }
+  .btn-sm-public { padding: 7px 12px !important; font-size: 0.75rem !important; }
+
+  .landing-hero { padding: 100px 0 56px; }
+  .landing-hero .container { padding-left: 16px; padding-right: 16px; }
+  .landing-headline { font-size: 2rem; line-height: 1.2; }
+  .landing-tagline { letter-spacing: 2px; font-size: 0.78rem; }
+  .landing-cta-group {
+    flex-direction: column;
+    width: 100%;
+    align-items: stretch;
+  }
+  .landing-cta-group .btn-gold,
+  .landing-cta-group .btn-outline-gold,
+  .landing-cta-group a {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+  .landing-hero-card { padding: 24px 18px; margin-top: 4px; }
+  .landing-stats-row { gap: 12px; flex-wrap: wrap; }
+  .landing-section { padding: 48px 0; }
+  .landing-section .container { padding-left: 16px; padding-right: 16px; }
+  .landing-section-title { font-size: 1.45rem; }
+  .landing-section-sub { margin-bottom: 28px; padding: 0 8px; }
+  .landing-feature-card { padding: 22px; }
+  .landing-role-card { padding: 24px 18px; }
+  .landing-cta-section { padding: 48px 0; }
+  .landing-footer-wrap { padding: 0 16px; }
+  .landing-footer-brand {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 20px 0 8px; text-align: center;
+  }
+
+  .top-navbar {
+    padding: 0 12px;
+    height: auto;
+    min-height: 58px;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .top-navbar > .d-flex:first-child {
+    flex: 1;
+    min-width: 0;
+  }
+  .page-title {
+    font-size: 0.72rem;
+    line-height: 1.3;
+    white-space: normal;
+    max-width: 100%;
+  }
+  .navbar-actions {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .user-chip {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    max-width: 140px;
+  }
+  .user-chip > span:not(.role-badge) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .theme-toggle { width: 36px; height: 36px; }
+  .btn-logout { padding: 7px 10px; font-size: 0.78rem; }
+
+  .page-heading { font-size: 1.35rem; }
+  .page-subtitle { font-size: 0.82rem; }
+  .stat-value { font-size: 1.45rem; }
+  .card-panel, .chart-panel { padding: 18px; }
+  .dashboard-feature-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .tournament-grid, .program-grid { grid-template-columns: 1fr; }
+  .role-select-group { flex-direction: column; }
+  .search-bar { flex-direction: column; }
+  .search-input-wrap { min-width: 100%; }
+  .table-responsive { -webkit-overflow-scrolling: touch; }
+  .admin-quick-link { padding: 14px; }
+
+  .login-page {
+    padding: 72px 12px 24px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-height: 100vh;
+  }
+  .login-card {
+    padding: 28px 20px;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+  }
+  .login-back-home { top: 14px; left: 14px; font-size: 0.78rem; }
+
+  .site-credits {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .site-credits-sep { display: none; }
+  .footer-inner { flex-direction: column; gap: 6px; }
+  .app-footer { padding: 14px 12px 18px; }
+}
+
 @media (max-width: 576px) {
-  .page-heading { font-size: 1.4rem; }
-  .stat-value { font-size: 1.5rem; }
-  .login-card { padding: 32px 24px; margin: 16px; }
+  .public-navbar-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .public-nav-links {
+    width: 100%;
+    justify-content: center;
+  }
+  .page-title { display: none; }
+  .user-chip > span:not(.role-badge) { display: none; }
+  .stat-card { margin-bottom: 0; }
+  .row.g-4 > [class*="col-"] { margin-bottom: 0; }
+  .toast-container { right: 12px; left: 12px; }
+  .toast-item { min-width: auto; width: 100%; }
 }
 
 /* ---- Avatar & Role ---- */
@@ -731,46 +890,6 @@ body {
   border-radius: 50%; pointer-events: none;
 }
 .landing-hero-content { position: relative; z-index: 1; }
-.founder-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 8px 16px; border-radius: 20px;
-  background: rgba(255, 215, 0, 0.12);
-  border: 1px solid rgba(255, 215, 0, 0.35);
-  color: var(--af-gold); font-size: 0.82rem; font-weight: 700;
-  letter-spacing: 0.4px; margin-bottom: 20px;
-}
-.founder-line {
-  text-align: center; margin: 16px 0 0;
-  font-size: 0.78rem; color: var(--text-muted);
-}
-.founder-line strong { color: var(--af-gold); font-weight: 700; }
-.auth-founder { margin-top: 12px; }
-
-.landing-founder-badge { font-size: 0.9rem !important; padding: 10px 18px !important; }
-
-.landing-founder-card {
-  display: flex; align-items: center; gap: 14px;
-  padding: 16px; margin-bottom: 16px;
-  background: rgba(255, 215, 0, 0.08);
-  border: 1px solid rgba(255, 215, 0, 0.25);
-  border-radius: var(--radius-sm);
-}
-.landing-founder-avatar {
-  width: 48px; height: 48px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--af-gold); color: var(--af-black);
-  border-radius: 50%; font-size: 1.2rem;
-}
-.landing-founder-label {
-  display: block; font-size: 0.68rem; text-transform: uppercase;
-  letter-spacing: 1px; color: var(--text-muted); margin-bottom: 2px;
-}
-.landing-founder-name {
-  font-family: 'Oswald', sans-serif;
-  font-size: 1.1rem; color: var(--af-gold); letter-spacing: 0.5px;
-}
-.sidebar-founder { color: var(--af-gold) !important; font-weight: 600; }
-
 .landing-badge {
   display: inline-block; padding: 6px 14px;
   background: var(--af-gold-glow); color: var(--af-gold);
@@ -867,12 +986,17 @@ body {
   background: linear-gradient(180deg, var(--af-black) 0%, var(--af-dark) 100%);
   border-top: 1px solid var(--af-border);
 }
-.landing-footer {
-  padding: 28px; border-top: 1px solid var(--af-border);
-  text-align: center;
+.landing-footer-wrap {
+  border-top: 1px solid var(--af-border);
+  background: var(--af-black);
 }
-.landing-footer .container {
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
+.landing-footer-brand {
+  text-align: center;
+  padding: 24px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 .footer-copy { font-size: 0.72rem; color: var(--text-muted); }
 

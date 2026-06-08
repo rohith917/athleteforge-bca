@@ -6,7 +6,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { FaEnvelope, FaLock, FaSignInAlt, FaArrowLeft, FaTachometerAlt, FaSignOutAlt } from 'react-icons/fa'
 import Logo from '../components/Logo'
-import { FounderLine } from '../components/FounderCredit'
 
 export default function Login() {
   const [identifier, setIdentifier] = useState('')
@@ -43,51 +42,28 @@ export default function Login() {
     }
   }
 
-  if (user) {
-    return (
-      <div className="login-page">
-        <Link to="/" className="login-back-home"><FaArrowLeft /> Back to Home</Link>
-        <div className="login-card">
-          <Logo size="lg" showTagline />
-          <h2 className="login-title mt-3">Already Signed In</h2>
-          <p className="login-subtitle">
-            Welcome back, {user.first_name || user.username}
-          </p>
-          <div className="auth-session-banner">
-            <span className={`role-badge role-${user.role}`}>{user.role}</span>
-            <span>{user.email}</span>
-          </div>
-          <button
-            type="button"
-            className="btn-gold w-100 justify-content-center mb-3"
-            style={{ width: '100%' }}
-            onClick={() => navigate('/dashboard')}
-          >
-            <FaTachometerAlt /> Go to Dashboard
-          </button>
-          <button
-            type="button"
-            className="btn-outline-gold w-100 justify-content-center"
-            style={{ width: '100%' }}
-            onClick={handleSwitchAccount}
-            disabled={loading}
-          >
-            <FaSignOutAlt /> {loading ? 'Signing out...' : 'Sign in as different user'}
-          </button>
-        </div>
+  const cardContent = user ? (
+    <>
+      <Logo size="lg" showTagline />
+      <h2 className="login-title mt-3">Already Signed In</h2>
+      <p className="login-subtitle">Welcome back, {user.first_name || user.username}</p>
+      <div className="auth-session-banner">
+        <span className={`role-badge role-${user.role}`}>{user.role}</span>
+        <span>{user.email}</span>
       </div>
-    )
-  }
-
-  return (
-    <div className="login-page">
-      <Link to="/" className="login-back-home"><FaArrowLeft /> Back to Home</Link>
-      <div className="login-card">
-        <Logo size="lg" showTagline />
-        <h2 className="login-title mt-3">Welcome Back</h2>
-        <p className="login-subtitle">Track. Recover. Perform.</p>
-
-        {error && <div className="alert-custom alert-danger-custom">{error}</div>}
+      <button type="button" className="btn-gold w-100 justify-content-center mb-3" style={{ width: '100%' }} onClick={() => navigate('/dashboard')}>
+        <FaTachometerAlt /> Go to Dashboard
+      </button>
+      <button type="button" className="btn-outline-gold w-100 justify-content-center" style={{ width: '100%' }} onClick={handleSwitchAccount} disabled={loading}>
+        <FaSignOutAlt /> {loading ? 'Signing out...' : 'Sign in as different user'}
+      </button>
+    </>
+  ) : (
+    <>
+      <Logo size="lg" showTagline />
+      <h2 className="login-title mt-3">Welcome Back</h2>
+      <p className="login-subtitle">Track. Recover. Perform.</p>
+      {error && <div className="alert-custom alert-danger-custom">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -123,11 +99,16 @@ export default function Login() {
           <Link to="/forgot-password" className="auth-link">Forgot password?</Link>
         </p>
 
-        <p className="auth-footer">
-          Don't have an account? <Link to="/register" className="auth-link">Register here</Link>
-        </p>
-        <FounderLine className="auth-founder" />
-      </div>
+      <p className="auth-footer">
+        Don't have an account? <Link to="/register" className="auth-link">Register here</Link>
+      </p>
+    </>
+  )
+
+  return (
+    <div className="login-page">
+      <Link to="/" className="login-back-home"><FaArrowLeft /> Back to Home</Link>
+      <div className="login-card">{cardContent}</div>
     </div>
   )
 }
