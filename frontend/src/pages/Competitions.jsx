@@ -79,7 +79,7 @@ export default function Competitions() {
   const medalClass = { Gold: 'medal-gold', Silver: 'medal-silver', Bronze: 'medal-bronze' }
 
   if (loading) return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader title="Competition Analytics" subtitle="Loading..." />
       <div className="row g-3">{Array.from({ length: 4 }).map((_, i) => (
         <div className="col-sm-6 col-xl-3" key={i}><Skeleton className="skeleton-kpi" /></div>
@@ -88,7 +88,7 @@ export default function Competitions() {
   )
 
   return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader
         title="Competition Analytics"
         subtitle="Events · Results · Medals · Rankings · Win rate"

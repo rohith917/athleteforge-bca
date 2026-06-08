@@ -2,11 +2,11 @@ import { motion } from 'framer-motion'
 import Sparkline from './Sparkline'
 
 const variants = {
-  gold: { accent: '#8B5CF6', glow: 'rgba(139, 92, 246, 0.15)' },
-  success: { accent: '#22C55E', glow: 'rgba(34, 197, 94, 0.12)' },
-  danger: { accent: '#EF4444', glow: 'rgba(239, 68, 68, 0.12)' },
-  warning: { accent: '#F59E0B', glow: 'rgba(245, 158, 11, 0.12)' },
-  info: { accent: '#8B5CF6', glow: 'rgba(139, 92, 246, 0.12)' },
+  gold: { accent: '#5B5CF6', glow: 'rgba(91, 92, 246, 0.08)' },
+  success: { accent: '#22C55E', glow: 'rgba(34, 197, 94, 0.08)' },
+  danger: { accent: '#EF4444', glow: 'rgba(239, 68, 68, 0.08)' },
+  warning: { accent: '#F59E0B', glow: 'rgba(245, 158, 11, 0.08)' },
+  info: { accent: '#111827', glow: 'rgba(17, 24, 39, 0.06)' },
 }
 
 export default function KpiCard({
@@ -17,18 +17,18 @@ export default function KpiCard({
 
   return (
     <motion.div
-      className="kpi-card glass-card"
+      className="kpi-card luxury-card"
       style={{ '--kpi-accent': v.accent, '--kpi-glow': v.glow }}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: delay / 1000, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      transition={{ duration: 0.4, delay: delay / 1000, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -2, transition: { duration: 0.2 } }}
     >
       <div className="kpi-card-top">
         <div className="kpi-icon"><Icon /></div>
         {change != null && (
           <span className={`kpi-change ${changeClass}`}>
-            {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '•'} {change}%
+            {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '·'} {change}%
           </span>
         )}
       </div>

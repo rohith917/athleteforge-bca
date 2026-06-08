@@ -22,12 +22,12 @@ import ActivityTimeline from '../components/analytics/ActivityTimeline'
 import NotificationCenter from '../components/analytics/NotificationCenter'
 import WellnessCheckIn from '../components/analytics/WellnessCheckIn'
 import PerformanceRadar from '../components/analytics/PerformanceRadar'
-import { GOLD, baseChartOptions } from '../utils/chartTheme'
+import { ACCENT, baseChartOptions } from '../utils/chartTheme'
 import { calcRecoveryScore } from '../utils/metricsEngine'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Filler, Tooltip, Legend)
-ChartJS.defaults.color = '#94A3B8'
-ChartJS.defaults.borderColor = 'rgba(148,163,184,0.08)'
+ChartJS.defaults.color = '#6B7280'
+ChartJS.defaults.borderColor = '#F3F4F6'
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null)
@@ -41,7 +41,7 @@ export default function Dashboard() {
 
   if (loading) return (
     <div className="animate-in">
-      <PageHeader title="Performance Command Center" subtitle="Loading analytics intelligence..." />
+      <PageHeader title="Overview" subtitle="Loading team analytics..." />
       <KpiSkeletonGrid count={8} />
     </div>
   )
@@ -65,19 +65,19 @@ export default function Dashboard() {
 
   const perfChart = {
     labels: ['Speed', 'Strength', 'Endurance', 'Flexibility', 'Agility'],
-    datasets: [{ data: Object.values(stats.avg_performance), backgroundColor: [GOLD, '#6366F1', '#22C55E', '#60A5FA', '#F59E0B'], borderRadius: 8 }],
+    datasets: [{ data: Object.values(stats.avg_performance), backgroundColor: ['#111827', ACCENT, '#22C55E', '#9CA3AF', '#E5E7EB'], borderRadius: 8 }],
   }
 
   const sportChart = {
     labels: stats.sport_distribution.map((s) => s.sport),
-    datasets: [{ data: stats.sport_distribution.map((s) => s.count), backgroundColor: [GOLD, '#1A1A1A', '#22C55E', '#60A5FA', '#EF4444', '#F59E0B'], borderWidth: 0 }],
+    datasets: [{ data: stats.sport_distribution.map((s) => s.count), backgroundColor: [ACCENT, '#111827', '#22C55E', '#9CA3AF', '#EF4444', '#E5E7EB'], borderWidth: 0 }],
   }
 
   const attendanceChart = {
     labels: stats.monthly_attendance.map((m) => m.month),
     datasets: [{
       data: stats.monthly_attendance.map((m) => m.rate),
-      borderColor: GOLD, backgroundColor: 'rgba(139, 92, 246, 0.12)', fill: true, tension: 0.4,
+      borderColor: ACCENT, backgroundColor: 'rgba(91, 92, 246, 0.06)', fill: true, tension: 0.4,
     }],
   }
 
@@ -92,10 +92,10 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader
-        title="Performance Command Center"
-        subtitle="Sports science analytics · Readiness · Recovery · Risk intelligence"
+        title="Overview"
+        subtitle="Team performance, recovery, and readiness at a glance"
       />
 
       <div className="row g-3 mb-4">
@@ -133,7 +133,7 @@ export default function Dashboard() {
           <div className="chart-panel-premium" style={{ height: '100%' }}>
             <h6>Attendance Intelligence</h6>
             <div style={{ height: 280 }}>
-              <Line data={attendanceChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: '#94A3B8' }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: '#94A3B8' }, grid: { color: 'rgba(148,163,184,0.08)' } } } }} />
+              <Line data={attendanceChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: '#9CA3AF' }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: '#9CA3AF' }, grid: { color: '#F3F4F6' } } } }} />
             </div>
           </div>
         </div>
@@ -144,7 +144,7 @@ export default function Dashboard() {
           <div className="chart-panel-premium">
             <h6>Performance Distribution</h6>
             <div style={{ height: 260 }}>
-              <Bar data={perfChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: '#94A3B8' }, grid: { display: false } }, y: { ticks: { color: '#94A3B8' }, grid: { color: 'rgba(148,163,184,0.08)' } } } }} />
+              <Bar data={perfChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: '#9CA3AF' }, grid: { display: false } }, y: { ticks: { color: '#9CA3AF' }, grid: { color: '#F3F4F6' } } } }} />
             </div>
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function Dashboard() {
           <div className="chart-panel-premium">
             <h6>Sport Composition</h6>
             <div style={{ height: 260 }}>
-              <Doughnut data={sportChart} options={{ ...baseChartOptions, cutout: '68%', plugins: { legend: { position: 'bottom', labels: { color: '#94A3B8', padding: 12 } } } }} />
+              <Doughnut data={sportChart} options={{ ...baseChartOptions, cutout: '68%', plugins: { legend: { position: 'bottom', labels: { color: '#6B7280', padding: 12 } } } }} />
             </div>
           </div>
         </div>

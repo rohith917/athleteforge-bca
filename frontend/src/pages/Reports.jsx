@@ -31,7 +31,7 @@ export default function Reports() {
   }
 
   return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader
         title="Reporting Center"
         subtitle="One-click exports · PDF reports · Excel spreadsheets"

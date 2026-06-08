@@ -33,7 +33,7 @@ export default function Navbar({ onMenuToggle }) {
           <FaBars />
         </button>
         <h4 className="page-title mb-0">
-          {isAdmin ? 'AthleteForge · Admin Control' : isStudent ? 'AthleteForge · My Portal' : 'AthleteForge · Coach Dashboard'}
+          {isAdmin ? 'Admin' : isStudent ? 'My Portal' : 'Dashboard'}
         </h4>
       </div>
 

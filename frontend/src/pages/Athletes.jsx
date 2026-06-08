@@ -49,7 +49,7 @@ export default function Athletes() {
   }
 
   return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader
         title="Athlete Management"
         subtitle="Elite roster intelligence · Readiness · Performance profiles"

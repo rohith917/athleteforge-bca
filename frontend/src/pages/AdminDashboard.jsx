@@ -43,7 +43,7 @@ export default function AdminDashboard() {
   }, [])
 
   if (loading) return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader title="Admin Command Center" subtitle="Loading system analytics..." />
       <KpiSkeletonGrid count={8} />
     </div>
@@ -61,7 +61,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader
         title="Admin Command Center"
         subtitle="System analytics · User management · Platform oversight"

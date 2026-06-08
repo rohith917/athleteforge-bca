@@ -83,7 +83,7 @@ export default function WeightTracking() {
   const latest = sortedRecords[0]
 
   return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader
         title="Weight Management"
         subtitle="Body composition · BMI · Weight trends · Combat sports cut"

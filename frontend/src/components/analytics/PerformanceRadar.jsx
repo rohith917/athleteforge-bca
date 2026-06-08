@@ -1,6 +1,6 @@
 import { Radar } from 'react-chartjs-2'
 import { Chart as ChartJS, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js'
-import { GOLD, baseChartOptions } from '../../utils/chartTheme'
+import { ACCENT, baseChartOptions } from '../../utils/chartTheme'
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler)
 
@@ -17,9 +17,9 @@ export default function PerformanceRadar({ scores = {} }) {
         scores.agility ?? 85,
         scores.recovery ?? 72,
       ],
-      borderColor: GOLD,
-      backgroundColor: 'rgba(212, 175, 55, 0.15)',
-      pointBackgroundColor: GOLD,
+      borderColor: ACCENT,
+      backgroundColor: 'rgba(91, 92, 246, 0.08)',
+      pointBackgroundColor: ACCENT,
     }],
   }
 
@@ -35,9 +35,9 @@ export default function PerformanceRadar({ scores = {} }) {
               r: {
                 min: 0, max: 100,
                 ticks: { display: false, stepSize: 20 },
-                grid: { color: 'rgba(148,163,184,0.12)' },
-                angleLines: { color: 'rgba(148,163,184,0.12)' },
-                pointLabels: { color: '#94A3B8', font: { size: 11 } },
+                grid: { color: '#F3F4F6' },
+                angleLines: { color: '#E5E7EB' },
+                pointLabels: { color: '#6B7280', font: { size: 11, family: 'Inter' } },
               },
             },
           }}

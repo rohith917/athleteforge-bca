@@ -72,7 +72,7 @@ export default function Injuries() {
   const recovered = injuries.filter((i) => i.recovery_status === 'Recovered').length
 
   return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader
         title="Injury Management"
         subtitle="Track injuries · Recovery timelines · Return-to-play workflow"

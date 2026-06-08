@@ -34,7 +34,7 @@ export default function StudentDashboard() {
   }, [])
 
   if (loading) return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader title="My Performance Hub" subtitle="Loading your analytics..." />
       <KpiSkeletonGrid count={3} />
     </div>
@@ -67,7 +67,7 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader
         title="My Performance Hub"
         subtitle={`Welcome back, ${user?.first_name || athlete?.first_name || 'Athlete'}`}

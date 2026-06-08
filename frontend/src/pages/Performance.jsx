@@ -104,7 +104,7 @@ export default function Performance() {
   )
 
   return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader
         title="Performance Analytics"
         subtitle="Speed · Strength · Power · Endurance · Agility · Training load"

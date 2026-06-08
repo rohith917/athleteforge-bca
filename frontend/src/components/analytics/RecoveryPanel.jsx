@@ -1,7 +1,7 @@
 import { Line } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler } from 'chart.js'
 import { calcRecoveryScore } from '../../utils/metricsEngine'
-import { baseChartOptions, SUCCESS, GOLD } from '../../utils/chartTheme'
+import { baseChartOptions, SUCCESS } from '../../utils/chartTheme'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Filler)
 
@@ -39,7 +39,7 @@ export default function RecoveryPanel({ stats }) {
         <div className="progress-luxury-fill" style={{ width: `${score}%` }} />
       </div>
       <div style={{ height: 120 }} className="mt-3">
-        <Line data={chartData} options={{ ...baseChartOptions, scales: { x: { ticks: { color: '#94A3B8', maxTicksLimit: 6 }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: '#94A3B8' }, grid: { color: 'rgba(148,163,184,0.08)' } } } }} />
+        <Line data={chartData} options={{ ...baseChartOptions, scales: { x: { ticks: { color: '#9CA3AF', maxTicksLimit: 6 }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: '#9CA3AF' }, grid: { color: '#F3F4F6' } } } }} />
       </div>
       <div className="rtp-workflow">
         {['Injured', 'Rehab', 'Light', 'Modified', 'Full', 'Comp Ready'].map((s, i) => (

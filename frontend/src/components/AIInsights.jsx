@@ -30,7 +30,7 @@ export default function AIInsights({ athleteId = null, compact = false }) {
   if (compact) {
     return (
       <div className="ai-insight-card ai-risk-low">
-        <strong style={{ color: 'var(--af-gold)' }}>{insights.athlete_name}</strong>
+        <strong style={{ color: 'var(--lux-text)' }}>{insights.athlete_name}</strong>
         <p className="mb-1 mt-2" style={{ fontSize: '0.88rem' }}>{progress?.summary}</p>
         {injury?.alert && (
           <p className="mb-0" style={{ fontSize: '0.82rem', color: 'var(--af-warning)' }}>
@@ -50,7 +50,7 @@ export default function AIInsights({ athleteId = null, compact = false }) {
       <div className="row g-3">
         <div className="col-md-4">
           <div className="ai-insight-card">
-            <h6 className="mb-3" style={{ color: 'var(--af-gold)' }}>
+            <h6 className="mb-3" style={{ color: 'var(--lux-text)', fontWeight: 600 }}>
               <FaChartLine className="me-2" />Performance Insights
             </h6>
             {perf?.available ? (

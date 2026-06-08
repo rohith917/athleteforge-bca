@@ -72,14 +72,14 @@ export default function Attendance() {
   } : null
 
   if (loading) return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader title="Attendance Monitoring" subtitle="Loading..." />
       <Skeleton className="skeleton-kpi" />
     </div>
   )
 
   return (
-    <div className="animate-in dashboard-premium">
+    <div className="animate-in dashboard-luxury">
       <PageHeader
         title="Attendance Monitoring"
         subtitle="Session tracking · Attendance rates · Team compliance"
