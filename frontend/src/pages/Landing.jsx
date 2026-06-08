@@ -35,6 +35,7 @@ export default function Landing() {
           <div className="row align-items-center g-5">
             <div className="col-lg-7">
               <span className="landing-badge"><FaShieldAlt /> BCA Final Year Project 2026</span>
+              <p className="landing-founder">Founded by <strong>Rohith Gowda V</strong></p>
               <h1 className="landing-headline">
                 Train Smarter.<br />
                 <span className="gold-text">Recover Faster.</span><br />
@@ -133,6 +134,7 @@ export default function Landing() {
         <div className="container">
           <span className="footer-brand">ATHLETEFORGE</span>
           <span className="footer-tag">Track. Recover. Perform.</span>
+          <span className="footer-founder">Founded by Rohith Gowda V</span>
           <span className="footer-copy">© 2026 BCA Final Year Project</span>
         </div>
       </footer>
