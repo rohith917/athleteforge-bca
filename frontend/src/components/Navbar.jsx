@@ -10,7 +10,7 @@ import Avatar from './Avatar'
 const roleLabels = { admin: 'Admin', coach: 'Coach', student: 'Student' }
 
 export default function Navbar({ onMenuToggle }) {
-  const { user, logout, isStudent } = useAuth()
+  const { user, logout, isStudent, isAdmin } = useAuth()
   const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()
 
@@ -30,7 +30,7 @@ export default function Navbar({ onMenuToggle }) {
           <FaBars />
         </button>
         <h4 className="page-title mb-0">
-          {isStudent ? 'AthleteForge · My Portal' : 'AthleteForge · Coach Dashboard'}
+          {isAdmin ? 'AthleteForge · Admin Control' : isStudent ? 'AthleteForge · My Portal' : 'AthleteForge · Coach Dashboard'}
         </h4>
       </div>
 

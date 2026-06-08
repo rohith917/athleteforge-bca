@@ -29,6 +29,13 @@ urlpatterns = [
     # Dashboard
     path('dashboard/stats/', views.dashboard_stats, name='dashboard-stats'),
 
+    # Admin management
+    path('admin/stats/', views.admin_dashboard_stats, name='admin-stats'),
+    path('admin/users/', views.AdminUserViewSet.as_view({'get': 'list', 'post': 'create'}), name='admin-users'),
+    path('admin/users/<int:pk>/', views.AdminUserViewSet.as_view({
+        'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy',
+    }), name='admin-user-detail'),
+
     # Reports
     path('reports/pdf/', views.export_pdf, name='export-pdf'),
     path('reports/excel/', views.export_excel, name='export-excel'),

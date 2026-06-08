@@ -1,13 +1,25 @@
 /**
- * Role-aware sidebar navigation — navy theme with cyan accents.
+ * Role-aware sidebar — admin, coach, and student navigation.
  */
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
   FaTachometerAlt, FaUsers, FaChartLine, FaBandAid,
-  FaTrophy, FaClipboardCheck, FaWeight, FaFileAlt, FaUser
+  FaTrophy, FaClipboardCheck, FaWeight, FaFileAlt, FaUser, FaUserShield
 } from 'react-icons/fa'
 import Logo from './Logo'
+
+const adminNav = [
+  { path: '/', icon: FaTachometerAlt, label: 'Admin Panel' },
+  { path: '/admin/users', icon: FaUserShield, label: 'User Management' },
+  { path: '/athletes', icon: FaUsers, label: 'Athletes' },
+  { path: '/performance', icon: FaChartLine, label: 'Performance' },
+  { path: '/injuries', icon: FaBandAid, label: 'Injuries' },
+  { path: '/competitions', icon: FaTrophy, label: 'Competitions' },
+  { path: '/attendance', icon: FaClipboardCheck, label: 'Attendance' },
+  { path: '/weight', icon: FaWeight, label: 'Weight' },
+  { path: '/reports', icon: FaFileAlt, label: 'Reports' },
+]
 
 const coachNav = [
   { path: '/', icon: FaTachometerAlt, label: 'Dashboard' },
@@ -28,9 +40,8 @@ const studentNav = [
 ]
 
 export default function Sidebar({ isOpen, onClose }) {
-  const { isStudent, user } = useAuth()
-  const navItems = isStudent ? studentNav : coachNav
-
+  const { isAdmin, isStudent, user } = useAuth()
+  const navItems = isAdmin ? adminNav : isStudent ? studentNav : coachNav
   const profilePath = isStudent && user?.athlete_id ? `/athletes/${user.athlete_id}` : null
 
   return (

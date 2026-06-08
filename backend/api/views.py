@@ -19,18 +19,19 @@ from rest_framework.views import APIView
 from .ai_insights import get_ai_insights_for_athlete
 from .models import (
     Athlete, Performance, Injury, Competition,
-    CompetitionResult, Attendance, WeightTracking, PasswordResetToken
+    CompetitionResult, Attendance, WeightTracking, PasswordResetToken, UserProfile
 )
 from .permissions import (
-    is_staff_role, get_athlete_for_user, filter_queryset_by_role,
-    filter_athletes_by_role, IsCoachOrAdmin, ReadOnlyForStudents,
+    is_staff_role, is_admin_role, get_athlete_for_user, filter_queryset_by_role,
+    filter_athletes_by_role, IsCoachOrAdmin, ReadOnlyForStudents, IsAdminOnly,
 )
 from .serializers import (
     AthleteSerializer, AthleteListSerializer, PerformanceSerializer,
     InjurySerializer, CompetitionSerializer, CompetitionResultSerializer,
     AttendanceSerializer, WeightTrackingSerializer, LoginSerializer,
     UserSerializer, RegisterSerializer, ForgotPasswordSerializer,
-    ResetPasswordSerializer,
+    ResetPasswordSerializer, AdminUserSerializer, AdminUserUpdateSerializer,
+    AdminCreateUserSerializer,
 )
 from .reports import (
     generate_athletes_pdf, generate_performance_pdf, generate_injuries_pdf,
@@ -619,3 +620,128 @@ def export_excel(request):
     )
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
+
+
+# ==================== Admin Management ====================
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdminOnly])
+def admin_dashboard_stats(request):
+    """Admin control panel — system overview and user breakdown."""
+    users = User.objects.all()
+    profiles = UserProfile.objects.all()
+
+    role_counts = {
+        'admin': profiles.filter(role='admin').count() + users.filter(is_superuser=True).count(),
+        'coach': profiles.filter(role='coach').count(),
+        'student': profiles.filter(role='student').count(),
+    }
+
+    recent_users = users.order_by('-date_joined')[:8]
+    injuries = Injury.objects.exclude(recovery_status='Recovered')
+
+    return Response({
+        'total_users': users.count(),
+        'active_users': users.filter(is_active=True).count(),
+        'inactive_users': users.filter(is_active=False).count(),
+        'users_by_role': role_counts,
+        'total_athletes': Athlete.objects.count(),
+        'active_athletes': Athlete.objects.filter(status='Active').count(),
+        'injured_athletes': Athlete.objects.filter(status='Injured').count(),
+        'active_injuries': injuries.count(),
+        'total_competitions': Competition.objects.count(),
+        'total_performance_records': Performance.objects.count(),
+        'total_attendance_records': Attendance.objects.count(),
+        'recent_users': AdminUserSerializer(recent_users, many=True).data,
+        'unlinked_students': profiles.filter(role='student', athlete__isnull=True).count(),
+    })
+
+
+class AdminUserViewSet(viewsets.ViewSet):
+    """Admin user management — list, create, update, deactivate users."""
+    permission_classes = [IsAuthenticated, IsAdminOnly]
+
+    def list(self, request):
+        """List all users with optional ?role= and ?search= filters."""
+        queryset = User.objects.select_related('profile').order_by('-date_joined')
+        role = request.query_params.get('role')
+        search = request.query_params.get('search')
+
+        if role:
+            if role == 'admin':
+                queryset = queryset.filter(
+                    Q(is_superuser=True) | Q(profile__role='admin')
+                )
+            else:
+                queryset = queryset.filter(profile__role=role)
+        if search:
+            queryset = queryset.filter(
+                Q(username__icontains=search) |
+                Q(email__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search)
+            )
+
+        return Response(AdminUserSerializer(queryset, many=True).data)
+
+    def create(self, request):
+        """Create a new coach or student account."""
+        serializer = AdminCreateUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(
+            AdminUserSerializer(user).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    def retrieve(self, request, pk=None):
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+        return Response(AdminUserSerializer(user).data)
+
+    def partial_update(self, request, pk=None):
+        """Update role, athlete link, active status, or name."""
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+
+        if user == request.user and request.data.get('is_active') is False:
+            return Response({'error': 'Cannot deactivate your own account'}, status=400)
+        if user.is_superuser and request.data.get('role') not in (None, 'admin'):
+            return Response({'error': 'Cannot change superuser role'}, status=400)
+
+        serializer = AdminUserUpdateSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        if 'first_name' in data:
+            user.first_name = data['first_name']
+        if 'last_name' in data:
+            user.last_name = data['last_name']
+        if 'is_active' in data:
+            user.is_active = data['is_active']
+        user.save()
+
+        profile, _ = UserProfile.objects.get_or_create(user=user, defaults={'role': 'coach'})
+        if 'role' in data:
+            profile.role = data['role']
+        if 'athlete_id' in data:
+            profile.athlete_id = data['athlete_id']
+        profile.save()
+
+        return Response(AdminUserSerializer(user).data)
+
+    def destroy(self, request, pk=None):
+        """Soft-delete: deactivate user account."""
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+        if user == request.user:
+            return Response({'error': 'Cannot deactivate your own account'}, status=400)
+        user.is_active = False
+        user.save()
+        return Response({'message': f'User {user.username} deactivated'})

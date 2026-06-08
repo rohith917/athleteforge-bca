@@ -104,6 +104,16 @@ export const dashboardAPI = {
   getStats: () => api.get('/dashboard/stats/'),
 }
 
+// Admin API
+export const adminAPI = {
+  getStats: () => api.get('/admin/stats/'),
+  getUsers: (params) => api.get('/admin/users/', { params }),
+  getUser: (id) => api.get(`/admin/users/${id}/`),
+  createUser: (data) => api.post('/admin/users/', data),
+  updateUser: (id, data) => api.patch(`/admin/users/${id}/`, data),
+  deactivateUser: (id) => api.delete(`/admin/users/${id}/`),
+}
+
 // Reports API
 export const reportsAPI = {
   downloadPDF: (type) => `${API_BASE}/reports/pdf/?type=${type}`,

@@ -31,6 +31,18 @@ def is_staff_role(user):
     return get_user_role(user) in (ROLE_ADMIN, ROLE_COACH) or user.is_superuser
 
 
+def is_admin_role(user):
+    """Admin or superuser only."""
+    return get_user_role(user) == ROLE_ADMIN or user.is_superuser
+
+
+class IsAdminOnly(BasePermission):
+    """Admin-only access for system management."""
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and is_admin_role(request.user)
+
+
 def get_athlete_for_user(user):
     """Linked athlete for student accounts."""
     profile = get_user_profile(user)

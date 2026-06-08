@@ -10,7 +10,9 @@ import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
+import AdminDashboard from './pages/AdminDashboard'
 import StudentDashboard from './pages/StudentDashboard'
+import UserManagement from './pages/UserManagement'
 import Athletes from './pages/Athletes'
 import AthleteForm from './pages/AthleteForm'
 import AthleteProfile from './pages/AthleteProfile'
@@ -27,17 +29,27 @@ function PrivateRoute({ children }) {
   return user ? children : <Navigate to="/login" />
 }
 
-function CoachRoute({ children }) {
-  const { user, loading, isCoach } = useAuth()
+function StaffRoute({ children }) {
+  const { user, loading, isStaff } = useAuth()
   if (loading) return <LoadingSpinner message="Authenticating..." fullScreen />
   if (!user) return <Navigate to="/login" />
-  if (!isCoach) return <Navigate to="/" />
+  if (!isStaff) return <Navigate to="/" />
+  return children
+}
+
+function AdminRoute({ children }) {
+  const { user, loading, isAdmin } = useAuth()
+  if (loading) return <LoadingSpinner message="Authenticating..." fullScreen />
+  if (!user) return <Navigate to="/login" />
+  if (!isAdmin) return <Navigate to="/" />
   return children
 }
 
 function DashboardRouter() {
-  const { isStudent } = useAuth()
-  return isStudent ? <StudentDashboard /> : <Dashboard />
+  const { isAdmin, isStudent } = useAuth()
+  if (isAdmin) return <AdminDashboard />
+  if (isStudent) return <StudentDashboard />
+  return <Dashboard />
 }
 
 export default function App() {
@@ -52,14 +64,15 @@ export default function App() {
         <Route index element={<DashboardRouter />} />
         <Route path="athletes" element={<Athletes />} />
         <Route path="athletes/:id" element={<AthleteProfile />} />
-        <Route path="athletes/new" element={<CoachRoute><AthleteForm /></CoachRoute>} />
-        <Route path="athletes/:id/edit" element={<CoachRoute><AthleteForm /></CoachRoute>} />
+        <Route path="admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
+        <Route path="athletes/new" element={<StaffRoute><AthleteForm /></StaffRoute>} />
+        <Route path="athletes/:id/edit" element={<StaffRoute><AthleteForm /></StaffRoute>} />
         <Route path="performance" element={<Performance />} />
         <Route path="injuries" element={<Injuries />} />
-        <Route path="competitions" element={<CoachRoute><Competitions /></CoachRoute>} />
+        <Route path="competitions" element={<StaffRoute><Competitions /></StaffRoute>} />
         <Route path="attendance" element={<Attendance />} />
-        <Route path="weight" element={<CoachRoute><WeightTracking /></CoachRoute>} />
-        <Route path="reports" element={<CoachRoute><Reports /></CoachRoute>} />
+        <Route path="weight" element={<StaffRoute><WeightTracking /></StaffRoute>} />
+        <Route path="reports" element={<StaffRoute><Reports /></StaffRoute>} />
       </Route>
     </Routes>
   )

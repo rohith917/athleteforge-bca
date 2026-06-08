@@ -263,6 +263,97 @@ class ResetPasswordSerializer(serializers.Serializer):
         return value
 
 
+class AdminUserSerializer(serializers.ModelSerializer):
+    """Full user record for admin management panel."""
+
+    role = serializers.SerializerMethodField()
+    athlete_id = serializers.SerializerMethodField()
+    athlete_name = serializers.SerializerMethodField()
+    is_active = serializers.BooleanField()
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 'username', 'email', 'first_name', 'last_name',
+            'role', 'athlete_id', 'athlete_name', 'is_active',
+            'is_superuser', 'last_login', 'date_joined',
+        ]
+
+    def get_role(self, obj):
+        return get_user_role(obj)
+
+    def get_athlete_id(self, obj):
+        athlete = get_athlete_for_user(obj)
+        return athlete.id if athlete else None
+
+    def get_athlete_name(self, obj):
+        athlete = get_athlete_for_user(obj)
+        return athlete.full_name if athlete else None
+
+
+class AdminUserUpdateSerializer(serializers.Serializer):
+    """Admin updates user role, athlete link, or active status."""
+    role = serializers.ChoiceField(choices=['admin', 'coach', 'student'], required=False)
+    athlete_id = serializers.IntegerField(required=False, allow_null=True)
+    is_active = serializers.BooleanField(required=False)
+    first_name = serializers.CharField(max_length=100, required=False)
+    last_name = serializers.CharField(max_length=100, required=False, allow_blank=True)
+
+    def validate_athlete_id(self, value):
+        if value is not None and not Athlete.objects.filter(pk=value).exists():
+            raise serializers.ValidationError('Athlete not found.')
+        return value
+
+
+class AdminCreateUserSerializer(serializers.Serializer):
+    """Admin creates coach or student accounts."""
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, min_length=6)
+    first_name = serializers.CharField(max_length=100)
+    last_name = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    role = serializers.ChoiceField(choices=['coach', 'student'], default='coach')
+    athlete_id = serializers.IntegerField(required=False, allow_null=True)
+
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError('Email already registered.')
+        return value.lower()
+
+    def validate_athlete_id(self, value):
+        if value is not None and not Athlete.objects.filter(pk=value).exists():
+            raise serializers.ValidationError('Athlete not found.')
+        return value
+
+    def create(self, validated_data):
+        email = validated_data['email']
+        username = email.split('@')[0]
+        base = username
+        n = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base}{n}"
+            n += 1
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data.get('last_name', ''),
+        )
+        athlete = None
+        if validated_data.get('athlete_id'):
+            athlete = Athlete.objects.get(pk=validated_data['athlete_id'])
+        elif validated_data['role'] == 'student':
+            athlete = Athlete.objects.filter(email__iexact=email).first()
+
+        UserProfile.objects.create(
+            user=user,
+            role=validated_data['role'],
+            athlete=athlete,
+        )
+        return user
+
+
 class DashboardStatsSerializer(serializers.Serializer):
     """Serializer for dashboard statistics."""
     total_athletes = serializers.IntegerField()

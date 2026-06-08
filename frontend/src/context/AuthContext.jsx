@@ -47,13 +47,15 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
+  const isAdmin = user?.role === 'admin'
   const isStudent = user?.role === 'student'
-  const isCoach = user?.role === 'coach' || user?.role === 'admin' || user?.is_staff_role
+  const isCoach = user?.role === 'coach' || user?.is_staff_role
+  const isStaff = isCoach || isAdmin
 
   return (
     <AuthContext.Provider value={{
       user, loading, login, loginWithEmail, register, logout, checkAuth,
-      isStudent, isCoach, isStaff: isCoach,
+      isAdmin, isStudent, isCoach, isStaff,
     }}>
       {children}
     </AuthContext.Provider>

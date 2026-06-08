@@ -679,6 +679,27 @@ body {
 .trend-up { color: var(--af-success); }
 .trend-down { color: var(--af-danger); }
 
+/* ---- Admin Panel ---- */
+.admin-quick-link {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px;
+  background: var(--af-navy-dark);
+  border: 1px solid var(--af-border);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: all var(--transition);
+}
+.admin-quick-link:hover {
+  border-color: rgba(0,212,255,0.4);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  color: var(--af-cyan);
+}
+.admin-quick-link strong { display: block; font-size: 0.9rem; margin-bottom: 2px; }
+.admin-quick-link small { color: var(--text-muted); font-size: 0.75rem; }
+.admin-quick-icon { font-size: 1.4rem; color: var(--af-cyan); flex-shrink: 0; }
+
 .auth-link { color: var(--af-cyan); text-decoration: none; font-size: 0.85rem; }
 .auth-link:hover { text-decoration: underline; color: #33DDFF; }
 .auth-footer { text-align: center; margin-top: 20px; font-size: 0.82rem; color: var(--text-muted); }
