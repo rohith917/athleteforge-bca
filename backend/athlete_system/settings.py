@@ -62,10 +62,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'athlete_system.wsgi.application'
 
-# Database: PostgreSQL (Render) > MySQL > SQLite (local dev)
+# Database: PostgreSQL (Render) > SQLite (local) > MySQL (local)
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 DATABASE_URL = os.getenv('DATABASE_URL')
+IS_RENDER = os.getenv('RENDER', '').lower() in ('true', '1', 'yes')
 
 if DATABASE_URL:
     # Production: Render PostgreSQL (recommended for free deploy)
@@ -77,6 +79,12 @@ elif os.getenv('USE_SQLITE', 'False').lower() == 'true':
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+elif not DEBUG or IS_RENDER:
+    raise ImproperlyConfigured(
+        'DATABASE_URL is required on Render/production. '
+        'Create a PostgreSQL database on Render, copy the Internal Database URL, '
+        'and add it as the DATABASE_URL environment variable on your web service.'
+    )
 else:
     DATABASES = {
         'default': {
