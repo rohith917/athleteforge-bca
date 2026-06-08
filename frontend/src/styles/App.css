@@ -165,10 +165,8 @@ body {
 .sidebar-footer {
   padding: 18px 20px;
   border-top: 1px solid var(--af-border);
-  text-align: center;
-}
-.sidebar-footer {
   display: flex; flex-direction: column; gap: 4px; align-items: center;
+  text-align: center;
 }
 .sidebar-footer small { color: var(--af-text-muted); font-size: 0.68rem; letter-spacing: 0.5px; text-align: center; }
 
