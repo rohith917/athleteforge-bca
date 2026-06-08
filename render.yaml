@@ -1,0 +1,45 @@
+# Render Blueprint - AthleteForge BCA Project
+# Deploy: Render Dashboard -> New + -> Blueprint -> connect this repo
+databases:
+  - name: athleteforge-db
+    databaseName: athleteforge
+    user: athleteforge_user
+    plan: free
+    region: singapore
+
+services:
+  - type: web
+    name: athleteforge-api
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: bash build.sh
+    startCommand: gunicorn athlete_system.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: athleteforge-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: athleteforge-api.onrender.com,.onrender.com
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://athleteforge-frontend.onrender.com
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://athleteforge-frontend.onrender.com
+
+  - type: web
+    name: athleteforge-frontend
+    runtime: static
+    plan: free
+    region: singapore
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://athleteforge-api.onrender.com/api
