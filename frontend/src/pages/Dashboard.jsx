@@ -65,7 +65,7 @@ export default function Dashboard() {
 
   const perfChart = {
     labels: ['Speed', 'Strength', 'Endurance', 'Flexibility', 'Agility'],
-    datasets: [{ data: Object.values(stats.avg_performance), backgroundColor: [GOLD, '#B8962E', '#22C55E', '#60A5FA', '#F59E0B'], borderRadius: 8 }],
+    datasets: [{ data: Object.values(stats.avg_performance), backgroundColor: [GOLD, '#6366F1', '#22C55E', '#60A5FA', '#F59E0B'], borderRadius: 8 }],
   }
 
   const sportChart = {
@@ -77,7 +77,7 @@ export default function Dashboard() {
     labels: stats.monthly_attendance.map((m) => m.month),
     datasets: [{
       data: stats.monthly_attendance.map((m) => m.rate),
-      borderColor: GOLD, backgroundColor: 'rgba(212, 175, 55, 0.12)', fill: true, tension: 0.4,
+      borderColor: GOLD, backgroundColor: 'rgba(139, 92, 246, 0.12)', fill: true, tension: 0.4,
     }],
   }
 

@@ -33,7 +33,7 @@ export default function WeightCutTracker({ records = [], targetWeight = null }) 
         </div>
       </div>
       <div className="progress-luxury mt-3">
-        <div className="progress-luxury-fill" style={{ width: `${progress.percent}%`, background: 'linear-gradient(90deg, #D4AF37, #F5C542)' }} />
+        <div className="progress-luxury-fill" style={{ width: `${progress.percent}%`, background: 'linear-gradient(90deg, #8B5CF6, #60A5FA)' }} />
       </div>
       <p className="weight-cut-note mt-2">
         <FaBullseye className="me-1" />

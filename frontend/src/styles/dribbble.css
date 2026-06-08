@@ -17,10 +17,14 @@ body {
   --af-purple-deep: #6d28d9;
   --af-blue: #3b82f6;
   --af-blue-deep: #1d4ed8;
-  --af-gold: #d4af37;
-  --af-gold-hover: #f5c542;
-  --af-gold-glow: rgba(212, 175, 55, 0.15);
-  --af-gold-glow-strong: rgba(212, 175, 55, 0.35);
+  --af-accent: #8b5cf6;
+  --af-accent-light: #a78bfa;
+  --af-accent-dark: #6d28d9;
+  --af-gold: #a78bfa;
+  --af-gold-hover: #c4b5fd;
+  --af-gold-glow: rgba(139, 92, 246, 0.14);
+  --af-gold-glow-strong: rgba(139, 92, 246, 0.28);
+  --af-gold-real: #d4af37;
   --af-text: #f8fafc;
   --af-text-secondary: #94a3b8;
   --af-text-muted: #64748b;
@@ -97,12 +101,12 @@ body {
   font-weight: 700;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--af-gold);
+  color: var(--af-accent-light);
   margin-bottom: 20px;
   padding: 8px 18px;
   border-radius: 30px;
-  background: rgba(212, 175, 55, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.28);
   backdrop-filter: blur(8px);
 }
 
@@ -111,8 +115,8 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--af-gold);
-  box-shadow: 0 0 12px var(--af-gold);
+  background: var(--af-accent);
+  box-shadow: 0 0 12px var(--af-accent-glow, rgba(139,92,246,0.5));
   animation: goldPulse 2s infinite;
 }
 
@@ -125,9 +129,9 @@ body {
   margin-bottom: 8px;
 }
 
-.hero-title-dribbble .gold { color: var(--af-gold); }
+.hero-title-dribbble .gold { color: var(--af-accent-light); }
 .hero-title-dribbble .gradient-text {
-  background: linear-gradient(135deg, var(--af-gold) 0%, #f5c542 40%, var(--af-purple) 100%);
+  background: linear-gradient(135deg, #c4b5fd 0%, var(--af-purple) 50%, var(--af-blue) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -163,18 +167,18 @@ body {
   font-weight: 700;
   font-size: 0.95rem;
   border-radius: 14px;
-  background: linear-gradient(135deg, var(--af-gold) 0%, #f5c542 100%);
-  color: #050508;
+  background: linear-gradient(135deg, var(--af-accent) 0%, var(--af-accent-dark) 100%);
+  color: #fff;
   border: none;
   text-decoration: none;
   transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: 0 4px 24px rgba(212, 175, 55, 0.35);
+  box-shadow: 0 4px 24px rgba(139, 92, 246, 0.35);
 }
 
 .btn-hero-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.5);
-  color: #050508;
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.5);
+  color: #fff;
 }
 
 .btn-hero-ghost {
@@ -276,7 +280,7 @@ body {
   margin-bottom: 16px;
 }
 
-.auth-split-visual h1 span { color: var(--af-gold); }
+.auth-split-visual h1 span { color: var(--af-accent-light); }
 
 .auth-split-visual p {
   color: rgba(248, 250, 252, 0.8);
@@ -293,7 +297,7 @@ body {
 .auth-split-stat strong {
   font-family: 'Bebas Neue', 'Oswald', sans-serif;
   font-size: 2rem;
-  color: var(--af-gold);
+  color: var(--af-accent-light);
   display: block;
   line-height: 1;
 }
@@ -347,7 +351,7 @@ body {
   z-index: 10;
 }
 
-.auth-back-link:hover { color: var(--af-gold); }
+.auth-back-link:hover { color: var(--af-accent-light); }
 
 /* ---- Role Selection (3 cards) ---- */
 .role-select-trio {
@@ -373,9 +377,9 @@ body {
 }
 
 .role-card-trio.selected {
-  border-color: var(--af-gold);
-  background: rgba(212, 175, 55, 0.08);
-  box-shadow: 0 0 24px rgba(212, 175, 55, 0.12);
+  border-color: var(--af-accent);
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.15);
 }
 
 .role-card-trio .role-icon-trio {
@@ -392,8 +396,8 @@ body {
 }
 
 .role-card-trio.selected .role-icon-trio {
-  background: rgba(212, 175, 55, 0.15);
-  color: var(--af-gold);
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--af-accent-light);
 }
 
 .role-card-trio strong {
@@ -465,7 +469,7 @@ body {
 }
 
 .feature-card-dribbble:hover {
-  border-color: rgba(212, 175, 55, 0.3);
+  border-color: rgba(139, 92, 246, 0.35);
   transform: translateY(-6px);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(109, 40, 217, 0.1);
 }
@@ -480,7 +484,7 @@ body {
   font-size: 1.3rem;
   margin-bottom: 18px;
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.15));
-  color: var(--af-gold);
+  color: var(--af-accent-light);
 }
 
 .feature-card-dribbble h4 {
@@ -515,7 +519,7 @@ body {
 .stat-item-dribbble .num {
   font-family: 'Bebas Neue', 'Oswald', sans-serif;
   font-size: 3rem;
-  color: var(--af-gold);
+  color: var(--af-accent-light);
   line-height: 1;
   display: block;
 }
@@ -556,7 +560,7 @@ body {
 
 .dashboard-premium .glass-card:hover,
 .glass-card:hover {
-  border-color: rgba(212, 175, 55, 0.22);
+  border-color: rgba(139, 92, 246, 0.28);
 }
 
 .sidebar {
@@ -566,7 +570,7 @@ body {
 
 .nav-item.active {
   background: rgba(139, 92, 246, 0.12);
-  border-left-color: var(--af-gold);
+  border-left-color: var(--af-accent);
 }
 
 .top-navbar {
@@ -592,13 +596,13 @@ body {
 }
 
 .btn-gold {
-  background: linear-gradient(135deg, var(--af-gold), #f5c542);
-  color: #050508;
+  background: linear-gradient(135deg, var(--af-accent), var(--af-accent-dark));
+  color: #fff;
 }
 
 .btn-gold:hover {
-  background: linear-gradient(135deg, #f5c542, var(--af-gold));
-  color: #050508;
+  background: linear-gradient(135deg, var(--af-accent-light), var(--af-accent));
+  color: #fff;
   transform: translateY(-2px);
 }
 

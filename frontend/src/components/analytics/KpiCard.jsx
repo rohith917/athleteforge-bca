@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import Sparkline from './Sparkline'
 
 const variants = {
-  gold: { accent: '#D4AF37', glow: 'rgba(212, 175, 55, 0.15)' },
+  gold: { accent: '#8B5CF6', glow: 'rgba(139, 92, 246, 0.15)' },
   success: { accent: '#22C55E', glow: 'rgba(34, 197, 94, 0.12)' },
   danger: { accent: '#EF4444', glow: 'rgba(239, 68, 68, 0.12)' },
   warning: { accent: '#F59E0B', glow: 'rgba(245, 158, 11, 0.12)' },

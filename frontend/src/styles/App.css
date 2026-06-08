@@ -11,11 +11,18 @@
   --af-card-hover: #1f2a3d;
   --af-elevated: #243044;
   --af-border: #2d3a4f;
-  --af-gold: #FFD700;
-  --af-gold-dark: #C9A000;
-  --af-gold-glow: rgba(255, 215, 0, 0.12);
-  --af-gold-glow-strong: rgba(255, 215, 0, 0.28);
-  --af-gold-highlight: #C9A962;
+  --af-accent: #8b5cf6;
+  --af-accent-light: #a78bfa;
+  --af-accent-dark: #6d28d9;
+  --af-accent-blue: #60a5fa;
+  --af-accent-glow: rgba(139, 92, 246, 0.14);
+  --af-accent-glow-strong: rgba(139, 92, 246, 0.28);
+  --af-gold: #a78bfa;
+  --af-gold-dark: #7c3aed;
+  --af-gold-glow: rgba(139, 92, 246, 0.12);
+  --af-gold-glow-strong: rgba(139, 92, 246, 0.25);
+  --af-gold-highlight: #c4b5fd;
+  --af-gold-real: #d4af37;
 
   --af-text: #f0f2f5;
   --af-text-secondary: #94a3b8;
@@ -40,7 +47,7 @@
   --border-color: var(--af-border);
   --gold-500: var(--af-gold);
   --gold-400: var(--af-gold);
-  --gold-300: #FFE44D;
+  --gold-300: #c4b5fd;
   --gold-glow: var(--af-gold-glow);
   --navy-800: var(--af-dark);
   --navy-700: var(--af-card);
@@ -98,7 +105,7 @@ body {
   font-family: 'Oswald', sans-serif;
   font-weight: 700;
   letter-spacing: 2px;
-  color: var(--af-gold);
+  color: var(--af-text);
   line-height: 1.1;
 }
 .af-tagline {
@@ -114,15 +121,15 @@ body {
 .athlete-avatar {
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--af-gold);
-  box-shadow: 0 0 12px var(--af-gold-glow);
+  border: 2px solid var(--af-accent);
+  box-shadow: 0 0 12px var(--af-accent-glow);
   transition: transform var(--transition), box-shadow var(--transition);
 }
 .athlete-avatar:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--af-gold-glow-strong); }
 .athlete-avatar-fallback {
   display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, var(--af-gold), var(--af-gold-dark));
-  color: var(--af-black); font-weight: 800;
+  background: linear-gradient(135deg, var(--af-accent), var(--af-accent-dark));
+  color: #fff; font-weight: 800;
   border-radius: 50%;
 }
 
@@ -190,7 +197,7 @@ body {
 .page-title {
   font-family: 'Oswald', sans-serif;
   font-size: 1.1rem; font-weight: 600;
-  color: var(--af-gold);
+  color: var(--af-accent-light);
   letter-spacing: 1px;
   text-transform: uppercase;
 }
@@ -313,8 +320,8 @@ body {
 
 /* ---- Buttons ---- */
 .btn-gold {
-  background: linear-gradient(135deg, var(--af-gold), var(--af-gold-dark));
-  color: var(--af-black);
+  background: linear-gradient(135deg, var(--af-accent) 0%, var(--af-accent-dark) 100%);
+  color: #fff;
   border: none; padding: 11px 24px;
   border-radius: var(--radius-sm);
   font-weight: 700; font-size: 0.88rem;
@@ -421,7 +428,7 @@ body {
 .badge-active { background: rgba(34,197,94,0.15); color: var(--af-success); border: 1px solid rgba(34,197,94,0.3); }
 .badge-injured { background: rgba(239,68,68,0.15); color: var(--af-danger); border: 1px solid rgba(239,68,68,0.3); }
 .badge-inactive { background: rgba(100,116,139,0.15); color: var(--text-muted); border: 1px solid var(--border-color); }
-.badge-gold-medal { background: var(--af-gold-glow); color: var(--af-gold-highlight); border: 1px solid rgba(201,169,98,0.35); }
+.badge-gold-medal { background: rgba(212,175,55,0.12); color: var(--af-gold-real, #d4af37); border: 1px solid rgba(212,175,55,0.35); }
 .badge-silver-medal { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
 .badge-bronze-medal { background: rgba(245,158,11,0.15); color: var(--af-warning); border: 1px solid rgba(245,158,11,0.3); }
 
@@ -479,7 +486,7 @@ body {
   color: var(--af-text); text-align: center;
   letter-spacing: 1px;
 }
-.login-subtitle { text-align: center; color: var(--af-gold); font-size: 0.8rem; margin-bottom: 32px; letter-spacing: 2px; text-transform: uppercase; }
+.login-subtitle { text-align: center; color: var(--af-accent-light); font-size: 0.8rem; margin-bottom: 32px; letter-spacing: 2px; text-transform: uppercase; }
 
 /* ---- Profile Hero ---- */
 .profile-hero {
@@ -617,7 +624,7 @@ body {
 .alert-danger-custom { background: rgba(239,68,68,0.1); color: var(--af-danger); border: 1px solid rgba(239,68,68,0.3); }
 
 .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 150; }
-.mobile-menu-btn { display: none; background: none; border: none; font-size: 1.3rem; color: var(--af-gold); cursor: pointer; }
+.mobile-menu-btn { display: none; background: none; border: none; font-size: 1.3rem; color: var(--af-accent-light); cursor: pointer; }
 
 .metric-pill {
   text-align: center; padding: 12px;
@@ -826,7 +833,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
-.role-coach { background: var(--af-gold-glow); color: var(--af-gold); border: 1px solid rgba(255,215,0,0.3); }
+.role-coach { background: var(--af-accent-glow); color: var(--af-accent-light); border: 1px solid rgba(139,92,246,0.35); }
 .role-student { background: rgba(34,197,94,0.12); color: var(--af-success); border: 1px solid rgba(34,197,94,0.3); }
 .role-admin { background: var(--af-gold-glow); color: var(--af-gold-highlight); border: 1px solid rgba(201,169,98,0.35); }
 
@@ -959,13 +966,13 @@ body {
 .btn-landing-primary { padding: 14px 28px !important; font-size: 0.95rem !important; }
 .btn-outline-gold {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 13px 26px; border: 1.5px solid rgba(255,215,0,0.4);
-  background: transparent; color: var(--af-gold);
+  padding: 13px 26px; border: 1.5px solid rgba(139,92,246,0.45);
+  background: transparent; color: var(--af-accent-light);
   border-radius: var(--radius-sm); font-weight: 600;
   text-decoration: none; transition: all var(--transition);
 }
 .btn-outline-gold:hover {
-  background: var(--af-gold-glow); border-color: var(--af-gold); color: #FFE44D;
+  background: var(--af-accent-glow); border-color: var(--af-accent); color: #c4b5fd;
 }
 .landing-hero-card {
   background: var(--af-card); border: 1px solid var(--af-border);

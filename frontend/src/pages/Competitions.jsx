@@ -9,7 +9,7 @@ import { useToast } from '../context/ToastContext'
 import { FaPlus, FaTrash, FaTrophy, FaMedal } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
 import KpiCard from '../components/analytics/KpiCard'
-import { GOLD, baseChartOptions } from '../utils/chartTheme'
+import { GOLD, MEDAL_GOLD, baseChartOptions } from '../utils/chartTheme'
 import { Skeleton } from '../components/ui/Skeleton'
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Tooltip, Legend)
@@ -59,7 +59,7 @@ export default function Competitions() {
     labels: ['Gold', 'Silver', 'Bronze'],
     datasets: [{
       data: [medals.gold, medals.silver, medals.bronze],
-      backgroundColor: [GOLD, '#C0C0C0', '#CD7F32'],
+      backgroundColor: [MEDAL_GOLD, '#C0C0C0', '#CD7F32'],
       borderWidth: 0,
     }],
   } : null
@@ -132,7 +132,7 @@ export default function Competitions() {
               <div style={{ height: 200 }}>
                 <Bar data={{
                   labels: ['Gold', 'Silver', 'Bronze', 'Total'],
-                  datasets: [{ data: [medals.gold, medals.silver, medals.bronze, medals.total], backgroundColor: [GOLD, '#C0C0C0', '#CD7F32', '#22C55E'], borderRadius: 8 }],
+                  datasets: [{ data: [medals.gold, medals.silver, medals.bronze, medals.total], backgroundColor: [MEDAL_GOLD, '#C0C0C0', '#CD7F32', '#22C55E'], borderRadius: 8 }],
                 }} options={{
                   ...baseChartOptions,
                   scales: {

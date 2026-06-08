@@ -1,11 +1,13 @@
-/** Shared Chart.js theme — luxury sports analytics */
-export const GOLD = '#D4AF37'
-export const GOLD_HOVER = '#F5C542'
+/** Shared Chart.js theme — purple/blue sports analytics */
+export const GOLD = '#8B5CF6'
+export const GOLD_HOVER = '#A78BFA'
+export const MEDAL_GOLD = '#D4AF37'
 export const TEXT = '#94A3B8'
 export const GRID = 'rgba(148, 163, 184, 0.08)'
 export const SUCCESS = '#22C55E'
 export const WARNING = '#F59E0B'
 export const DANGER = '#EF4444'
+export const BLUE = '#60A5FA'
 
 export const chartDefaults = {
   color: TEXT,
@@ -20,7 +22,7 @@ export const baseChartOptions = {
     legend: { display: false },
     tooltip: {
       backgroundColor: '#1A1A1A',
-      borderColor: 'rgba(212, 175, 55, 0.3)',
+      borderColor: 'rgba(139, 92, 246, 0.35)',
       borderWidth: 1,
       titleColor: '#F8FAFC',
       bodyColor: TEXT,

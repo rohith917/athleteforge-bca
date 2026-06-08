@@ -55,7 +55,7 @@ export default function AdminDashboard() {
     labels: ['Admins', 'Coaches', 'Students'],
     datasets: [{
       data: [roles.admin || 0, roles.coach || 0, roles.student || 0],
-      backgroundColor: [GOLD, '#B8962E', '#22C55E'],
+      backgroundColor: [GOLD, '#6366F1', '#22C55E'],
       borderWidth: 0,
     }],
   }

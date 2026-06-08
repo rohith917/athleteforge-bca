@@ -4,10 +4,10 @@ import { FaUsers, FaHeartbeat, FaExclamationTriangle, FaTrophy, FaBed, FaClipboa
 export default function TeamOverview({ stats }) {
   const t = deriveTeamOverview(stats)
   const items = [
-    { icon: FaUsers, label: 'Total Athletes', val: t.totalAthletes, color: '#D4AF37' },
+    { icon: FaUsers, label: 'Total Athletes', val: t.totalAthletes, color: '#8B5CF6' },
     { icon: FaHeartbeat, label: 'Ready to Train', val: t.readyToTrain, color: '#22C55E' },
     { icon: FaExclamationTriangle, label: 'High Injury Risk', val: t.highInjuryRisk, color: '#EF4444' },
-    { icon: FaTrophy, label: 'Competition Ready', val: t.competitionReady, color: '#D4AF37' },
+    { icon: FaTrophy, label: 'Competition Ready', val: t.competitionReady, color: '#8B5CF6' },
     { icon: FaBed, label: 'Poor Recovery', val: t.poorRecovery, color: '#F59E0B' },
     { icon: FaClipboardCheck, label: 'Attendance %', val: `${t.attendanceSummary}%`, color: '#60A5FA' },
   ]
