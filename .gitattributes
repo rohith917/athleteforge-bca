@@ -1,0 +1,2 @@
+# Ensure Render can run the backend build script (Linux needs LF line endings)
+backend/build.sh text eol=lf
