@@ -2,10 +2,13 @@ import { Doughnut } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement } from 'chart.js'
 import { calcInjuryRisk } from '../../utils/metricsEngine'
 import { SUCCESS, WARNING, DANGER } from '../../utils/chartTheme'
+import { useTheme } from '../../context/ThemeContext'
 
 ChartJS.register(ArcElement)
 
 export default function InjuryRiskGauge({ stats }) {
+  const { isDark } = useTheme()
+  const trackColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
   const { risk, level } = calcInjuryRisk(stats)
   const color = level === 'High' ? DANGER : level === 'Medium' ? WARNING : SUCCESS
 
@@ -14,7 +17,7 @@ export default function InjuryRiskGauge({ stats }) {
       <h6 className="analytics-card-title">Injury Risk Score</h6>
       <div className="gauge-wrap">
         <Doughnut
-          data={{ datasets: [{ data: [risk, 100 - risk], backgroundColor: [color, '#F3F4F6'], borderWidth: 0, circumference: 270, rotation: 225 }] }}
+          data={{ datasets: [{ data: [risk, 100 - risk], backgroundColor: [color, trackColor], borderWidth: 0, circumference: 270, rotation: 225 }] }}
           options={{ cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }}
         />
         <div className="gauge-center">

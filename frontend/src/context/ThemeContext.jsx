@@ -1,5 +1,5 @@
 /**
- * Theme context — dark / light mode toggle with localStorage persistence.
+ * Theme context — dark / light mode. Only admins may toggle; others always see light.
  */
 import { createContext, useContext, useState, useEffect } from 'react'
 
@@ -7,16 +7,28 @@ const ThemeContext = createContext(null)
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('athleteforge-theme') || 'light')
+  const [forcedLight, setForcedLight] = useState(false)
+
+  const effectiveTheme = forcedLight ? 'light' : theme
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('athleteforge-theme', theme)
-  }, [theme])
+    document.documentElement.setAttribute('data-theme', effectiveTheme)
+    if (!forcedLight) localStorage.setItem('athleteforge-theme', theme)
+  }, [effectiveTheme, forcedLight, theme])
 
-  const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light')
+  const toggleTheme = () => {
+    if (forcedLight) return
+    setTheme((t) => (t === 'light' ? 'dark' : 'light'))
+  }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, isDark: theme === 'dark' }}>
+    <ThemeContext.Provider value={{
+      theme: effectiveTheme,
+      toggleTheme,
+      isDark: effectiveTheme === 'dark',
+      setForcedLight,
+      canToggleTheme: !forcedLight,
+    }}>
       {children}
     </ThemeContext.Provider>
   )

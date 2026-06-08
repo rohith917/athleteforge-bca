@@ -11,7 +11,7 @@ const roleLabels = { admin: 'Admin', coach: 'Coach', student: 'Student' }
 
 export default function Navbar({ onMenuToggle }) {
   const { user, logout, isStudent, isAdmin } = useAuth()
-  const { isDark, toggleTheme } = useTheme()
+  const { isDark, toggleTheme, canToggleTheme } = useTheme()
   const navigate = useNavigate()
 
   const handleLogout = async () => {
@@ -38,9 +38,11 @@ export default function Navbar({ onMenuToggle }) {
       </div>
 
       <div className="navbar-actions">
-        <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme">
-          {isDark ? <FaSun /> : <FaMoon />}
-        </button>
+        {isAdmin && canToggleTheme && (
+          <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme" aria-label="Toggle theme">
+            {isDark ? <FaSun /> : <FaMoon />}
+          </button>
+        )}
         <div className="user-chip">
           <Avatar src={user?.profile_photo} name={displayName} size="sm" />
           <span>{displayName}</span>

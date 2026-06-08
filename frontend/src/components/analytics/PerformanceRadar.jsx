@@ -1,10 +1,15 @@
 import { Radar } from 'react-chartjs-2'
 import { Chart as ChartJS, RadialLinearScale, PointElement, LineElement, Filler } from 'chart.js'
 import { ACCENT, baseChartOptions } from '../../utils/chartTheme'
+import { useTheme } from '../../context/ThemeContext'
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler)
 
 export default function PerformanceRadar({ scores = {} }) {
+  const { isDark } = useTheme()
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
+  const angleColor = isDark ? 'rgba(255,255,255,0.08)' : '#E5E7EB'
+  const labelColor = isDark ? '#9CA3AF' : '#6B7280'
   const data = {
     labels: ['Speed', 'Strength', 'Power', 'Endurance', 'Flexibility', 'Agility', 'Recovery'],
     datasets: [{
@@ -35,9 +40,9 @@ export default function PerformanceRadar({ scores = {} }) {
               r: {
                 min: 0, max: 100,
                 ticks: { display: false, stepSize: 20 },
-                grid: { color: '#F3F4F6' },
-                angleLines: { color: '#E5E7EB' },
-                pointLabels: { color: '#6B7280', font: { size: 11, family: 'Inter' } },
+                grid: { color: gridColor },
+                angleLines: { color: angleColor },
+                pointLabels: { color: labelColor, font: { size: 11, family: 'Inter' } },
               },
             },
           }}

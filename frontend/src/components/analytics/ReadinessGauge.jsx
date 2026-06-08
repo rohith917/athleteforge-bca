@@ -2,10 +2,13 @@ import { Doughnut } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, Tooltip } from 'chart.js'
 import { calcReadiness } from '../../utils/metricsEngine'
 import { SUCCESS, WARNING, DANGER } from '../../utils/chartTheme'
+import { useTheme } from '../../context/ThemeContext'
 
 ChartJS.register(ArcElement, Tooltip)
 
 export default function ReadinessGauge({ wellness, score: fixedScore }) {
+  const { isDark } = useTheme()
+  const trackColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
   const { score, status, level } = fixedScore != null
     ? { score: fixedScore, status: fixedScore >= 80 ? 'Ready to Train' : fixedScore >= 60 ? 'Moderate Readiness' : 'Recovery Recommended', level: fixedScore >= 80 ? 'high' : fixedScore >= 60 ? 'medium' : 'low' }
     : calcReadiness(wellness)
@@ -17,7 +20,7 @@ export default function ReadinessGauge({ wellness, score: fixedScore }) {
       <h6 className="analytics-card-title">Athlete Readiness</h6>
       <div className="gauge-wrap">
         <Doughnut
-          data={{ datasets: [{ data: [score, 100 - score], backgroundColor: [color, '#F3F4F6'], borderWidth: 0, circumference: 270, rotation: 225 }] }}
+          data={{ datasets: [{ data: [score, 100 - score], backgroundColor: [color, trackColor], borderWidth: 0, circumference: 270, rotation: 225 }] }}
           options={{ cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }}
         />
         <div className="gauge-center">
