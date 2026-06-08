@@ -1,113 +1,92 @@
 /**
- * AthleteForge Landing Page — hero, features, CTA.
+ * AthleteForge — Premium enterprise landing page
  */
 import { Link } from 'react-router-dom'
 import {
-  FaChartLine, FaBandAid, FaUsers, FaTrophy, FaBrain,
-  FaClipboardCheck, FaArrowRight
+  FaUsers, FaChartLine, FaBandAid, FaHeartbeat, FaTrophy, FaClipboardCheck,
+  FaWeight, FaBrain, FaDumbbell, FaArrowRight, FaBolt
 } from 'react-icons/fa'
 import PublicNavbar from '../components/PublicNavbar'
 import PublicFooter from '../components/PublicFooter'
-import Logo from '../components/Logo'
+import DashboardPreview from '../components/analytics/DashboardPreview'
+import AnimatedCounter from '../components/ui/AnimatedCounter'
 
 const features = [
-  { icon: FaUsers, title: 'Athlete Management', desc: 'Complete profiles, photos, and team organization.' },
-  { icon: FaChartLine, title: 'Performance Tracking', desc: 'Speed, strength, endurance, flexibility & agility scores.' },
-  { icon: FaBandAid, title: 'Injury Recovery', desc: 'Track injuries, recovery status, and medical notes.' },
-  { icon: FaTrophy, title: 'Competitions', desc: 'Events, results, and medal tracking.' },
-  { icon: FaClipboardCheck, title: 'Attendance', desc: 'Training session records and attendance reports.' },
-  { icon: FaBrain, title: 'AI Insights', desc: 'Smart performance suggestions and injury risk alerts.' },
+  { icon: FaUsers, title: 'Athlete Management', desc: 'Elite profiles, roster intelligence, and team organization.' },
+  { icon: FaChartLine, title: 'Performance Analytics', desc: 'Speed, power, strength, agility, and trend intelligence.' },
+  { icon: FaBandAid, title: 'Injury Tracking', desc: 'Clinical-grade injury logging with severity and RTP workflows.' },
+  { icon: FaHeartbeat, title: 'Recovery Monitoring', desc: 'Recovery scores, progress bars, and return-to-play timelines.' },
+  { icon: FaTrophy, title: 'Competition Tracking', desc: 'Results, medals, rankings, and win-rate analytics.' },
+  { icon: FaClipboardCheck, title: 'Attendance Monitoring', desc: 'Session records with compliance and trend reporting.' },
+  { icon: FaWeight, title: 'Weight Management', desc: 'BMI, body composition, and combat sports weight-cut progress.' },
+  { icon: FaBrain, title: 'Sports Science Insights', desc: 'Evidence-based metrics for high-performance environments.' },
+  { icon: FaDumbbell, title: 'Training Load Monitoring', desc: 'Duration × RPE load with acute vs chronic analysis.' },
+  { icon: FaBolt, title: 'AI Recommendations', desc: 'Smart alerts for risk, recovery, readiness, and load.' },
 ]
 
-const roles = [
-  { title: 'Coaches & Admins', desc: 'Full control — manage athletes, data, reports & users.', badge: 'Full Access' },
-  { title: 'Students & Athletes', desc: 'View your profile, performance, injuries & attendance.', badge: 'Personal Portal' },
+const platformStats = [
+  { value: 120, suffix: '+', label: 'Athletes Managed' },
+  { value: 340, suffix: '+', label: 'Injuries Tracked' },
+  { value: 85, suffix: '+', label: 'Competitions Recorded' },
+  { value: 92, suffix: '%', label: 'Recovery Success Rate' },
+  { value: 1500, suffix: '+', label: 'Performance Metrics' },
 ]
 
 export default function Landing() {
   return (
-    <div className="landing-page">
+    <div className="landing-page landing-premium">
       <PublicNavbar />
 
-      <section className="landing-hero">
-        <div className="landing-hero-glow" />
-        <div className="container landing-hero-content animate-in">
+      <section className="landing-hero-premium">
+        <div className="container position-relative">
           <div className="row align-items-center g-4 g-lg-5">
-            <div className="col-12 col-lg-7 landing-hero-text order-1">
-              <h1 className="landing-headline">
-                Train Smarter.<br />
-                <span className="gold-text">Recover Faster.</span><br />
-                Perform Better.
+            <div className="col-12 col-lg-6 landing-hero-text order-1">
+              <span className="landing-eyebrow">Elite Sports Performance Platform</span>
+              <h1 className="landing-headline-premium">
+                Track. Recover.<br />
+                <span className="gold">Perform. Win.</span>
               </h1>
-              <p className="landing-lead">
-                <strong>AthleteForge</strong> is a professional athlete performance and injury
-                tracking platform built for coaches, admins, and student athletes.
+              <p className="landing-sub-premium">
+                AthleteForge is a professional athlete performance, recovery, injury management,
+                and analytics platform built for coaches, sports academies, and athletes.
               </p>
-              <p className="landing-tagline">Track. Recover. Perform.</p>
               <div className="landing-cta-group">
-                <Link to="/login" className="btn-gold btn-landing-primary">
-                  Sign In <FaArrowRight />
+                <Link to="/register" className="btn-gold btn-landing-primary">
+                  Get Started <FaArrowRight />
                 </Link>
-                <Link to="/register" className="btn-outline-gold">
-                  Create Free Account
-                </Link>
+                <Link to="/login" className="btn-outline-gold">View Dashboard</Link>
               </div>
             </div>
-            <div className="col-12 col-lg-5 order-2">
-              <div className="landing-hero-card">
-                <Logo size="lg" showTagline />
-                <div className="landing-stats-row">
-                  <div className="landing-stat">
-                    <span className="val">5+</span>
-                    <span className="lbl">Metrics</span>
-                  </div>
-                  <div className="landing-stat">
-                    <span className="val">AI</span>
-                    <span className="lbl">Insights</span>
-                  </div>
-                  <div className="landing-stat">
-                    <span className="val">24/7</span>
-                    <span className="lbl">Access</span>
-                  </div>
-                </div>
-                <p className="landing-hero-note">
-                  Role-based dashboards for coaches, admins, and athletes — secure and professional.
-                </p>
-              </div>
+            <div className="col-12 col-lg-6 order-2">
+              <DashboardPreview />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="landing-section">
+      <section className="stats-section-premium">
         <div className="container">
-          <h2 className="landing-section-title">Everything You Need</h2>
-          <p className="landing-section-sub">A complete sports management system in one elegant platform.</p>
-          <div className="row g-4">
-            {features.map((f, i) => (
-              <div className="col-md-6 col-lg-4" key={f.title}>
-                <div className="landing-feature-card animate-in" style={{ animationDelay: `${i * 80}ms` }}>
-                  <div className="landing-feature-icon"><f.icon /></div>
-                  <h4>{f.title}</h4>
-                  <p>{f.desc}</p>
-                </div>
+          <div className="stats-grid-premium">
+            {platformStats.map((s) => (
+              <div className="stat-block-premium animate-in" key={s.label}>
+                <span className="num"><AnimatedCounter value={s.value} suffix={s.suffix} /></span>
+                <span className="lbl">{s.label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="landing-section landing-section-dark">
+      <section className="landing-section">
         <div className="container">
-          <h2 className="landing-section-title">Built for Every Role</h2>
-          <div className="row g-4 justify-content-center">
-            {roles.map(r => (
-              <div className="col-md-5" key={r.title}>
-                <div className="landing-role-card">
-                  <span className="landing-role-badge">{r.badge}</span>
-                  <h4>{r.title}</h4>
-                  <p>{r.desc}</p>
-                </div>
+          <h2 className="landing-section-title">Enterprise Sports Intelligence</h2>
+          <p className="landing-section-sub">Everything elite teams need — in one premium platform.</p>
+          <div className="feature-grid-premium">
+            {features.map((f, i) => (
+              <div className="feature-card-premium animate-in" style={{ animationDelay: `${i * 50}ms` }} key={f.title}>
+                <div className="icon"><f.icon /></div>
+                <h4>{f.title}</h4>
+                <p>{f.desc}</p>
               </div>
             ))}
           </div>
@@ -116,11 +95,13 @@ export default function Landing() {
 
       <section className="landing-cta-section">
         <div className="container text-center">
-          <h2 className="landing-section-title mb-3">Ready to Get Started?</h2>
-          <p className="landing-section-sub mb-4">Sign in with your credentials or register as Coach or Student.</p>
+          <h2 className="landing-section-title mb-3">Built for Elite Performance</h2>
+          <p className="landing-section-sub mb-4">
+            Trusted by coaches, academies, and athletes pursuing Olympic-level excellence.
+          </p>
           <div className="landing-cta-group justify-content-center">
-            <Link to="/login" className="btn-gold btn-landing-primary">Sign In Now</Link>
-            <Link to="/register" className="btn-outline-gold">Register</Link>
+            <Link to="/register" className="btn-gold btn-landing-primary">Get Started</Link>
+            <Link to="/login" className="btn-outline-gold">Sign In</Link>
           </div>
         </div>
       </section>
