@@ -16,7 +16,7 @@ export default function Navbar({ onMenuToggle }) {
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login')
+    navigate('/')
   }
 
   const displayName = user?.first_name

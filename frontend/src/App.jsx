@@ -1,10 +1,11 @@
 /**
- * Main App — routing with role-based access control.
+ * Main App — public landing + protected dashboard routes.
  */
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import Layout from './components/Layout'
 import LoadingSpinner from './components/LoadingSpinner'
+import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
@@ -23,25 +24,32 @@ import Attendance from './pages/Attendance'
 import WeightTracking from './pages/WeightTracking'
 import Reports from './pages/Reports'
 
+function GuestRoute({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return <LoadingSpinner message="Loading..." fullScreen />
+  if (user) return <Navigate to="/dashboard" replace />
+  return children
+}
+
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
   if (loading) return <LoadingSpinner message="Authenticating..." fullScreen />
-  return user ? children : <Navigate to="/login" />
+  return user ? children : <Navigate to="/login" replace />
 }
 
 function StaffRoute({ children }) {
   const { user, loading, isStaff } = useAuth()
   if (loading) return <LoadingSpinner message="Authenticating..." fullScreen />
-  if (!user) return <Navigate to="/login" />
-  if (!isStaff) return <Navigate to="/" />
+  if (!user) return <Navigate to="/login" replace />
+  if (!isStaff) return <Navigate to="/dashboard" replace />
   return children
 }
 
 function AdminRoute({ children }) {
   const { user, loading, isAdmin } = useAuth()
   if (loading) return <LoadingSpinner message="Authenticating..." fullScreen />
-  if (!user) return <Navigate to="/login" />
-  if (!isAdmin) return <Navigate to="/" />
+  if (!user) return <Navigate to="/login" replace />
+  if (!isAdmin) return <Navigate to="/dashboard" replace />
   return children
 }
 
@@ -55,12 +63,15 @@ function DashboardRouter() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+      {/* Public routes */}
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+      <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+      <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
+      <Route path="/reset-password" element={<GuestRoute><ResetPassword /></GuestRoute>} />
 
-      <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
+      {/* Protected app */}
+      <Route path="/dashboard" element={<PrivateRoute><Layout /></PrivateRoute>}>
         <Route index element={<DashboardRouter />} />
         <Route path="athletes" element={<Athletes />} />
         <Route path="athletes/:id" element={<AthleteProfile />} />
@@ -74,6 +85,8 @@ export default function App() {
         <Route path="weight" element={<StaffRoute><WeightTracking /></StaffRoute>} />
         <Route path="reports" element={<StaffRoute><Reports /></StaffRoute>} />
       </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }

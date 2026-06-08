@@ -19,13 +19,13 @@ import Avatar from '../components/Avatar'
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 const quickLinks = [
-  { to: '/admin/users', icon: FaUserShield, label: 'Manage Users', desc: 'Roles, access, athlete links' },
-  { to: '/athletes', icon: FaUsers, label: 'Athletes', desc: 'All athlete profiles' },
-  { to: '/performance', icon: FaChartLine, label: 'Performance', desc: 'Training metrics' },
-  { to: '/injuries', icon: FaBandAid, label: 'Injuries', desc: 'Recovery tracking' },
-  { to: '/competitions', icon: FaTrophy, label: 'Competitions', desc: 'Events & medals' },
-  { to: '/attendance', icon: FaClipboardCheck, label: 'Attendance', desc: 'Session records' },
-  { to: '/reports', icon: FaCog, label: 'Reports', desc: 'PDF & Excel exports' },
+  { to: '/dashboard/admin/users', icon: FaUserShield, label: 'Manage Users', desc: 'Roles, access, athlete links' },
+  { to: '/dashboard/athletes', icon: FaUsers, label: 'Athletes', desc: 'All athlete profiles' },
+  { to: '/dashboard/performance', icon: FaChartLine, label: 'Performance', desc: 'Training metrics' },
+  { to: '/dashboard/injuries', icon: FaBandAid, label: 'Injuries', desc: 'Recovery tracking' },
+  { to: '/dashboard/competitions', icon: FaTrophy, label: 'Competitions', desc: 'Events & medals' },
+  { to: '/dashboard/attendance', icon: FaClipboardCheck, label: 'Attendance', desc: 'Session records' },
+  { to: '/dashboard/reports', icon: FaCog, label: 'Reports', desc: 'PDF & Excel exports' },
 ]
 
 export default function AdminDashboard() {
@@ -45,7 +45,7 @@ export default function AdminDashboard() {
     labels: ['Admins', 'Coaches', 'Students'],
     datasets: [{
       data: [roles.admin || 0, roles.coach || 0, roles.student || 0],
-      backgroundColor: ['#C9A962', '#00D4FF', '#22c55e'],
+      backgroundColor: ['#C9A962', '#FFD700', '#22c55e'],
       borderWidth: 0,
     }],
   }
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
         title="Admin Control Panel"
         subtitle="Full system management — users, athletes, and all modules"
         action={
-          <Link to="/admin/users" className="btn-gold text-decoration-none">
+          <Link to="/dashboard/admin/users" className="btn-gold text-decoration-none">
             <FaUserShield /> Manage Users
           </Link>
         }
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
         }}>
           <FaExclamationTriangle className="me-2" />
           {stats.unlinked_students} student account(s) not linked to an athlete profile.
-          <Link to="/admin/users?role=student" className="auth-link ms-2">Fix now</Link>
+          <Link to="/dashboard/admin/users?role=student" className="auth-link ms-2">Fix now</Link>
         </div>
       )}
 
@@ -122,7 +122,7 @@ export default function AdminDashboard() {
           <div className="card-panel">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="card-panel-title mb-0">Recent Users</h5>
-              <Link to="/admin/users" className="auth-link">View all <FaArrowRight /></Link>
+              <Link to="/dashboard/admin/users" className="auth-link">View all <FaArrowRight /></Link>
             </div>
             <div className="table-responsive">
               <table className="table-custom">

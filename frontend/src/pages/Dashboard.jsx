@@ -1,5 +1,5 @@
 /**
- * Coach Dashboard — navy/cyan analytics with AI insights.
+ * Coach Dashboard — dark gold sports analytics with AI insights.
  */
 import { useState, useEffect } from 'react'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend, Filler } from 'chart.js'
@@ -37,8 +37,8 @@ export default function Dashboard() {
   if (loading) return <LoadingSpinner message="Loading AthleteForge dashboard..." fullScreen />
   if (!stats) return <div className="alert-custom alert-danger-custom">Failed to load dashboard.</div>
 
-  const CYAN = '#00D4FF'
-  const colors = [CYAN, '#00A8CC', '#22c55e', '#3b82f6', '#C9A962']
+  const GOLD = '#FFD700'
+  const colors = [GOLD, '#C9A000', '#22c55e', '#3b82f6', '#f59e0b']
 
   const perfChart = {
     labels: ['Speed', 'Strength', 'Endurance', 'Flexibility', 'Agility'],
@@ -47,15 +47,15 @@ export default function Dashboard() {
 
   const sportChart = {
     labels: stats.sport_distribution.map(s => s.sport),
-    datasets: [{ data: stats.sport_distribution.map(s => s.count), backgroundColor: ['#00D4FF', '#122240', '#22c55e', '#3b82f6', '#ef4444', '#C9A962'], borderWidth: 0 }],
+    datasets: [{ data: stats.sport_distribution.map(s => s.count), backgroundColor: ['#FFD700', '#1a2332', '#22c55e', '#3b82f6', '#ef4444', '#f59e0b'], borderWidth: 0 }],
   }
 
   const attendanceChart = {
     labels: stats.monthly_attendance.map(m => m.month),
     datasets: [{
       label: 'Attendance %', data: stats.monthly_attendance.map(m => m.rate),
-      borderColor: CYAN, backgroundColor: 'rgba(0,212,255,0.1)', fill: true, tension: 0.4,
-      pointBackgroundColor: CYAN, pointRadius: 5,
+      borderColor: GOLD, backgroundColor: 'rgba(255,215,0,0.1)', fill: true, tension: 0.4,
+      pointBackgroundColor: GOLD, pointRadius: 5,
     }],
   }
 

@@ -190,12 +190,13 @@ class LoginSerializer(serializers.Serializer):
 
 
 class RegisterSerializer(serializers.Serializer):
-    """Student/athlete self-registration."""
+    """Self-registration as Coach or Student/Athlete."""
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, min_length=6)
     password_confirm = serializers.CharField(write_only=True)
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    role = serializers.ChoiceField(choices=['coach', 'student'], default='student')
 
     def validate_email(self, value):
         if User.objects.filter(email__iexact=value).exists():
@@ -228,8 +229,11 @@ class RegisterSerializer(serializers.Serializer):
             last_name=validated_data.get('last_name', ''),
         )
 
-        athlete = Athlete.objects.filter(email__iexact=email).first()
-        UserProfile.objects.create(user=user, role='student', athlete=athlete)
+        role = validated_data.get('role', 'student')
+        athlete = None
+        if role == 'student':
+            athlete = Athlete.objects.filter(email__iexact=email).first()
+        UserProfile.objects.create(user=user, role=role, athlete=athlete)
         return user
 
 

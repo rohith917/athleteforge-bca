@@ -16,7 +16,7 @@ import Avatar from '../components/Avatar'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, Filler)
 
-const CYAN = '#00D4FF'
+const GOLD = '#FFD700'
 const chartOpts = {
   responsive: true,
   plugins: { legend: { labels: { color: '#B8C5D6', font: { family: 'Inter' } } } },
@@ -45,7 +45,7 @@ export default function StudentDashboard() {
     datasets: [{
       label: 'Your Scores',
       data: Object.values(stats.avg_performance),
-      backgroundColor: [CYAN, '#00A8CC', '#22c55e', '#3b82f6', '#C9A962'],
+      backgroundColor: [GOLD, '#C9A000', '#22c55e', '#3b82f6', '#f59e0b'],
       borderRadius: 8,
     }],
   }
@@ -55,11 +55,11 @@ export default function StudentDashboard() {
     datasets: [{
       label: 'Attendance %',
       data: stats.monthly_attendance.map(m => m.rate),
-      borderColor: CYAN,
-      backgroundColor: 'rgba(0,212,255,0.1)',
+      borderColor: GOLD,
+      backgroundColor: 'rgba(255,215,0,0.1)',
       fill: true,
       tension: 0.4,
-      pointBackgroundColor: CYAN,
+      pointBackgroundColor: GOLD,
     }],
   }
 
@@ -80,7 +80,7 @@ export default function StudentDashboard() {
           <h3>{athlete?.full_name}</h3>
           <p>{athlete?.sport} · {athlete?.team} · <span className="role-badge role-student">Student</span></p>
           {athlete?.id && (
-            <Link to={`/athletes/${athlete.id}`} className="btn-outline-navy mt-2">
+            <Link to={`/dashboard/athletes/${athlete.id}`} className="btn-outline-navy mt-2">
               <FaUser className="me-1" /> View My Profile
             </Link>
           )}

@@ -26,8 +26,8 @@ export default function AthleteProfile() {
   return (
     <div className="animate-in">
       <div className="d-flex justify-content-between mb-3">
-        <Link to="/athletes" className="btn-outline-navy text-decoration-none"><FaArrowLeft /> Back</Link>
-        <Link to={`/athletes/${id}/edit`} className="btn-gold text-decoration-none"><FaEdit /> Edit</Link>
+        <Link to="/dashboard/athletes" className="btn-outline-navy text-decoration-none"><FaArrowLeft /> Back</Link>
+        <Link to={`/dashboard/athletes/${id}/edit`} className="btn-gold text-decoration-none"><FaEdit /> Edit</Link>
       </div>
 
       <div className="profile-hero">

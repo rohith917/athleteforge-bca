@@ -52,7 +52,7 @@ export default function Athletes() {
       <PageHeader
         title="Athletes"
         subtitle="Manage athlete profiles and performance records"
-        action={isCoach ? <Link to="/athletes/new" className="btn-gold text-decoration-none"><FaPlus /> Add Athlete</Link> : null}
+        action={isCoach ? <Link to="/dashboard/athletes/new" className="btn-gold text-decoration-none"><FaPlus /> Add Athlete</Link> : null}
       />
 
       <div className="search-bar">
@@ -96,10 +96,10 @@ export default function Athletes() {
                     <td>{statusBadge(a.status)}</td>
                     <td>
                       <div className="d-flex gap-1">
-                        <Link to={`/athletes/${a.id}`} className="btn-icon btn-icon-view"><FaEye /></Link>
+                        <Link to={`/dashboard/athletes/${a.id}`} className="btn-icon btn-icon-view"><FaEye /></Link>
                         {isCoach && (
                           <>
-                            <Link to={`/athletes/${a.id}/edit`} className="btn-icon btn-icon-edit"><FaEdit /></Link>
+                            <Link to={`/dashboard/athletes/${a.id}/edit`} className="btn-icon btn-icon-edit"><FaEdit /></Link>
                             <button className="btn-icon btn-icon-delete"
                               onClick={() => handleDelete(a.id, a.full_name || a.first_name)}><FaTrash /></button>
                           </>

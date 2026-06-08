@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { authAPI } from '../services/api'
-import { FaLock, FaCheck } from 'react-icons/fa'
+import { FaLock, FaCheck, FaArrowLeft } from 'react-icons/fa'
 import Logo from '../components/Logo'
 
 export default function ResetPassword() {
@@ -40,6 +40,7 @@ export default function ResetPassword() {
 
   return (
     <div className="login-page">
+      <Link to="/" className="login-back-home"><FaArrowLeft /> Back to Home</Link>
       <div className="login-card">
         <Logo size="lg" showTagline />
         <h2 className="login-title mt-3">Reset Password</h2>

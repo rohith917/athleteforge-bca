@@ -44,7 +44,7 @@ export default function Performance() {
       setChartData({
         labels: d.labels,
         datasets: [
-          { label: 'Speed', data: d.speed, borderColor: '#00D4FF', tension: 0.4, fill: false },
+          { label: 'Speed', data: d.speed, borderColor: '#FFD700', tension: 0.4, fill: false },
           { label: 'Strength', data: d.strength, borderColor: '#22c55e', tension: 0.4, fill: false },
           { label: 'Endurance', data: d.endurance, borderColor: '#3b82f6', tension: 0.4, fill: false },
           { label: 'Flexibility', data: d.flexibility, borderColor: '#f59e0b', tension: 0.4, fill: false },

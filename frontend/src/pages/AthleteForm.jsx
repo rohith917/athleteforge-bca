@@ -44,7 +44,7 @@ export default function AthleteForm() {
       if (isEdit) await athletesAPI.update(id, form)
       else await athletesAPI.create(form)
       showToast(isEdit ? 'Athlete updated successfully' : 'Athlete added successfully')
-      navigate('/athletes')
+      navigate('/dashboard/athletes')
     } catch { showToast('Failed to save athlete', 'error') }
     finally { setLoading(false) }
   }
@@ -107,7 +107,7 @@ export default function AthleteForm() {
             <button type="submit" className="btn-gold" disabled={loading}>
               <FaSave /> {loading ? 'Saving...' : (isEdit ? 'Update Athlete' : <><FaUserPlus /> Add Athlete</>)}
             </button>
-            <button type="button" className="btn-outline-navy" onClick={() => navigate('/athletes')}>
+            <button type="button" className="btn-outline-navy" onClick={() => navigate('/dashboard/athletes')}>
               <FaTimes /> Cancel
             </button>
           </div>
