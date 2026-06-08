@@ -6,6 +6,7 @@ from datetime import date, timedelta
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.middleware.csrf import get_token
 from django.contrib.auth.models import User
 from django.db.models import Avg, Count, Q
 from django.http import HttpResponse
@@ -61,6 +62,15 @@ def _resolve_user_from_login(data):
 
 
 # ==================== Authentication ====================
+
+class CsrfView(APIView):
+    """Return CSRF token for cross-origin SPA (cookie on API domain + JSON body)."""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        token = get_token(request)
+        return Response({'csrfToken': token})
+
 
 class LoginView(APIView):
     """Email or username login with session management."""

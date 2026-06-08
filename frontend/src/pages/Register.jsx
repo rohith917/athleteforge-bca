@@ -4,7 +4,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { FaEnvelope, FaLock, FaUser, FaUserPlus, FaUserTie, FaUserGraduate, FaArrowLeft } from 'react-icons/fa'
+import {
+  FaEnvelope, FaLock, FaUser, FaUserPlus, FaUserTie, FaUserGraduate,
+  FaArrowLeft, FaTachometerAlt, FaSignOutAlt
+} from 'react-icons/fa'
 import Logo from '../components/Logo'
 
 const emptyForm = {
@@ -15,7 +18,7 @@ export default function Register() {
   const [form, setForm] = useState(emptyForm)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { register } = useAuth()
+  const { user, register, logout } = useAuth()
   const navigate = useNavigate()
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
@@ -27,13 +30,57 @@ export default function Register() {
     setLoading(true)
     try {
       await register(form)
-      navigate('/dashboard')
+      navigate('/dashboard', { replace: true })
     } catch (err) {
       const data = err.response?.data
       setError(data?.email?.[0] || data?.password?.[0] || data?.role?.[0] || data?.password_confirm?.[0] || 'Registration failed.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleSwitchAccount = async () => {
+    setLoading(true)
+    try {
+      await logout()
+      setForm(emptyForm)
+      setError('')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (user) {
+    return (
+      <div className="login-page">
+        <Link to="/" className="login-back-home"><FaArrowLeft /> Back to Home</Link>
+        <div className="login-card">
+          <Logo size="lg" showTagline />
+          <h2 className="login-title mt-3">Already Signed In</h2>
+          <p className="login-subtitle">Sign out to create a new account</p>
+          <button
+            type="button"
+            className="btn-gold w-100 justify-content-center mb-3"
+            style={{ width: '100%' }}
+            onClick={() => navigate('/dashboard')}
+          >
+            <FaTachometerAlt /> Go to Dashboard
+          </button>
+          <button
+            type="button"
+            className="btn-outline-gold w-100 justify-content-center"
+            style={{ width: '100%' }}
+            onClick={handleSwitchAccount}
+            disabled={loading}
+          >
+            <FaSignOutAlt /> {loading ? 'Signing out...' : 'Sign out & register new account'}
+          </button>
+          <p className="auth-footer mt-3">
+            Already have an account? <Link to="/login" className="auth-link">Sign in</Link>
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -72,29 +119,24 @@ export default function Register() {
           </div>
 
           <div className="mb-3">
-            <label className="form-label-custom"><FaUser className="me-1" /> First Name</label>
+            <label className="form-label-custom"><FaUser className="me-1" /> Full Name</label>
             <input type="text" name="first_name" className="form-control-custom" value={form.first_name}
-              onChange={handleChange} required placeholder="Your first name" />
-          </div>
-          <div className="mb-3">
-            <label className="form-label-custom">Last Name</label>
-            <input type="text" name="last_name" className="form-control-custom" value={form.last_name}
-              onChange={handleChange} placeholder="Optional" />
+              onChange={handleChange} required placeholder="Your full name" />
           </div>
           <div className="mb-3">
             <label className="form-label-custom"><FaEnvelope className="me-1" /> Email</label>
             <input type="email" name="email" className="form-control-custom" value={form.email}
-              onChange={handleChange} required placeholder="you@email.com" />
+              onChange={handleChange} required placeholder="you@email.com" autoComplete="email" />
           </div>
           <div className="mb-3">
             <label className="form-label-custom"><FaLock className="me-1" /> Password</label>
             <input type="password" name="password" className="form-control-custom" value={form.password}
-              onChange={handleChange} required minLength={6} placeholder="Min 6 characters" />
+              onChange={handleChange} required minLength={6} placeholder="Min 6 characters" autoComplete="new-password" />
           </div>
           <div className="mb-4">
             <label className="form-label-custom"><FaLock className="me-1" /> Confirm Password</label>
             <input type="password" name="password_confirm" className="form-control-custom" value={form.password_confirm}
-              onChange={handleChange} required placeholder="Repeat password" />
+              onChange={handleChange} required placeholder="Repeat password" autoComplete="new-password" />
           </div>
           <button type="submit" className="btn-gold w-100 justify-content-center" disabled={loading} style={{ width: '100%' }}>
             {loading ? 'Creating account...' : <><FaUserPlus /> Register as {form.role === 'coach' ? 'Coach' : 'Student'}</>}

@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
   FaTachometerAlt, FaUsers, FaChartLine, FaBandAid,
-  FaTrophy, FaClipboardCheck, FaWeight, FaFileAlt, FaUser, FaUserShield
+  FaTrophy, FaClipboardCheck, FaWeight, FaFileAlt, FaUser, FaUserShield, FaHome
 } from 'react-icons/fa'
 import Logo from './Logo'
 
@@ -51,6 +51,14 @@ export default function Sidebar({ isOpen, onClose }) {
       </div>
 
       <nav className="sidebar-nav">
+        <NavLink
+          to="/"
+          className={({ isActive }) => `nav-item nav-item-home ${isActive ? 'active' : ''}`}
+          onClick={onClose}
+        >
+          <FaHome /> <span>Home</span>
+        </NavLink>
+
         {navItems.map(({ path, icon: Icon, label }) => (
           <NavLink
             key={path}

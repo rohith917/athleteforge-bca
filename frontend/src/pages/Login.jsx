@@ -1,18 +1,18 @@
 /**
- * AthleteForge login — redirects to dashboard after auth.
+ * AthleteForge login — email or username + password.
  */
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { FaEnvelope, FaLock, FaSignInAlt, FaArrowLeft } from 'react-icons/fa'
+import { FaEnvelope, FaLock, FaSignInAlt, FaArrowLeft, FaTachometerAlt, FaSignOutAlt } from 'react-icons/fa'
 import Logo from '../components/Logo'
 
 export default function Login() {
-  const [email, setEmail] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { loginWithEmail } = useAuth()
+  const { user, login, logout } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -20,13 +20,62 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
-      await loginWithEmail(email, password)
-      navigate('/dashboard')
+      const useEmail = identifier.includes('@')
+      await login(identifier.trim(), password, useEmail)
+      navigate('/dashboard', { replace: true })
     } catch (err) {
-      setError(err.response?.data?.error || 'Invalid email or password.')
+      setError(err.response?.data?.error || 'Invalid email/username or password.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleSwitchAccount = async () => {
+    setLoading(true)
+    try {
+      await logout()
+      setIdentifier('')
+      setPassword('')
+      setError('')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (user) {
+    return (
+      <div className="login-page">
+        <Link to="/" className="login-back-home"><FaArrowLeft /> Back to Home</Link>
+        <div className="login-card">
+          <Logo size="lg" showTagline />
+          <h2 className="login-title mt-3">Already Signed In</h2>
+          <p className="login-subtitle">
+            Welcome back, {user.first_name || user.username}
+          </p>
+          <div className="auth-session-banner">
+            <span className={`role-badge role-${user.role}`}>{user.role}</span>
+            <span>{user.email}</span>
+          </div>
+          <button
+            type="button"
+            className="btn-gold w-100 justify-content-center mb-3"
+            style={{ width: '100%' }}
+            onClick={() => navigate('/dashboard')}
+          >
+            <FaTachometerAlt /> Go to Dashboard
+          </button>
+          <button
+            type="button"
+            className="btn-outline-gold w-100 justify-content-center"
+            style={{ width: '100%' }}
+            onClick={handleSwitchAccount}
+            disabled={loading}
+          >
+            <FaSignOutAlt /> {loading ? 'Signing out...' : 'Sign in as different user'}
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -41,14 +90,28 @@ export default function Login() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label-custom"><FaEnvelope className="me-1" /> Email</label>
-            <input type="email" className="form-control-custom" value={email}
-              onChange={(e) => setEmail(e.target.value)} required placeholder="Enter your email" autoComplete="email" />
+            <label className="form-label-custom"><FaEnvelope className="me-1" /> Email or Username</label>
+            <input
+              type="text"
+              className="form-control-custom"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              required
+              placeholder="you@email.com or username"
+              autoComplete="username"
+            />
           </div>
           <div className="mb-4">
             <label className="form-label-custom"><FaLock className="me-1" /> Password</label>
-            <input type="password" className="form-control-custom" value={password}
-              onChange={(e) => setPassword(e.target.value)} required placeholder="Enter password" autoComplete="current-password" />
+            <input
+              type="password"
+              className="form-control-custom"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Enter password"
+              autoComplete="current-password"
+            />
           </div>
           <button type="submit" className="btn-gold w-100 justify-content-center" disabled={loading} style={{ width: '100%' }}>
             {loading ? 'Signing in...' : <><FaSignInAlt /> Sign In to AthleteForge</>}

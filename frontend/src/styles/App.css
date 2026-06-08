@@ -854,3 +854,131 @@ body {
   display: flex; align-items: center; gap: 6px;
 }
 .login-back-home:hover { color: #FFE44D; }
+
+.auth-session-banner {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 16px; margin-bottom: 20px;
+  background: rgba(255, 215, 0, 0.06);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem; color: var(--text-secondary);
+}
+
+.nav-item-home {
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px !important;
+}
+
+/* Dashboard feature panels */
+.dashboard-feature-panel { margin-bottom: 0; }
+.dashboard-feature-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+}
+.feature-badge {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.5px;
+  padding: 5px 12px; border-radius: 20px;
+  background: rgba(255, 215, 0, 0.1);
+  color: var(--af-gold);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  text-transform: uppercase;
+}
+
+.tournament-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.tournament-card {
+  padding: 16px;
+  background: var(--af-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+.tournament-card:hover {
+  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
+}
+.tournament-card-top {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px; gap: 8px;
+}
+.tournament-sport {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  color: var(--af-gold); letter-spacing: 0.5px;
+}
+.tournament-status {
+  font-size: 0.65rem; padding: 3px 8px; border-radius: 12px;
+  background: rgba(34, 197, 94, 0.12); color: var(--af-success);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+.tournament-card h6 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.95rem; color: var(--af-text); margin-bottom: 10px;
+}
+.tournament-card p {
+  font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.tournament-card p svg { color: var(--af-gold); font-size: 0.7rem; }
+
+.program-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.program-card {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px;
+  background: var(--af-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+.program-card:hover { border-color: rgba(255, 215, 0, 0.25); }
+.program-icon {
+  width: 42px; height: 42px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 10px; color: var(--af-gold); font-size: 1.1rem;
+}
+.program-card h6 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.9rem; color: var(--af-text); margin-bottom: 4px;
+}
+.program-card p {
+  font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4;
+}
+.program-meta {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.program-meta span {
+  font-size: 0.68rem; font-weight: 600;
+  padding: 3px 8px; border-radius: 10px;
+  background: rgba(255, 215, 0, 0.08);
+  color: var(--af-gold);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+}
+
+.coach-tips-list { display: flex; flex-direction: column; gap: 12px; }
+.coach-tip-item {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px;
+  background: var(--af-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+}
+.coach-tip-num {
+  width: 28px; height: 28px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--af-gold); color: var(--af-black);
+  font-weight: 700; font-size: 0.8rem; border-radius: 50%;
+}
+.coach-tip-item strong {
+  display: block; font-size: 0.85rem; color: var(--af-text); margin-bottom: 4px;
+}
+.coach-tip-item p {
+  font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.45;
+}

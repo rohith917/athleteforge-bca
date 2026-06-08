@@ -2,7 +2,7 @@
  * Authentication context — login, register, logout, role-aware user state.
  */
 import { createContext, useContext, useState, useEffect } from 'react'
-import { authAPI } from '../services/api'
+import { authAPI, initCsrf } from '../services/api'
 
 const AuthContext = createContext(null)
 
@@ -11,11 +11,12 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    checkAuth()
+    bootstrapAuth()
   }, [])
 
-  const checkAuth = async () => {
+  const bootstrapAuth = async () => {
     try {
+      await initCsrf()
       const response = await authAPI.getUser()
       setUser(response.data)
     } catch {
@@ -25,7 +26,19 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const checkAuth = async () => {
+    try {
+      const response = await authAPI.getUser()
+      setUser(response.data)
+      return response.data
+    } catch {
+      setUser(null)
+      return null
+    }
+  }
+
   const login = async (emailOrUsername, password, useEmail = false) => {
+    await initCsrf()
     const payload = useEmail
       ? { email: emailOrUsername, password }
       : { username: emailOrUsername, password }
@@ -37,14 +50,22 @@ export function AuthProvider({ children }) {
   const loginWithEmail = async (email, password) => login(email, password, true)
 
   const register = async (data) => {
+    await initCsrf()
     const response = await authAPI.register(data)
     setUser(response.data.user)
     return response.data
   }
 
   const logout = async () => {
-    await authAPI.logout()
-    setUser(null)
+    try {
+      await initCsrf()
+      await authAPI.logout()
+    } catch {
+      // Clear client state even if server logout fails (e.g. expired session)
+    } finally {
+      setUser(null)
+      await initCsrf()
+    }
   }
 
   const isAdmin = user?.role === 'admin'

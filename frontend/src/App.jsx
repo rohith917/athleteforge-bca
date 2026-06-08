@@ -24,13 +24,6 @@ import Attendance from './pages/Attendance'
 import WeightTracking from './pages/WeightTracking'
 import Reports from './pages/Reports'
 
-function GuestRoute({ children }) {
-  const { user, loading } = useAuth()
-  if (loading) return <LoadingSpinner message="Loading..." fullScreen />
-  if (user) return <Navigate to="/dashboard" replace />
-  return children
-}
-
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
   if (loading) return <LoadingSpinner message="Authenticating..." fullScreen />
@@ -65,10 +58,10 @@ export default function App() {
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
-      <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
-      <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
-      <Route path="/reset-password" element={<GuestRoute><ResetPassword /></GuestRoute>} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Protected app */}
       <Route path="/dashboard" element={<PrivateRoute><Layout /></PrivateRoute>}>

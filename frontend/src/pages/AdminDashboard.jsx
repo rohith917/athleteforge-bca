@@ -15,6 +15,9 @@ import PageHeader from '../components/PageHeader'
 import StatCard from '../components/StatCard'
 import LoadingSpinner from '../components/LoadingSpinner'
 import Avatar from '../components/Avatar'
+import UpcomingTournaments from '../components/UpcomingTournaments'
+import TrainingPrograms from '../components/TrainingPrograms'
+import CoachTips from '../components/CoachTips'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -151,6 +154,21 @@ export default function AdminDashboard() {
               </table>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="row g-4 mb-4">
+        <div className="col-12">
+          <UpcomingTournaments />
+        </div>
+      </div>
+
+      <div className="row g-4 mb-4">
+        <div className="col-lg-7">
+          <TrainingPrograms />
+        </div>
+        <div className="col-lg-5">
+          <CoachTips />
         </div>
       </div>
 

@@ -12,19 +12,61 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-function getCsrfToken() {
+let csrfToken = ''
+
+function readCookieCsrf() {
   const match = document.cookie.match(/csrftoken=([^;]+)/)
-  return match ? match[1] : ''
+  return match ? decodeURIComponent(match[1]) : ''
+}
+
+export function getCsrfToken() {
+  return csrfToken || readCookieCsrf()
+}
+
+export async function initCsrf() {
+  try {
+    const res = await api.get('/auth/csrf/')
+    csrfToken = res.data?.csrfToken || ''
+    return csrfToken
+  } catch {
+    csrfToken = readCookieCsrf()
+    return csrfToken
+  }
 }
 
 api.interceptors.request.use((config) => {
-  const token = getCsrfToken()
-  if (token) config.headers['X-CSRFToken'] = token
+  const method = (config.method || 'get').toLowerCase()
+  if (['post', 'put', 'patch', 'delete'].includes(method)) {
+    const token = getCsrfToken()
+    if (token) config.headers['X-CSRFToken'] = token
+  }
   return config
 })
 
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const original = error.config
+    if (
+      error.response?.status === 403 &&
+      !original._csrfRetry &&
+      !original.url?.includes('/auth/csrf/')
+    ) {
+      original._csrfRetry = true
+      await initCsrf()
+      const token = getCsrfToken()
+      if (token) {
+        original.headers['X-CSRFToken'] = token
+        return api.request(original)
+      }
+    }
+    return Promise.reject(error)
+  }
+)
+
 // Auth API
 export const authAPI = {
+  getCsrf: () => api.get('/auth/csrf/'),
   login: (credentials) => api.post('/auth/login/', credentials),
   register: (data) => api.post('/auth/register/', data),
   forgotPassword: (data) => api.post('/auth/forgot-password/', data),
