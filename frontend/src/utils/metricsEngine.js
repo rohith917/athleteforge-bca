@@ -1,5 +1,7 @@
 /** Sports science metrics — readiness, recovery, injury risk */
 
+const DAY_MS = 86400000
+
 export function calcReadiness(wellness = {}) {
   const sleep = Math.min((wellness.sleep ?? 7) / 8, 1) * 20
   const fatigue = 20 - (wellness.fatigue ?? 3) * 4
@@ -55,4 +57,69 @@ export function deriveTeamOverview(stats) {
     attendanceSummary: att,
     avgRecovery: recovery.score,
   }
+}
+
+/** Training Load = Duration × RPE */
+export function calcTrainingLoads(sessions = []) {
+  const now = new Date()
+
+  const loads = sessions.map((s) => ({
+    ...s,
+    load: s.load ?? (s.duration || 0) * (s.rpe || 0),
+    ts: new Date(s.date).getTime(),
+  }))
+
+  const weekAgo = now.getTime() - 7 * DAY_MS
+  const monthAgo = now.getTime() - 28 * DAY_MS
+
+  const weeklyTotal = loads.filter((s) => s.ts >= weekAgo).reduce((a, s) => a + s.load, 0)
+  const monthlyTotal = loads.filter((s) => s.ts >= monthAgo).reduce((a, s) => a + s.load, 0)
+  const acute = weeklyTotal
+  const chronic = monthlyTotal / 4 || 1
+  const acr = acute / chronic
+
+  const weeklyLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  const weeklyLoads = weeklyLabels.map((_, i) => {
+    const d = new Date(now)
+    d.setDate(d.getDate() - (6 - i))
+    const key = d.toISOString().split('T')[0]
+    return loads.filter((s) => s.date === key).reduce((a, s) => a + s.load, 0)
+  })
+
+  const trendLabels = Array.from({ length: 6 }, (_, i) => `W${i + 1}`)
+  const acuteTrend = trendLabels.map((_, i) => Math.round(weeklyTotal * (0.7 + i * 0.05)))
+  const chronicTrend = trendLabels.map((_, i) => Math.round(chronic * (0.85 + i * 0.03)))
+
+  return { weeklyTotal, monthlyTotal, acr, weeklyLabels, weeklyLoads, trendLabels, acuteTrend, chronicTrend }
+}
+
+export function calcWeightCutProgress(records = [], targetWeight = null) {
+  const sorted = [...records].sort((a, b) => new Date(b.record_date) - new Date(a.record_date))
+  const latest = sorted[0]
+  if (!latest) return { percent: 0, target: 0, remaining: 0, daysLeft: 0, estimatedDate: '—' }
+
+  const start = sorted[sorted.length - 1]
+  const startWeight = parseFloat(start.weight_kg)
+  const current = parseFloat(latest.weight_kg)
+  const target = targetWeight ?? Math.max(current - 3, startWeight * 0.92)
+  const totalToCut = Math.max(startWeight - target, 0.1)
+  const cutSoFar = Math.max(startWeight - current, 0)
+  const percent = Math.min(100, Math.round((cutSoFar / totalToCut) * 100))
+  const remaining = Math.max(target - current, 0)
+
+  let daysLeft = 0
+  if (sorted.length >= 2 && remaining > 0) {
+    const prev = sorted[1]
+    const rate = (parseFloat(prev.weight_kg) - current) / Math.max(1,
+      (new Date(latest.record_date) - new Date(prev.record_date)) / DAY_MS)
+    daysLeft = rate > 0 ? Math.ceil(remaining / rate) : 14
+  } else {
+    daysLeft = remaining > 0 ? 14 : 0
+  }
+
+  const est = new Date()
+  est.setDate(est.getDate() + daysLeft)
+  const estimatedDate = remaining > 0 ? est.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Achieved'
+
+  return { percent, target: target.toFixed(1), remaining, daysLeft, estimatedDate }
 }

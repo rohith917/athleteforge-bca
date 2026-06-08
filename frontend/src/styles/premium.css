@@ -303,6 +303,143 @@
   font-family: 'Bebas Neue', 'Oswald', sans-serif;
 }
 
+/* Athlete grid cards */
+.athlete-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.athlete-grid-card { padding: 20px; }
+.agc-header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+.agc-info { flex: 1; min-width: 0; }
+.agc-name {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif; font-size: 1.15rem; letter-spacing: 0.5px;
+  color: var(--af-text); text-decoration: none; display: block;
+}
+.agc-name:hover { color: var(--af-gold); }
+.agc-meta { font-size: 0.78rem; color: var(--text-muted); }
+.agc-metrics { display: flex; gap: 16px; margin-bottom: 10px; flex-wrap: wrap; }
+.agc-metric { display: flex; gap: 8px; align-items: center; font-size: 0.78rem; }
+.agc-metric svg { color: var(--af-gold); }
+.agc-metric small { display: block; color: var(--text-muted); font-size: 0.65rem; text-transform: uppercase; }
+.agc-metric strong { color: var(--af-text); }
+.agc-progress { margin-bottom: 14px; }
+.agc-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* Injury cards */
+.injury-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.injury-card { padding: 20px; }
+.injury-card-header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+.injury-icon-wrap {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(239, 68, 68, 0.12); color: #EF4444;
+}
+.injury-athlete { font-family: 'Bebas Neue', 'Oswald', sans-serif; font-size: 1.1rem; color: var(--af-text); margin: 0; }
+.injury-type { font-size: 0.78rem; color: var(--text-muted); }
+.injury-meta { display: flex; gap: 16px; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; flex-wrap: wrap; }
+.injury-recovery-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.injury-notes { font-size: 0.8rem; color: var(--text-secondary); padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; margin: 0; }
+.injury-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; gap: 8px; }
+.injury-status-select { max-width: 180px; padding: 6px 10px; font-size: 0.8rem; }
+.rtp-compact .rtp-step { min-width: 44px; font-size: 0.5rem; }
+
+/* Training load */
+.training-load-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.tl-kpi { text-align: center; padding: 12px; background: rgba(0,0,0,0.25); border-radius: 10px; border: 1px solid var(--af-border); }
+.tl-val { font-family: 'Bebas Neue', 'Oswald', sans-serif; font-size: 1.5rem; color: var(--af-gold); display: block; line-height: 1; }
+.tl-lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+.training-form { padding: 14px; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--af-border); }
+.text-gold { color: var(--af-gold); }
+
+/* Weight cut */
+.weight-cut-panel { margin-bottom: 20px; }
+.weight-cut-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+.wc-stat { text-align: center; padding: 12px; background: rgba(0,0,0,0.25); border-radius: 10px; }
+.wc-stat small { display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+.wc-stat strong { font-family: 'Bebas Neue', 'Oswald', sans-serif; font-size: 1.3rem; color: var(--af-text); }
+.weight-cut-note { font-size: 0.8rem; color: var(--text-muted); margin: 0; }
+
+/* Performance record cards */
+.record-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.record-card {
+  padding: 16px; border-radius: 12px;
+  background: rgba(0,0,0,0.25); border: 1px solid var(--af-border);
+  transition: border-color 0.2s;
+}
+.record-card:hover { border-color: rgba(212, 175, 55, 0.25); }
+.record-card-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.record-scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.record-score { text-align: center; padding: 8px; background: rgba(212,175,55,0.06); border-radius: 8px; }
+.record-score small { display: block; font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; }
+.record-score strong { font-family: 'Bebas Neue', 'Oswald', sans-serif; color: var(--af-gold); }
+
+/* Competition cards */
+.comp-card-premium { margin-bottom: 16px; }
+.comp-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+.comp-title { font-family: 'Bebas Neue', 'Oswald', sans-serif; font-size: 1.2rem; color: var(--af-text); margin: 0; letter-spacing: 1px; }
+.comp-meta { font-size: 0.8rem; color: var(--text-muted); }
+.result-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.result-pill {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  background: rgba(0,0,0,0.25); border-radius: 10px; border: 1px solid var(--af-border);
+  font-size: 0.82rem;
+}
+.medal-gold { border-color: rgba(212,175,55,0.4); }
+.medal-silver { border-color: rgba(192,192,192,0.3); }
+.medal-bronze { border-color: rgba(205,127,50,0.3); }
+
+/* Attendance cards */
+.attendance-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.attendance-athlete-card {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px; background: rgba(0,0,0,0.25); border-radius: 12px; border: 1px solid var(--af-border);
+}
+.attendance-athlete-card.present { border-left: 3px solid #22C55E; }
+.attendance-athlete-card.absent { border-left: 3px solid #EF4444; }
+.attendance-athlete-card.late { border-left: 3px solid #F59E0B; }
+
+/* Reports premium */
+.reports-grid-premium { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.report-card-premium {
+  padding: 20px; border-radius: 14px;
+  background: linear-gradient(160deg, rgba(26,26,26,0.9), rgba(17,24,39,0.7));
+  border: 1px solid var(--af-border);
+  transition: all 0.3s ease;
+}
+.report-card-premium:hover {
+  border-color: rgba(212, 175, 55, 0.3);
+  transform: translateY(-2px);
+}
+.report-card-premium .icon-wrap {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px; font-size: 1.2rem;
+}
+.report-card-premium.pdf .icon-wrap { background: rgba(239,68,68,0.12); color: #EF4444; }
+.report-card-premium.excel .icon-wrap { background: rgba(34,197,94,0.12); color: #22C55E; }
+.report-card-premium h5 { font-family: 'Bebas Neue', 'Oswald', sans-serif; color: var(--af-text); letter-spacing: 1px; margin-bottom: 6px; }
+.report-card-premium p { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px; }
+
+/* Weight history mini cards */
+.weight-record-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.weight-record-card {
+  padding: 14px; border-radius: 12px;
+  background: rgba(0,0,0,0.25); border: 1px solid var(--af-border); text-align: center;
+}
+.weight-record-card .wr-val { font-family: 'Bebas Neue', 'Oswald', sans-serif; font-size: 1.6rem; color: var(--af-gold); }
+.weight-record-card .wr-date { font-size: 0.72rem; color: var(--text-muted); }
+
+/* Filter bar */
+.filter-bar-premium {
+  display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+  padding: 16px; margin-bottom: 20px;
+  background: rgba(26,26,26,0.6); border-radius: 12px; border: 1px solid var(--af-border);
+}
+
+/* Admin user cards */
+.user-card-premium {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--af-border);
+  margin-bottom: 8px;
+}
+
 @media (max-width: 768px) {
   .preview-gauges { grid-template-columns: 1fr; max-width: 200px; margin: 0 auto 16px; }
   .preview-charts { grid-template-columns: 1fr; }
@@ -311,4 +448,6 @@
   .team-grid { grid-template-columns: 1fr 1fr; }
   .rtp-workflow .rtp-step { min-width: 48px; font-size: 0.55rem; }
   .profile-premium-hero { flex-direction: column; text-align: center; }
+  .athlete-grid { grid-template-columns: 1fr; }
+  .injury-grid { grid-template-columns: 1fr; }
 }

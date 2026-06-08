@@ -1,91 +1,72 @@
 /**
- * Reports page — PDF and Excel export with premium cards.
+ * Reporting System — one-click PDF and Excel exports
  */
 import { reportsAPI } from '../services/api'
 import { useToast } from '../context/ToastContext'
-import { FaFilePdf, FaFileExcel, FaDownload, FaFileAlt } from 'react-icons/fa'
+import { FaFilePdf, FaFileExcel, FaDownload, FaFileAlt, FaBandAid, FaClipboardCheck, FaTrophy } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
 
-const pdfReports = [
-  { type: 'athletes', title: 'Athletes Report', desc: 'Complete list of all registered athletes with contact details', icon: FaFilePdf },
-  { type: 'performance', title: 'Performance Report', desc: 'All performance records with speed, strength, and agility scores', icon: FaFilePdf },
-  { type: 'injuries', title: 'Injury Report', desc: 'Injury records with severity, recovery status, and medical notes', icon: FaFilePdf },
-]
-
-const excelReports = [
-  { type: 'athletes', title: 'Athletes Export', desc: 'Export athlete data to Excel spreadsheet for analysis', icon: FaFileExcel },
-  { type: 'performance', title: 'Performance Export', desc: 'Export performance metrics to Excel format', icon: FaFileExcel },
-  { type: 'attendance', title: 'Attendance Export', desc: 'Export attendance records with dates and status', icon: FaFileExcel },
+const reports = [
+  { type: 'athletes', title: 'Athlete Report', desc: 'Complete roster with contact details and status', format: 'pdf', icon: FaFilePdf },
+  { type: 'performance', title: 'Performance Report', desc: 'Speed, strength, endurance, agility metrics', format: 'pdf', icon: FaFilePdf },
+  { type: 'injuries', title: 'Injury Report', desc: 'Severity, recovery status, and medical notes', format: 'pdf', icon: FaBandAid },
+  { type: 'athletes', title: 'Athletes Export', desc: 'Spreadsheet export for roster analysis', format: 'excel', icon: FaFileExcel },
+  { type: 'performance', title: 'Performance Export', desc: 'All performance metrics in Excel format', format: 'excel', icon: FaFileExcel },
+  { type: 'attendance', title: 'Attendance Export', desc: 'Session records with dates and status', format: 'excel', icon: FaClipboardCheck },
 ]
 
 export default function Reports() {
   const { showToast } = useToast()
 
-  const downloadFile = (url, filename) => {
+  const handleExport = (report) => {
+    const ext = report.format === 'pdf' ? 'pdf' : 'xlsx'
+    const url = report.format === 'pdf'
+      ? reportsAPI.downloadPDF(report.type)
+      : reportsAPI.downloadExcel(report.type)
     const link = document.createElement('a')
     link.href = url
-    link.download = filename
+    link.download = `${report.type}_${report.format === 'pdf' ? 'report' : 'export'}.${ext}`
     link.click()
-    showToast(`Downloading ${filename}...`, 'info')
+    showToast(`Generating ${report.title}...`, 'info')
   }
 
   return (
-    <div className="animate-in">
+    <div className="animate-in dashboard-premium">
       <PageHeader
-        title="Reports"
-        subtitle="AthleteForge — Export PDF reports and Excel spreadsheets"
+        title="Reporting Center"
+        subtitle="One-click exports · PDF reports · Excel spreadsheets"
       />
 
-      <div className="row g-4">
-        <div className="col-lg-6">
-          <div className="card-panel" style={{ minHeight: 400 }}>
-            <h5 className="card-panel-title"><FaFilePdf /> PDF Reports</h5>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 20 }}>
-              Generate formatted PDF reports for printing and documentation.
-            </p>
-            {pdfReports.map(r => (
-              <div className="report-card" key={r.type}>
-                <div>
-                  <strong style={{ color: 'var(--navy-800)' }}>{r.title}</strong>
-                  <br /><small style={{ color: 'var(--text-muted)' }}>{r.desc}</small>
-                </div>
-                <button className="btn-export-pdf" onClick={() => downloadFile(reportsAPI.downloadPDF(r.type), `${r.type}_report.pdf`)}>
-                  <FaDownload /> PDF
-                </button>
-              </div>
-            ))}
+      <div className="reports-grid-premium mb-4">
+        {reports.map((r) => (
+          <div className={`report-card-premium ${r.format}`} key={`${r.type}-${r.format}`}>
+            <div className="icon-wrap"><r.icon /></div>
+            <h5>{r.title}</h5>
+            <p>{r.desc}</p>
+            <button
+              type="button"
+              className={r.format === 'pdf' ? 'btn-export-pdf' : 'btn-export-excel'}
+              onClick={() => handleExport(r)}
+            >
+              <FaDownload /> Export {r.format === 'pdf' ? 'PDF' : 'Excel'}
+            </button>
           </div>
-        </div>
-
-        <div className="col-lg-6">
-          <div className="card-panel" style={{ minHeight: 400 }}>
-            <h5 className="card-panel-title"><FaFileExcel /> Excel Exports</h5>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 20 }}>
-              Export data to Excel spreadsheets for further analysis.
-            </p>
-            {excelReports.map(r => (
-              <div className="report-card" key={r.type}>
-                <div>
-                  <strong style={{ color: 'var(--navy-800)' }}>{r.title}</strong>
-                  <br /><small style={{ color: 'var(--text-muted)' }}>{r.desc}</small>
-                </div>
-                <button className="btn-export-excel" onClick={() => downloadFile(reportsAPI.downloadExcel(r.type), `${r.type}_export.xlsx`)}>
-                  <FaDownload /> Excel
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
 
-      <div className="card-panel mt-2">
-        <div className="d-flex align-items-center gap-3">
-          <FaFileAlt style={{ fontSize: '2rem', color: 'var(--gold-500)' }} />
+      <div className="glass-card">
+        <div className="d-flex align-items-center gap-3 flex-wrap">
+          <FaFileAlt style={{ fontSize: '2rem', color: 'var(--af-gold)' }} />
           <div>
-            <strong>Report Generation</strong>
+            <strong style={{ color: 'var(--af-text)' }}>Enterprise Report Generation</strong>
             <p className="mb-0" style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-              Reports are generated server-side using ReportLab (PDF) and OpenPyXL (Excel). Ensure the backend server is running before downloading.
+              Reports are generated server-side using ReportLab (PDF) and OpenPyXL (Excel).
+              Available exports: Athlete, Performance, Injury, Attendance, Recovery, and Competition reports.
             </p>
+          </div>
+          <div className="d-flex gap-2 ms-auto flex-wrap">
+            <span className="badge-pill badge-active"><FaTrophy /> Competition</span>
+            <span className="badge-pill badge-recovering"><FaBandAid /> Recovery</span>
           </div>
         </div>
       </div>

@@ -1,15 +1,15 @@
 /**
- * Athletes list with profile pictures — AthleteForge dark theme.
+ * Athletes — premium card grid with readiness indicators
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { athletesAPI } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import { FaPlus, FaSearch, FaEye, FaEdit, FaTrash, FaUsers } from 'react-icons/fa'
+import { FaPlus, FaSearch, FaUsers } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
-import AthleteAvatar from '../components/AthleteAvatar'
-import LoadingSpinner from '../components/LoadingSpinner'
+import AthleteGridCard from '../components/analytics/AthleteGridCard'
+import { Skeleton } from '../components/ui/Skeleton'
 
 export default function Athletes() {
   const [athletes, setAthletes] = useState([])
@@ -42,77 +42,53 @@ export default function Athletes() {
     } catch { showToast('Delete failed', 'error') }
   }
 
-  const statusBadge = (s) => {
-    const m = { Active: 'badge-active', Injured: 'badge-injured', Inactive: 'badge-inactive' }
-    return <span className={`badge-pill ${m[s]}`}>{s}</span>
+  const counts = {
+    total: athletes.length,
+    active: athletes.filter((a) => a.status === 'Active').length,
+    injured: athletes.filter((a) => a.status === 'Injured').length,
   }
 
   return (
-    <div className="animate-in">
+    <div className="animate-in dashboard-premium">
       <PageHeader
-        title="Athletes"
-        subtitle="Manage athlete profiles and performance records"
+        title="Athlete Management"
+        subtitle="Elite roster intelligence · Readiness · Performance profiles"
         action={isCoach ? <Link to="/dashboard/athletes/new" className="btn-gold text-decoration-none"><FaPlus /> Add Athlete</Link> : null}
       />
 
-      <div className="search-bar">
-        <div className="search-input-wrap">
+      <div className="filter-bar-premium">
+        <div className="search-input-wrap flex-grow-1">
           <FaSearch />
           <input type="text" className="form-control-custom" placeholder="Search athletes..."
             value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
-        <select className="form-select-custom" style={{ maxWidth: 200 }}
+        <select className="form-select-custom" style={{ maxWidth: 180 }}
           value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
           <option value="">All Status</option>
           <option value="Active">Active</option>
           <option value="Injured">Injured</option>
           <option value="Inactive">Inactive</option>
         </select>
+        <div className="d-flex gap-3 ms-auto" style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          <span><strong className="text-gold">{counts.total}</strong> Total</span>
+          <span><strong style={{ color: '#22C55E' }}>{counts.active}</strong> Active</span>
+          <span><strong style={{ color: '#EF4444' }}>{counts.injured}</strong> Injured</span>
+        </div>
       </div>
 
-      <div className="card-panel">
-        {loading ? <LoadingSpinner /> : athletes.length === 0 ? (
-          <div className="empty-state"><FaUsers /><p>No athletes found</p></div>
-        ) : (
-          <div className="table-responsive">
-            <table className="table-custom">
-              <thead>
-                <tr><th>Profile</th><th>Name</th><th>Sport</th><th>Team</th><th>Status</th><th>Actions</th></tr>
-              </thead>
-              <tbody>
-                {athletes.map(a => (
-                  <tr key={a.id}>
-                    <td><AthleteAvatar athlete={a} size={44} /></td>
-                    <td>
-                      <div className="athlete-row-name">
-                        <div>
-                          <strong>{a.full_name || `${a.first_name} ${a.last_name}`}</strong>
-                          <br /><small style={{ color: 'var(--text-muted)' }}>{a.gender} · #{a.id}</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td>{a.sport}</td>
-                    <td>{a.team || '—'}</td>
-                    <td>{statusBadge(a.status)}</td>
-                    <td>
-                      <div className="d-flex gap-1">
-                        <Link to={`/dashboard/athletes/${a.id}`} className="btn-icon btn-icon-view"><FaEye /></Link>
-                        {isCoach && (
-                          <>
-                            <Link to={`/dashboard/athletes/${a.id}/edit`} className="btn-icon btn-icon-edit"><FaEdit /></Link>
-                            <button className="btn-icon btn-icon-delete"
-                              onClick={() => handleDelete(a.id, a.full_name || a.first_name)}><FaTrash /></button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {loading ? (
+        <div className="athlete-grid">
+          {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="skeleton-kpi" />)}
+        </div>
+      ) : athletes.length === 0 ? (
+        <div className="glass-card empty-state"><FaUsers /><p>No athletes found</p></div>
+      ) : (
+        <div className="athlete-grid">
+          {athletes.map((a) => (
+            <AthleteGridCard key={a.id} athlete={a} isCoach={isCoach} onDelete={handleDelete} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
