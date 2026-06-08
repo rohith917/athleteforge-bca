@@ -4,8 +4,22 @@ Django Admin configuration for all models.
 from django.contrib import admin
 from .models import (
     Athlete, Performance, Injury, Competition,
-    CompetitionResult, Attendance, WeightTracking
+    CompetitionResult, Attendance, WeightTracking,
+    UserProfile, PasswordResetToken,
 )
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ['user', 'role', 'athlete', 'phone']
+    list_filter = ['role']
+    search_fields = ['user__username', 'user__email']
+
+
+@admin.register(PasswordResetToken)
+class PasswordResetTokenAdmin(admin.ModelAdmin):
+    list_display = ['user', 'token', 'created_at', 'expires_at', 'used']
+    list_filter = ['used']
 
 
 @admin.register(Athlete)

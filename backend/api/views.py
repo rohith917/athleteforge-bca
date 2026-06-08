@@ -1,25 +1,36 @@
 """
-API Views for Athlete Performance and Injury Tracking System.
-Handles authentication, CRUD, dashboard stats, and report generation.
+API Views for AthleteForge — Athlete Performance and Injury Tracking System.
+Authentication, role-based access, CRUD, dashboard, AI insights, reports.
 """
 from datetime import date, timedelta
+
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.db.models import Avg, Count, Q
 from django.http import HttpResponse
 from rest_framework import viewsets, status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .ai_insights import get_ai_insights_for_athlete
 from .models import (
     Athlete, Performance, Injury, Competition,
-    CompetitionResult, Attendance, WeightTracking
+    CompetitionResult, Attendance, WeightTracking, PasswordResetToken
+)
+from .permissions import (
+    is_staff_role, get_athlete_for_user, filter_queryset_by_role,
+    filter_athletes_by_role, IsCoachOrAdmin, ReadOnlyForStudents,
 )
 from .serializers import (
     AthleteSerializer, AthleteListSerializer, PerformanceSerializer,
     InjurySerializer, CompetitionSerializer, CompetitionResultSerializer,
-    AttendanceSerializer, WeightTrackingSerializer, LoginSerializer, UserSerializer
+    AttendanceSerializer, WeightTrackingSerializer, LoginSerializer,
+    UserSerializer, RegisterSerializer, ForgotPasswordSerializer,
+    ResetPasswordSerializer,
 )
 from .reports import (
     generate_athletes_pdf, generate_performance_pdf, generate_injuries_pdf,
@@ -27,30 +38,108 @@ from .reports import (
 )
 
 
+def _resolve_user_from_login(data):
+    """Authenticate by email or username."""
+    email = data.get('email', '').strip()
+    username = data.get('username', '').strip()
+    password = data['password']
+
+    if email:
+        try:
+            user_obj = User.objects.get(email__iexact=email)
+            user = authenticate(username=user_obj.username, password=password)
+            if user:
+                return user
+        except User.DoesNotExist:
+            pass
+
+    if username:
+        return authenticate(username=username, password=password)
+
+    return None
+
+
 # ==================== Authentication ====================
 
 class LoginView(APIView):
-    """Admin login with session management."""
+    """Email or username login with session management."""
     permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = authenticate(
-            username=serializer.validated_data['username'],
-            password=serializer.validated_data['password']
-        )
+        user = _resolve_user_from_login(serializer.validated_data)
         if user is not None:
             login(request, user)
             return Response({
                 'message': 'Login successful',
-                'user': UserSerializer(user).data
+                'user': UserSerializer(user, context={'request': request}).data,
             })
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class RegisterView(APIView):
+    """Student self-registration with optional athlete link by email."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        login(request, user)
+        return Response({
+            'message': 'Registration successful',
+            'user': UserSerializer(user, context={'request': request}).data,
+        }, status=status.HTTP_201_CREATED)
+
+
+class ForgotPasswordView(APIView):
+    """Generate password reset token (demo: returned in DEBUG mode)."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            return Response({
+                'message': 'If an account exists with this email, a reset link has been sent.',
+            })
+
+        PasswordResetToken.objects.filter(user=user, used=False).update(used=True)
+        token_obj = PasswordResetToken.objects.create(user=user)
+
+        payload = {'message': 'Password reset instructions sent.'}
+        if settings.DEBUG:
+            payload['reset_token'] = token_obj.token
+            payload['note'] = 'Token shown only in DEBUG mode for demo/viva.'
+
+        return Response(payload)
+
+
+class ResetPasswordView(APIView):
+    """Reset password using valid token."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        token_obj = PasswordResetToken.objects.get(token=serializer.validated_data['token'])
+        user = token_obj.user
+        user.set_password(serializer.validated_data['password'])
+        user.save()
+        token_obj.used = True
+        token_obj.save()
+
+        return Response({'message': 'Password reset successful. You can now log in.'})
 
 
 class LogoutView(APIView):
-    """Admin logout - destroys session."""
+    """Logout — destroys session."""
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -59,22 +148,20 @@ class LogoutView(APIView):
 
 
 class CurrentUserView(APIView):
-    """Get current authenticated user info."""
+    """Get current authenticated user with role info."""
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response(UserSerializer(request.user).data)
+        return Response(UserSerializer(request.user, context={'request': request}).data)
 
 
 # ==================== Athlete Management ====================
 
 class AthleteViewSet(viewsets.ModelViewSet):
-    """
-    Athlete CRUD: Add, Edit, Delete, Search, View Profile.
-    Search via ?search=query parameter.
-    """
+    """Athlete CRUD — coaches manage all; students view own profile only."""
     queryset = Athlete.objects.all()
     serializer_class = AthleteSerializer
+    permission_classes = [IsAuthenticated, ReadOnlyForStudents]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -82,10 +169,10 @@ class AthleteViewSet(viewsets.ModelViewSet):
         return AthleteSerializer
 
     def get_queryset(self):
-        queryset = Athlete.objects.all()
-        search = self.request.query_params.get('search', None)
-        sport = self.request.query_params.get('sport', None)
-        status_filter = self.request.query_params.get('status', None)
+        queryset = filter_athletes_by_role(Athlete.objects.all(), self.request.user)
+        search = self.request.query_params.get('search')
+        sport = self.request.query_params.get('sport')
+        status_filter = self.request.query_params.get('status')
 
         if search:
             queryset = queryset.filter(
@@ -101,11 +188,26 @@ class AthleteViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(status__iexact=status_filter)
         return queryset
 
+    def perform_create(self, serializer):
+        if not is_staff_role(self.request.user):
+            raise PermissionDenied('Only coaches can add athletes.')
+        serializer.save()
+
+    def perform_update(self, serializer):
+        if not is_staff_role(self.request.user):
+            raise PermissionDenied('Only coaches can edit athletes.')
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if not is_staff_role(self.request.user):
+            raise PermissionDenied('Only coaches can delete athletes.')
+        instance.delete()
+
     @action(detail=True, methods=['get'])
     def profile(self, request, pk=None):
         """Full athlete profile with related data summary."""
         athlete = self.get_object()
-        data = AthleteSerializer(athlete).data
+        data = AthleteSerializer(athlete, context={'request': request}).data
         data['performance_count'] = athlete.performances.count()
         data['injury_count'] = athlete.injuries.count()
         data['competition_count'] = athlete.competition_results.count()
@@ -125,25 +227,30 @@ class AthleteViewSet(viewsets.ModelViewSet):
 # ==================== Performance Tracking ====================
 
 class PerformanceViewSet(viewsets.ModelViewSet):
-    """Record and view speed, strength, endurance, flexibility, agility."""
+    """Performance records — students: own data read-only."""
     queryset = Performance.objects.select_related('athlete').all()
     serializer_class = PerformanceSerializer
+    permission_classes = [IsAuthenticated, ReadOnlyForStudents]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = filter_queryset_by_role(
+            Performance.objects.select_related('athlete').all(), self.request.user
+        )
         athlete_id = self.request.query_params.get('athlete_id')
         if athlete_id:
             queryset = queryset.filter(athlete_id=athlete_id)
         return queryset
 
     def perform_create(self, serializer):
+        if not is_staff_role(self.request.user):
+            raise PermissionDenied('Students cannot create performance records.')
         serializer.save(recorded_by=self.request.user)
 
     @action(detail=False, methods=['get'])
     def dashboard(self, request):
         """Performance dashboard data for charts."""
-        athlete_id = request.query_params.get('athlete_id')
         queryset = self.get_queryset()
+        athlete_id = request.query_params.get('athlete_id')
         if athlete_id:
             queryset = queryset.filter(athlete_id=athlete_id)
 
@@ -161,12 +268,15 @@ class PerformanceViewSet(viewsets.ModelViewSet):
 # ==================== Injury Tracking ====================
 
 class InjuryViewSet(viewsets.ModelViewSet):
-    """Add injury, update recovery status, view history."""
+    """Injury records — students: own data read-only."""
     queryset = Injury.objects.select_related('athlete').all()
     serializer_class = InjurySerializer
+    permission_classes = [IsAuthenticated, ReadOnlyForStudents]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = filter_queryset_by_role(
+            Injury.objects.select_related('athlete').all(), self.request.user
+        )
         athlete_id = self.request.query_params.get('athlete_id')
         recovery_status = self.request.query_params.get('recovery_status')
         if athlete_id:
@@ -175,9 +285,16 @@ class InjuryViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(recovery_status=recovery_status)
         return queryset
 
+    def perform_create(self, serializer):
+        if not is_staff_role(self.request.user):
+            raise PermissionDenied('Students cannot create injury records.')
+        serializer.save()
+
     @action(detail=True, methods=['patch'])
     def update_recovery(self, request, pk=None):
-        """Update recovery status of an injury."""
+        """Update recovery status — coach only."""
+        if not is_staff_role(request.user):
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         injury = self.get_object()
         recovery_status = request.data.get('recovery_status')
         if recovery_status:
@@ -192,13 +309,13 @@ class InjuryViewSet(viewsets.ModelViewSet):
 # ==================== Competition Management ====================
 
 class CompetitionViewSet(viewsets.ModelViewSet):
-    """Add competitions and manage results/medals."""
+    """Competitions — coach/admin only."""
     queryset = Competition.objects.prefetch_related('results').all()
     serializer_class = CompetitionSerializer
+    permission_classes = [IsAuthenticated, IsCoachOrAdmin]
 
     @action(detail=True, methods=['post'])
     def add_result(self, request, pk=None):
-        """Store competition result for an athlete."""
         competition = self.get_object()
         data = request.data.copy()
         data['competition'] = competition.id
@@ -209,7 +326,6 @@ class CompetitionViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def medals(self, request):
-        """Medal tracking summary."""
         results = CompetitionResult.objects.all()
         return Response({
             'gold': results.filter(medal='Gold').count(),
@@ -220,9 +336,10 @@ class CompetitionViewSet(viewsets.ModelViewSet):
 
 
 class CompetitionResultViewSet(viewsets.ModelViewSet):
-    """CRUD for individual competition results."""
+    """Competition results — coach/admin only."""
     queryset = CompetitionResult.objects.select_related('athlete', 'competition').all()
     serializer_class = CompetitionResultSerializer
+    permission_classes = [IsAuthenticated, IsCoachOrAdmin]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -238,12 +355,15 @@ class CompetitionResultViewSet(viewsets.ModelViewSet):
 # ==================== Attendance Tracking ====================
 
 class AttendanceViewSet(viewsets.ModelViewSet):
-    """Mark attendance and view reports."""
+    """Attendance — students view own; coaches manage all."""
     queryset = Attendance.objects.select_related('athlete').all()
     serializer_class = AttendanceSerializer
+    permission_classes = [IsAuthenticated, ReadOnlyForStudents]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = filter_queryset_by_role(
+            Attendance.objects.select_related('athlete').all(), self.request.user
+        )
         athlete_id = self.request.query_params.get('athlete_id')
         date_from = self.request.query_params.get('date_from')
         date_to = self.request.query_params.get('date_to')
@@ -256,11 +376,14 @@ class AttendanceViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
+        if not is_staff_role(self.request.user):
+            raise PermissionDenied('Students cannot mark attendance.')
         serializer.save(marked_by=self.request.user)
 
     @action(detail=False, methods=['post'])
     def bulk_mark(self, request):
-        """Mark attendance for multiple athletes at once."""
+        if not is_staff_role(request.user):
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         records = request.data.get('records', [])
         created = []
         for record in records:
@@ -272,7 +395,6 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def report(self, request):
-        """Attendance report with statistics."""
         queryset = self.get_queryset()
         total = queryset.count()
         present = queryset.filter(status='Present').count()
@@ -291,9 +413,10 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 # ==================== Weight Monitoring ====================
 
 class WeightTrackingViewSet(viewsets.ModelViewSet):
-    """Weight tracking with auto BMI calculation."""
+    """Weight tracking — coach/admin only."""
     queryset = WeightTracking.objects.select_related('athlete').all()
     serializer_class = WeightTrackingSerializer
+    permission_classes = [IsAuthenticated, IsCoachOrAdmin]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -304,7 +427,6 @@ class WeightTrackingViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def calculate_bmi(self, request):
-        """BMI calculator endpoint."""
         weight = float(request.data.get('weight_kg', 0))
         height = float(request.data.get('height_cm', 0))
         if weight <= 0 or height <= 0:
@@ -322,18 +444,64 @@ class WeightTrackingViewSet(viewsets.ModelViewSet):
         return Response({'bmi': bmi, 'category': category})
 
 
+# ==================== AI Insights ====================
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def ai_insights(request):
+    """
+    Rule-based AI insights: performance, injury risk, progress summary.
+    ?athlete_id= for coaches; students get own athlete automatically.
+    """
+    athlete_id = request.query_params.get('athlete_id')
+
+    if is_staff_role(request.user):
+        if athlete_id:
+            try:
+                athlete = Athlete.objects.get(pk=athlete_id)
+            except Athlete.DoesNotExist:
+                return Response({'error': 'Athlete not found'}, status=404)
+        else:
+            athlete = Athlete.objects.first()
+            if not athlete:
+                return Response({'error': 'No athletes in system'}, status=404)
+    else:
+        athlete = get_athlete_for_user(request.user)
+        if not athlete:
+            return Response({
+                'error': 'No athlete profile linked to your account. Contact your coach.',
+            }, status=404)
+
+    return Response(get_ai_insights_for_athlete(athlete))
+
+
 # ==================== Dashboard ====================
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def dashboard_stats(request):
-    """Dashboard statistics with chart data."""
-    athletes = Athlete.objects.all()
-    injuries = Injury.objects.exclude(recovery_status='Recovered')
-    performances = Performance.objects.all()
-    competitions = Competition.objects.all()
-    results = CompetitionResult.objects.all()
-    attendance = Attendance.objects.all()
+    """Dashboard statistics — full for coaches, personal for students."""
+    user = request.user
+
+    if is_staff_role(user):
+        athletes = Athlete.objects.all()
+        injuries = Injury.objects.exclude(recovery_status='Recovered')
+        performances = Performance.objects.all()
+        competitions = Competition.objects.all()
+        results = CompetitionResult.objects.all()
+        attendance = Attendance.objects.all()
+        role = 'coach'
+    else:
+        athlete = get_athlete_for_user(user)
+        if not athlete:
+            return Response({'error': 'No linked athlete profile'}, status=404)
+        athletes = Athlete.objects.filter(pk=athlete.pk)
+        injuries = athlete.injuries.exclude(recovery_status='Recovered')
+        performances = athlete.performances.all()
+        competitions = Competition.objects.filter(results__athlete=athlete).distinct()
+        results = athlete.competition_results.all()
+        attendance = athlete.attendance_records.all()
+        role = 'student'
 
     avg_perf = performances.aggregate(
         speed=Avg('speed_score'),
@@ -343,15 +511,9 @@ def dashboard_stats(request):
         agility=Avg('agility_score'),
     )
 
-    sport_dist = list(
-        athletes.values('sport').annotate(count=Count('id')).order_by('-count')
-    )
+    sport_dist = list(athletes.values('sport').annotate(count=Count('id')).order_by('-count'))
+    injury_severity = list(injuries.values('severity').annotate(count=Count('id')))
 
-    injury_severity = list(
-        injuries.values('severity').annotate(count=Count('id'))
-    )
-
-    # Monthly attendance for last 6 months
     monthly_attendance = []
     for i in range(5, -1, -1):
         month_start = date.today().replace(day=1) - timedelta(days=i * 30)
@@ -369,7 +531,6 @@ def dashboard_stats(request):
             'rate': round((present / total * 100) if total > 0 else 0, 1),
         })
 
-    # Performance trend (last 6 records)
     recent_perf = performances.order_by('-record_date')[:6]
     performance_trend = [
         {
@@ -384,7 +545,8 @@ def dashboard_stats(request):
         for p in reversed(list(recent_perf))
     ]
 
-    return Response({
+    payload = {
+        'role': role,
         'total_athletes': athletes.count(),
         'active_athletes': athletes.filter(status='Active').count(),
         'injured_athletes': athletes.filter(status='Injured').count(),
@@ -398,13 +560,20 @@ def dashboard_stats(request):
         'injury_by_severity': injury_severity,
         'monthly_attendance': monthly_attendance,
         'performance_trend': performance_trend,
-    })
+    }
+
+    if role == 'student':
+        athlete = get_athlete_for_user(user)
+        payload['athlete'] = AthleteSerializer(athlete, context={'request': request}).data
+        payload['ai_preview'] = get_ai_insights_for_athlete(athlete)
+
+    return Response(payload)
 
 
 # ==================== Reports ====================
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsCoachOrAdmin])
 def export_pdf(request):
     """Generate PDF reports. ?type=athletes|performance|injuries"""
     report_type = request.query_params.get('type', 'athletes')
@@ -427,7 +596,7 @@ def export_pdf(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsCoachOrAdmin])
 def export_excel(request):
     """Export data to Excel. ?type=athletes|performance|attendance"""
     report_type = request.query_params.get('type', 'athletes')

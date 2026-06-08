@@ -3,8 +3,65 @@ Database models for Athlete Performance and Injury Tracking System.
 Maps to MySQL tables: athletes, performance, injuries, competitions,
 attendance, weight_tracking
 """
+import secrets
+from datetime import timedelta
+
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+
+
+class UserProfile(models.Model):
+    """Extended user profile with role-based access and optional athlete link."""
+
+    ROLE_CHOICES = [
+        ('admin', 'Admin'),
+        ('coach', 'Coach'),
+        ('student', 'Student'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
+    athlete = models.ForeignKey(
+        'Athlete', on_delete=models.SET_NULL, null=True, blank=True, related_name='linked_users'
+    )
+    profile_photo = models.ImageField(upload_to='profiles/', blank=True, default='')
+    phone = models.CharField(max_length=20, blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'user_profiles'
+
+    def __str__(self):
+        return f"{self.user.username} ({self.get_role_display()})"
+
+    @property
+    def is_staff_role(self):
+        return self.role in ('admin', 'coach') or self.user.is_superuser
+
+
+class PasswordResetToken(models.Model):
+    """Secure token for password reset flow."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reset_tokens')
+    token = models.CharField(max_length=64, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    used = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'password_reset_tokens'
+        ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = secrets.token_urlsafe(32)
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(hours=24)
+        super().save(*args, **kwargs)
+
+    def is_valid(self):
+        return not self.used and timezone.now() < self.expires_at
 
 
 class Athlete(models.Model):

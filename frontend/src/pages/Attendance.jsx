@@ -3,6 +3,7 @@
  */
 import { useState, useEffect } from 'react'
 import { attendanceAPI, athletesAPI } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { FaClipboardCheck, FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
@@ -18,6 +19,7 @@ export default function Attendance() {
   const [dateTo, setDateTo] = useState('')
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
+  const { isCoach } = useAuth()
   const { showToast } = useToast()
 
   useEffect(() => {
@@ -59,7 +61,7 @@ export default function Attendance() {
     <div className="animate-in">
       <PageHeader title="Attendance Tracking" subtitle="Mark daily attendance and view reports" />
 
-      <div className="card-panel">
+      {isCoach && <div className="card-panel">
         <h5 className="card-panel-title"><FaClipboardCheck /> Mark Attendance</h5>
         <div className="mb-3" style={{ maxWidth: 220 }}>
           <label className="form-label-custom">Date</label>
@@ -92,10 +94,10 @@ export default function Attendance() {
         <button className="btn-gold mt-3" onClick={handleBulkMark} disabled={saving}>
           {saving ? 'Saving...' : 'Mark Attendance for All'}
         </button>
-      </div>
+      </div>}
 
       <div className="card-panel">
-        <h5 className="card-panel-title">Attendance Reports</h5>
+        <h5 className="card-panel-title">{isCoach ? 'Attendance Reports' : 'My Attendance History'}</h5>
         <div className="search-bar mb-4">
           <input type="date" className="form-control-custom" style={{ maxWidth: 200 }}
             value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />

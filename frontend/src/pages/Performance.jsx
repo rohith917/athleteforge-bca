@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend, Filler } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import { performanceAPI, athletesAPI } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { FaPlus, FaTrash, FaChartLine } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
@@ -26,6 +27,7 @@ export default function Performance() {
   const [chartData, setChartData] = useState(null)
   const [filterAthlete, setFilterAthlete] = useState('')
   const [loading, setLoading] = useState(true)
+  const { isCoach } = useAuth()
   const { showToast } = useToast()
 
   const fetchData = async () => {
@@ -42,7 +44,7 @@ export default function Performance() {
       setChartData({
         labels: d.labels,
         datasets: [
-          { label: 'Speed', data: d.speed, borderColor: '#FFD700', tension: 0.4, fill: false },
+          { label: 'Speed', data: d.speed, borderColor: '#00D4FF', tension: 0.4, fill: false },
           { label: 'Strength', data: d.strength, borderColor: '#22c55e', tension: 0.4, fill: false },
           { label: 'Endurance', data: d.endurance, borderColor: '#3b82f6', tension: 0.4, fill: false },
           { label: 'Flexibility', data: d.flexibility, borderColor: '#f59e0b', tension: 0.4, fill: false },
@@ -75,10 +77,10 @@ export default function Performance() {
       <PageHeader
         title="Performance"
         subtitle="AthleteForge — Track speed, strength, endurance, flexibility & agility"
-        action={<button className="btn-gold" onClick={() => setShowForm(!showForm)}><FaPlus /> Record Performance</button>}
+        action={isCoach ? <button className="btn-gold" onClick={() => setShowForm(!showForm)}><FaPlus /> Record Performance</button> : null}
       />
 
-      {showForm && (
+      {isCoach && showForm && (
         <div className="card-panel">
           <h5 className="card-panel-title"><FaChartLine /> New Performance Record</h5>
           <form onSubmit={handleSubmit}>
@@ -131,7 +133,7 @@ export default function Performance() {
           <div className="table-responsive">
             <table className="table-custom">
               <thead>
-                <tr><th>Athlete</th><th>Date</th><th>Speed</th><th>Strength</th><th>Endurance</th><th>Flexibility</th><th>Agility</th><th></th></tr>
+                <tr><th>Athlete</th><th>Date</th><th>Speed</th><th>Strength</th><th>Endurance</th><th>Flexibility</th><th>Agility</th>{isCoach && <th></th>}</tr>
               </thead>
               <tbody>
                 {records.map(r => (
@@ -140,7 +142,7 @@ export default function Performance() {
                     <td>{r.speed_score || '—'}</td><td>{r.strength_score || '—'}</td>
                     <td>{r.endurance_score || '—'}</td><td>{r.flexibility_score || '—'}</td>
                     <td>{r.agility_score || '—'}</td>
-                    <td><button className="btn-icon btn-icon-delete" onClick={() => handleDelete(r.id)}><FaTrash /></button></td>
+                    {isCoach && <td><button className="btn-icon btn-icon-delete" onClick={() => handleDelete(r.id)}><FaTrash /></button></td>}
                   </tr>
                 ))}
               </tbody>

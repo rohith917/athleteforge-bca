@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { athletesAPI } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { FaPlus, FaSearch, FaEye, FaEdit, FaTrash, FaUsers } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
@@ -15,6 +16,7 @@ export default function Athletes() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [loading, setLoading] = useState(true)
+  const { isCoach } = useAuth()
   const { showToast } = useToast()
 
   const fetchAthletes = async () => {
@@ -50,7 +52,7 @@ export default function Athletes() {
       <PageHeader
         title="Athletes"
         subtitle="Manage athlete profiles and performance records"
-        action={<Link to="/athletes/new" className="btn-gold text-decoration-none"><FaPlus /> Add Athlete</Link>}
+        action={isCoach ? <Link to="/athletes/new" className="btn-gold text-decoration-none"><FaPlus /> Add Athlete</Link> : null}
       />
 
       <div className="search-bar">
@@ -95,9 +97,13 @@ export default function Athletes() {
                     <td>
                       <div className="d-flex gap-1">
                         <Link to={`/athletes/${a.id}`} className="btn-icon btn-icon-view"><FaEye /></Link>
-                        <Link to={`/athletes/${a.id}/edit`} className="btn-icon btn-icon-edit"><FaEdit /></Link>
-                        <button className="btn-icon btn-icon-delete"
-                          onClick={() => handleDelete(a.id, a.full_name || a.first_name)}><FaTrash /></button>
+                        {isCoach && (
+                          <>
+                            <Link to={`/athletes/${a.id}/edit`} className="btn-icon btn-icon-edit"><FaEdit /></Link>
+                            <button className="btn-icon btn-icon-delete"
+                              onClick={() => handleDelete(a.id, a.full_name || a.first_name)}><FaTrash /></button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

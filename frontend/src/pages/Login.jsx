@@ -1,18 +1,18 @@
 /**
- * AthleteForge login page — dark premium sports theme.
+ * AthleteForge login — email + password with role-based redirect.
  */
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { FaUser, FaLock, FaSignInAlt } from 'react-icons/fa'
+import { FaEnvelope, FaLock, FaSignInAlt } from 'react-icons/fa'
 import Logo from '../components/Logo'
 
 export default function Login() {
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { login, user } = useAuth()
+  const { loginWithEmail, user } = useAuth()
   const navigate = useNavigate()
 
   if (user) { navigate('/'); return null }
@@ -22,10 +22,10 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
-      await login(username, password)
+      await loginWithEmail(email, password)
       navigate('/')
     } catch (err) {
-      setError(err.response?.data?.error || 'Invalid credentials.')
+      setError(err.response?.data?.error || 'Invalid email or password.')
     } finally {
       setLoading(false)
     }
@@ -42,9 +42,9 @@ export default function Login() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label-custom"><FaUser className="me-1" /> Username</label>
-            <input type="text" className="form-control-custom" value={username}
-              onChange={(e) => setUsername(e.target.value)} required placeholder="Enter username" />
+            <label className="form-label-custom"><FaEnvelope className="me-1" /> Email</label>
+            <input type="email" className="form-control-custom" value={email}
+              onChange={(e) => setEmail(e.target.value)} required placeholder="Enter your email" />
           </div>
           <div className="mb-4">
             <label className="form-label-custom"><FaLock className="me-1" /> Password</label>
@@ -56,8 +56,17 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="text-center mt-4 mb-0" style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-          Demo: <span style={{ color: 'var(--af-gold)' }}>admin</span> / <span style={{ color: 'var(--af-gold)' }}>admin123</span>
+        <p className="text-center mt-3 mb-0">
+          <Link to="/forgot-password" className="auth-link">Forgot password?</Link>
+        </p>
+
+        <p className="auth-footer">
+          New athlete? <Link to="/register" className="auth-link">Create account</Link>
+        </p>
+
+        <p className="text-center mt-3 mb-0" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+          Coach: <span style={{ color: 'var(--af-cyan)' }}>coach@athleteforge.com</span> / coach123<br />
+          Student: <span style={{ color: 'var(--af-cyan)' }}>rahul.sharma@email.com</span> / student123
         </p>
       </div>
     </div>

@@ -3,6 +3,7 @@
  */
 import { useState, useEffect } from 'react'
 import { injuriesAPI, athletesAPI } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { FaPlus, FaTrash, FaBandAid } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
@@ -21,6 +22,7 @@ export default function Injuries() {
   const [showForm, setShowForm] = useState(false)
   const [filter, setFilter] = useState('')
   const [loading, setLoading] = useState(true)
+  const { isCoach } = useAuth()
   const { showToast } = useToast()
 
   const fetchData = async () => {
@@ -60,10 +62,10 @@ export default function Injuries() {
       <PageHeader
         title="Injuries"
         subtitle="AthleteForge — Monitor recovery, medical notes & injury history"
-        action={<button className="btn-gold" onClick={() => setShowForm(!showForm)}><FaPlus /> Add Injury</button>}
+        action={isCoach ? <button className="btn-gold" onClick={() => setShowForm(!showForm)}><FaPlus /> Add Injury</button> : null}
       />
 
-      {showForm && (
+      {isCoach && showForm && (
         <div className="card-panel">
           <h5 className="card-panel-title"><FaBandAid /> Record New Injury</h5>
           <form onSubmit={handleSubmit}>
@@ -126,7 +128,7 @@ export default function Injuries() {
           <div className="table-responsive">
             <table className="table-custom">
               <thead>
-                <tr><th>Athlete</th><th>Type</th><th>Body Part</th><th>Date</th><th>Severity</th><th>Status</th><th>Notes</th><th></th></tr>
+                <tr><th>Athlete</th><th>Type</th><th>Body Part</th><th>Date</th><th>Severity</th><th>Status</th><th>Notes</th>{isCoach && <th></th>}</tr>
               </thead>
               <tbody>
                 {injuries.map(inj => (
@@ -137,17 +139,23 @@ export default function Injuries() {
                     <td>{inj.injury_date}</td>
                     <td><span className="badge-pill" style={{ color: sevColor[inj.severity], background: `${sevColor[inj.severity]}18` }}>{inj.severity}</span></td>
                     <td>
-                      <select className="form-select-custom" style={{ maxWidth: 160, padding: '4px 8px', fontSize: '0.8rem' }}
-                        value={inj.recovery_status} onChange={(e) => handleRecoveryUpdate(inj.id, e.target.value)}>
-                        <option value="Recovering">Recovering</option>
-                        <option value="Ongoing Treatment">Ongoing Treatment</option>
-                        <option value="Recovered">Recovered</option>
-                      </select>
+                      {isCoach ? (
+                        <select className="form-select-custom" style={{ maxWidth: 160, padding: '4px 8px', fontSize: '0.8rem' }}
+                          value={inj.recovery_status} onChange={(e) => handleRecoveryUpdate(inj.id, e.target.value)}>
+                          <option value="Recovering">Recovering</option>
+                          <option value="Ongoing Treatment">Ongoing Treatment</option>
+                          <option value="Recovered">Recovered</option>
+                        </select>
+                      ) : (
+                        <span className="badge-pill badge-inactive">{inj.recovery_status}</span>
+                      )}
                     </td>
                     <td><small>{inj.medical_notes?.substring(0, 40) || '—'}</small></td>
-                    <td><button className="btn-icon btn-icon-delete"
-                      onClick={async () => { if (confirm('Delete?')) { await injuriesAPI.delete(inj.id); showToast('Deleted'); fetchData() } }}>
-                      <FaTrash /></button></td>
+                    {isCoach && (
+                      <td><button className="btn-icon btn-icon-delete"
+                        onClick={async () => { if (confirm('Delete?')) { await injuriesAPI.delete(inj.id); showToast('Deleted'); fetchData() } }}>
+                        <FaTrash /></button></td>
+                    )}
                   </tr>
                 ))}
               </tbody>

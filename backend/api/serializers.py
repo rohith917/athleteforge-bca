@@ -2,29 +2,70 @@
 DRF Serializers for all API endpoints.
 """
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from .models import (
     Athlete, Performance, Injury, Competition,
-    CompetitionResult, Attendance, WeightTracking
+    CompetitionResult, Attendance, WeightTracking, UserProfile, PasswordResetToken
 )
+from .permissions import get_user_role, get_athlete_for_user
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """Serializer for authenticated admin user info."""
+    """Authenticated user with role and linked athlete."""
+
+    role = serializers.SerializerMethodField()
+    athlete_id = serializers.SerializerMethodField()
+    athlete_name = serializers.SerializerMethodField()
+    profile_photo = serializers.SerializerMethodField()
+    is_staff_role = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = [
+            'id', 'username', 'email', 'first_name', 'last_name',
+            'role', 'athlete_id', 'athlete_name', 'profile_photo', 'is_staff_role',
+        ]
+
+    def get_role(self, obj):
+        return get_user_role(obj)
+
+    def get_athlete_id(self, obj):
+        athlete = get_athlete_for_user(obj)
+        return athlete.id if athlete else None
+
+    def get_athlete_name(self, obj):
+        athlete = get_athlete_for_user(obj)
+        return athlete.full_name if athlete else None
+
+    def get_profile_photo(self, obj):
+        profile = getattr(obj, 'profile', None)
+        if profile and profile.profile_photo:
+            return profile.profile_photo.url
+        athlete = get_athlete_for_user(obj)
+        if athlete and athlete.photo:
+            return athlete.photo.url
+        return None
+
+    def get_is_staff_role(self, obj):
+        from .permissions import is_staff_role
+        return is_staff_role(obj)
 
 
 class AthleteSerializer(serializers.ModelSerializer):
     """Serializer for athlete CRUD operations."""
     full_name = serializers.ReadOnlyField()
     age = serializers.SerializerMethodField()
+    avatar_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Athlete
-        fields = '__all__'
+        fields = [
+            'id', 'first_name', 'last_name', 'full_name', 'email', 'phone',
+            'date_of_birth', 'age', 'gender', 'sport', 'team', 'height_cm',
+            'address', 'emergency_contact', 'emergency_phone', 'status', 'photo',
+            'avatar_url', 'created_at', 'updated_at',
+        ]
 
     def get_age(self, obj):
         from datetime import date
@@ -33,17 +74,30 @@ class AthleteSerializer(serializers.ModelSerializer):
             (today.month, today.day) < (obj.date_of_birth.month, obj.date_of_birth.day)
         )
 
+    def get_avatar_url(self, obj):
+        if obj.photo:
+            return obj.photo.url
+        name = obj.full_name.replace(' ', '+')
+        return f"https://ui-avatars.com/api/?name={name}&background=0A1428&color=00D4FF&size=128&bold=true"
+
 
 class AthleteListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for athlete list/search."""
     full_name = serializers.ReadOnlyField()
+    avatar_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Athlete
         fields = [
             'id', 'first_name', 'last_name', 'full_name', 'email',
-            'sport', 'team', 'status', 'gender', 'date_of_birth'
+            'sport', 'team', 'status', 'gender', 'date_of_birth', 'avatar_url',
         ]
+
+    def get_avatar_url(self, obj):
+        if obj.photo:
+            return obj.photo.url
+        name = obj.full_name.replace(' ', '+')
+        return f"https://ui-avatars.com/api/?name={name}&background=0A1428&color=00D4FF&size=128&bold=true"
 
 
 class PerformanceSerializer(serializers.ModelSerializer):
@@ -124,9 +178,89 @@ class WeightTrackingSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    """Serializer for admin login."""
-    username = serializers.CharField()
+    """Login with email or username + password."""
+    email = serializers.EmailField(required=False, allow_blank=True)
+    username = serializers.CharField(required=False, allow_blank=True)
     password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        if not data.get('email') and not data.get('username'):
+            raise serializers.ValidationError('Email or username is required.')
+        return data
+
+
+class RegisterSerializer(serializers.Serializer):
+    """Student/athlete self-registration."""
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, min_length=6)
+    password_confirm = serializers.CharField(write_only=True)
+    first_name = serializers.CharField(max_length=100)
+    last_name = serializers.CharField(max_length=100, required=False, allow_blank=True)
+
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError('An account with this email already exists.')
+        return value.lower()
+
+    def validate(self, data):
+        if data['password'] != data['password_confirm']:
+            raise serializers.ValidationError({'password_confirm': 'Passwords do not match.'})
+        try:
+            validate_password(data['password'])
+        except Exception as e:
+            raise serializers.ValidationError({'password': list(e.messages)})
+        return data
+
+    def create(self, validated_data):
+        email = validated_data['email']
+        username = email.split('@')[0]
+        base_username = username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data.get('last_name', ''),
+        )
+
+        athlete = Athlete.objects.filter(email__iexact=email).first()
+        UserProfile.objects.create(user=user, role='student', athlete=athlete)
+        return user
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    """Request password reset token."""
+    email = serializers.EmailField()
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    """Reset password with token."""
+    token = serializers.CharField()
+    password = serializers.CharField(write_only=True, min_length=6)
+    password_confirm = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        if data['password'] != data['password_confirm']:
+            raise serializers.ValidationError({'password_confirm': 'Passwords do not match.'})
+        try:
+            validate_password(data['password'])
+        except Exception as e:
+            raise serializers.ValidationError({'password': list(e.messages)})
+        return data
+
+    def validate_token(self, value):
+        try:
+            token_obj = PasswordResetToken.objects.get(token=value)
+        except PasswordResetToken.DoesNotExist:
+            raise serializers.ValidationError('Invalid or expired reset token.')
+        if not token_obj.is_valid():
+            raise serializers.ValidationError('Invalid or expired reset token.')
+        return value
 
 
 class DashboardStatsSerializer(serializers.Serializer):

@@ -4,7 +4,6 @@
  */
 import axios from 'axios'
 
-// Local dev: uses Vite proxy (/api). Production: set VITE_API_URL on Render.
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 const api = axios.create({
@@ -13,7 +12,6 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Get CSRF token from cookie for POST requests
 function getCsrfToken() {
   const match = document.cookie.match(/csrftoken=([^;]+)/)
   return match ? match[1] : ''
@@ -28,8 +26,16 @@ api.interceptors.request.use((config) => {
 // Auth API
 export const authAPI = {
   login: (credentials) => api.post('/auth/login/', credentials),
+  register: (data) => api.post('/auth/register/', data),
+  forgotPassword: (data) => api.post('/auth/forgot-password/', data),
+  resetPassword: (data) => api.post('/auth/reset-password/', data),
   logout: () => api.post('/auth/logout/'),
   getUser: () => api.get('/auth/user/'),
+}
+
+// AI Insights API
+export const aiAPI = {
+  getInsights: (params) => api.get('/ai/insights/', { params }),
 }
 
 // Athletes API

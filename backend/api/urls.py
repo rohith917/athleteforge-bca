@@ -17,8 +17,14 @@ router.register(r'weight-tracking', views.WeightTrackingViewSet)
 urlpatterns = [
     # Authentication
     path('auth/login/', views.LoginView.as_view(), name='login'),
+    path('auth/register/', views.RegisterView.as_view(), name='register'),
+    path('auth/forgot-password/', views.ForgotPasswordView.as_view(), name='forgot-password'),
+    path('auth/reset-password/', views.ResetPasswordView.as_view(), name='reset-password'),
     path('auth/logout/', views.LogoutView.as_view(), name='logout'),
     path('auth/user/', views.CurrentUserView.as_view(), name='current-user'),
+
+    # AI Insights
+    path('ai/insights/', views.ai_insights, name='ai-insights'),
 
     # Dashboard
     path('dashboard/stats/', views.dashboard_stats, name='dashboard-stats'),

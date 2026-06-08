@@ -4,9 +4,10 @@ Usage: python manage.py seed_data
 """
 from datetime import date
 from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User
 from api.models import (
     Athlete, Performance, Injury, Competition,
-    CompetitionResult, Attendance, WeightTracking
+    CompetitionResult, Attendance, WeightTracking, UserProfile
 )
 
 
@@ -90,6 +91,20 @@ class Command(BaseCommand):
                 weight_kg=weights[i][0], height_cm=a.height_cm,
                 body_fat_percentage=weights[i][1]
             )
+
+        # Demo student account linked to Rahul Sharma
+        if not User.objects.filter(email='rahul.sharma@email.com').exists():
+            student = User.objects.create_user(
+                username='rahul',
+                email='rahul.sharma@email.com',
+                password='student123',
+                first_name='Rahul',
+                last_name='Sharma',
+            )
+            UserProfile.objects.create(user=student, role='student', athlete=athletes[0])
+            self.stdout.write(self.style.SUCCESS('Student: rahul.sharma@email.com / student123'))
+        else:
+            self.stdout.write(self.style.WARNING('Student demo account already exists'))
 
         self.stdout.write(self.style.SUCCESS(
             f'Sample data loaded: {len(athletes)} athletes, performances, injuries, competitions, attendance, weight records'
