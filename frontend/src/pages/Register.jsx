@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import {
   FaEnvelope, FaLock, FaUser, FaUserPlus, FaUserTie, FaUserGraduate,
-  FaArrowLeft, FaTachometerAlt, FaSignOutAlt, FaRunning
+  FaArrowLeft, FaRunning
 } from 'react-icons/fa'
 import Logo from '../components/Logo'
 
@@ -22,8 +22,7 @@ export default function Register() {
     email: '', password: '', password_confirm: '', first_name: '', accountType: 'athlete',
   })
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const { user, register, logout } = useAuth()
+  const { register, actionLoading, getErrorMessage } = useAuth()
   const navigate = useNavigate()
 
   const selected = ROLES.find((r) => r.id === form.accountType) || ROLES[1]
@@ -31,7 +30,6 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setLoading(true)
     try {
       await register({
         email: form.email,
@@ -43,30 +41,8 @@ export default function Register() {
       })
       navigate('/dashboard', { replace: true })
     } catch (err) {
-      const d = err.response?.data
-      setError(d?.email?.[0] || d?.password?.[0] || d?.password_confirm?.[0] || 'Registration failed.')
-    } finally {
-      setLoading(false)
+      setError(getErrorMessage(err, 'Registration failed.'))
     }
-  }
-
-  if (user) {
-    return (
-      <div className="auth-luxury-page">
-        <Link to="/" className="auth-back-luxury"><FaArrowLeft /> Home</Link>
-        <motion.div className="auth-luxury-card" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-          <Logo size="lg" showTagline />
-          <h2 className="login-title mt-3">Already signed in</h2>
-          <button type="button" className="btn-gold w-100 mb-3" style={{ width: '100%' }} onClick={() => navigate('/dashboard')}>
-            <FaTachometerAlt /> Dashboard
-          </button>
-          <button type="button" className="btn-outline-gold w-100" style={{ width: '100%' }}
-            onClick={async () => { setLoading(true); await logout(); setLoading(false) }} disabled={loading}>
-            <FaSignOutAlt /> Sign out
-          </button>
-        </motion.div>
-      </div>
-    )
   }
 
   return (
@@ -112,8 +88,8 @@ export default function Register() {
             <input type="password" className="form-control-custom" value={form.password_confirm}
               onChange={(e) => setForm({ ...form, password_confirm: e.target.value })} required />
           </div>
-          <button type="submit" className="btn-gold w-100" disabled={loading} style={{ width: '100%' }}>
-            {loading ? 'Creating...' : <><FaUserPlus /> Register as {selected.label}</>}
+          <button type="submit" className="btn-gold w-100" disabled={actionLoading} style={{ width: '100%' }}>
+            {actionLoading ? 'Creating...' : <><FaUserPlus /> Register as {selected.label}</>}
           </button>
         </form>
         <p className="auth-footer">

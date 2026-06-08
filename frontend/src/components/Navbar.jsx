@@ -1,24 +1,32 @@
 /**
  * Top navbar with role badge, avatar, and theme toggle.
  */
+import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
-import { useNavigate } from 'react-router-dom'
+import { useToast } from '../context/ToastContext'
 import { FaSignOutAlt, FaMoon, FaSun, FaBars } from 'react-icons/fa'
 import Avatar from './Avatar'
 
 const roleLabels = { admin: 'Admin', coach: 'Coach', student: 'Student' }
 
 export default function Navbar({ onMenuToggle }) {
-  const { user, logout, isStudent, isAdmin } = useAuth()
+  const { user, logout, isStudent, isAdmin, actionLoading, getErrorMessage } = useAuth()
   const { isDark, toggleTheme, canToggleTheme } = useTheme()
-  const navigate = useNavigate()
+  const { showToast } = useToast()
+  const [loggingOut, setLoggingOut] = useState(false)
 
   const handleLogout = async () => {
+    if (loggingOut || actionLoading) return
+    setLoggingOut(true)
     try {
       await logout()
+      window.location.href = '/login'
+    } catch (err) {
+      showToast(getErrorMessage(err, 'Logout failed. Please try again.'), 'error')
+      window.location.href = '/login'
     } finally {
-      navigate('/login', { replace: true })
+      setLoggingOut(false)
     }
   }
 
@@ -50,8 +58,13 @@ export default function Navbar({ onMenuToggle }) {
             <span className={`role-badge role-${user.role}`}>{roleLabels[user.role] || user.role}</span>
           )}
         </div>
-        <button className="btn-logout" onClick={handleLogout}>
-          <FaSignOutAlt /> <span className="d-none d-md-inline">Logout</span>
+        <button
+          className="btn-logout"
+          onClick={handleLogout}
+          disabled={loggingOut || actionLoading}
+          aria-label="Logout"
+        >
+          <FaSignOutAlt /> <span className="d-none d-md-inline">{loggingOut ? 'Logging out...' : 'Logout'}</span>
         </button>
       </div>
     </header>

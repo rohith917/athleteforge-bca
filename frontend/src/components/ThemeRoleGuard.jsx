@@ -7,16 +7,16 @@ import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 
 export default function ThemeRoleGuard() {
-  const { user, isAdmin, loading } = useAuth()
+  const { isAdmin, initializing } = useAuth()
   const { setForcedLight } = useTheme()
 
   useEffect(() => {
-    if (loading) {
+    if (initializing) {
       setForcedLight(true)
       return
     }
     setForcedLight(!isAdmin)
-  }, [user, isAdmin, loading, setForcedLight])
+  }, [isAdmin, initializing, setForcedLight])
 
   return null
 }

@@ -1,70 +1,118 @@
 /**
- * Authentication context — login, register, logout, role-aware user state.
+ * Authentication context — session bootstrap, login, logout, role state.
  */
-import { createContext, useContext, useState, useEffect } from 'react'
-import { authAPI, initCsrf } from '../services/api'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import {
+  authAPI,
+  initCsrf,
+  clearAuthTokens,
+  setUnauthorizedHandler,
+  getErrorMessage,
+} from '../services/api'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [initializing, setInitializing] = useState(true)
+  const [actionLoading, setActionLoading] = useState(false)
+
+  const clearUser = useCallback(() => {
+    setUser(null)
+    clearAuthTokens()
+  }, [])
+
+  const fetchCurrentUser = useCallback(async () => {
+    const response = await authAPI.getUser()
+    setUser(response.data)
+    return response.data
+  }, [])
+
+  const bootstrapAuth = useCallback(async () => {
+    try {
+      await initCsrf()
+      await fetchCurrentUser()
+    } catch {
+      clearUser()
+    } finally {
+      setInitializing(false)
+    }
+  }, [clearUser, fetchCurrentUser])
 
   useEffect(() => {
     bootstrapAuth()
-  }, [])
+  }, [bootstrapAuth])
 
-  const bootstrapAuth = async () => {
-    try {
-      await initCsrf()
-      const response = await authAPI.getUser()
-      setUser(response.data)
-    } catch {
-      setUser(null)
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      clearUser()
+    })
+    return () => setUnauthorizedHandler(null)
+  }, [clearUser])
 
   const checkAuth = async () => {
     try {
-      const response = await authAPI.getUser()
-      setUser(response.data)
-      return response.data
+      await initCsrf()
+      return await fetchCurrentUser()
     } catch {
-      setUser(null)
+      clearUser()
       return null
     }
   }
 
   const login = async (emailOrUsername, password, useEmail = false) => {
-    await initCsrf()
-    const payload = useEmail
-      ? { email: emailOrUsername, password }
-      : { username: emailOrUsername, password }
-    const response = await authAPI.login(payload)
-    setUser(response.data.user)
-    return response.data
+    setActionLoading(true)
+    try {
+      await initCsrf()
+      const payload = useEmail
+        ? { email: emailOrUsername, password }
+        : { username: emailOrUsername, password }
+      const response = await authAPI.login(payload)
+      const loggedInUser = response.data?.user
+      if (!loggedInUser) {
+        throw new Error('Login succeeded but no user data was returned.')
+      }
+      setUser(loggedInUser)
+      // Confirm session cookie works (critical on mobile / cross-origin Render)
+      const verified = await fetchCurrentUser()
+      if (!verified) {
+        throw new Error('Session could not be established. Please try again.')
+      }
+      return response.data
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   const loginWithEmail = async (email, password) => login(email, password, true)
 
   const register = async (data) => {
-    await initCsrf()
-    const response = await authAPI.register(data)
-    setUser(response.data.user)
-    return response.data
+    setActionLoading(true)
+    try {
+      await initCsrf()
+      const response = await authAPI.register(data)
+      const newUser = response.data?.user
+      if (!newUser) {
+        throw new Error('Registration succeeded but no user data was returned.')
+      }
+      setUser(newUser)
+      await fetchCurrentUser()
+      return response.data
+    } finally {
+      setActionLoading(false)
+    }
   }
 
   const logout = async () => {
+    setActionLoading(true)
     try {
       await initCsrf()
       await authAPI.logout()
     } catch {
-      // Clear client state even if server logout fails (e.g. expired session)
+      // Always clear client state even if server session already expired
     } finally {
-      setUser(null)
-      await initCsrf()
+      clearUser()
+      setActionLoading(false)
     }
   }
 
@@ -75,8 +123,20 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{
-      user, loading, login, loginWithEmail, register, logout, checkAuth,
-      isAdmin, isStudent, isCoach, isStaff,
+      user,
+      loading: initializing || actionLoading,
+      initializing,
+      actionLoading,
+      login,
+      loginWithEmail,
+      register,
+      logout,
+      checkAuth,
+      isAdmin,
+      isStudent,
+      isCoach,
+      isStaff,
+      getErrorMessage,
     }}>
       {children}
     </AuthContext.Provider>

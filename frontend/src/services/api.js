@@ -1,6 +1,5 @@
 /**
- * API service layer - handles all HTTP requests to Django backend.
- * Uses session-based authentication with credentials.
+ * API service layer — session auth with CSRF for cross-origin Render deploy.
  */
 import axios from 'axios'
 
@@ -10,9 +9,11 @@ const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
+  timeout: 30000,
 })
 
 let csrfToken = ''
+let onUnauthorized = null
 
 function readCookieCsrf() {
   const match = document.cookie.match(/csrftoken=([^;]+)/)
@@ -20,17 +21,37 @@ function readCookieCsrf() {
 }
 
 export function getCsrfToken() {
-  return csrfToken || readCookieCsrf()
+  return csrfToken || sessionStorage.getItem('af_csrf') || readCookieCsrf()
+}
+
+export function setCsrfToken(token) {
+  csrfToken = token || ''
+  if (token) {
+    sessionStorage.setItem('af_csrf', token)
+  } else {
+    sessionStorage.removeItem('af_csrf')
+  }
+}
+
+export function clearAuthTokens() {
+  csrfToken = ''
+  sessionStorage.removeItem('af_csrf')
+}
+
+export function setUnauthorizedHandler(handler) {
+  onUnauthorized = handler
 }
 
 export async function initCsrf() {
   try {
     const res = await api.get('/auth/csrf/')
-    csrfToken = res.data?.csrfToken || ''
-    return csrfToken
+    const token = res.data?.csrfToken || ''
+    setCsrfToken(token)
+    return token
   } catch {
-    csrfToken = readCookieCsrf()
-    return csrfToken
+    const fallback = readCookieCsrf()
+    if (fallback) setCsrfToken(fallback)
+    return fallback
   }
 }
 
@@ -47,10 +68,13 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config
+    const status = error.response?.status
+    const url = original?.url || ''
+
     if (
-      error.response?.status === 403 &&
-      !original._csrfRetry &&
-      !original.url?.includes('/auth/csrf/')
+      status === 403 &&
+      !original?._csrfRetry &&
+      !url.includes('/auth/csrf/')
     ) {
       original._csrfRetry = true
       await initCsrf()
@@ -60,9 +84,33 @@ api.interceptors.response.use(
         return api.request(original)
       }
     }
+
+    if (
+      status === 401 &&
+      !url.includes('/auth/login/') &&
+      !url.includes('/auth/register/') &&
+      !url.includes('/auth/csrf/') &&
+      !url.includes('/auth/user/')
+    ) {
+      onUnauthorized?.()
+    }
+
     return Promise.reject(error)
   }
 )
+
+export function getErrorMessage(error, fallback = 'Something went wrong. Please try again.') {
+  const data = error?.response?.data
+  if (!data) return fallback
+  if (typeof data === 'string') return data
+  if (data.error) return data.error
+  if (data.detail) return data.detail
+  if (data.message) return data.message
+  const firstKey = Object.keys(data)[0]
+  if (firstKey && Array.isArray(data[firstKey])) return data[firstKey][0]
+  if (firstKey && typeof data[firstKey] === 'string') return data[firstKey]
+  return fallback
+}
 
 // Auth API
 export const authAPI = {

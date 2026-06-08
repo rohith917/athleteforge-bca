@@ -7,6 +7,8 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
 from django.db.models import Avg, Count, Q
 from django.http import HttpResponse
@@ -63,6 +65,7 @@ def _resolve_user_from_login(data):
 
 # ==================== Authentication ====================
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class CsrfView(APIView):
     """Return CSRF token for cross-origin SPA (cookie on API domain + JSON body)."""
     permission_classes = [AllowAny]
@@ -81,7 +84,13 @@ class LoginView(APIView):
         serializer.is_valid(raise_exception=True)
         user = _resolve_user_from_login(serializer.validated_data)
         if user is not None:
+            if not user.is_active:
+                return Response(
+                    {'error': 'This account has been deactivated. Contact your administrator.'},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
             login(request, user)
+            request.session.save()
             return Response({
                 'message': 'Login successful',
                 'user': UserSerializer(user, context={'request': request}).data,
@@ -150,12 +159,27 @@ class ResetPasswordView(APIView):
 
 
 class LogoutView(APIView):
-    """Logout — destroys session."""
-    permission_classes = [IsAuthenticated]
+    """Logout — destroys session (works even if session is partially expired)."""
+    permission_classes = [AllowAny]
 
     def post(self, request):
-        logout(request)
-        return Response({'message': 'Logout successful'})
+        if request.user.is_authenticated:
+            logout(request)
+        request.session.flush()
+        response = Response({'message': 'Logout successful'})
+        response.delete_cookie(
+            settings.SESSION_COOKIE_NAME,
+            path=settings.SESSION_COOKIE_PATH,
+            domain=settings.SESSION_COOKIE_DOMAIN,
+            samesite=settings.SESSION_COOKIE_SAMESITE,
+        )
+        response.delete_cookie(
+            settings.CSRF_COOKIE_NAME,
+            path=settings.CSRF_COOKIE_PATH,
+            domain=settings.CSRF_COOKIE_DOMAIN,
+            samesite=settings.CSRF_COOKIE_SAMESITE,
+        )
+        return response
 
 
 class CurrentUserView(APIView):

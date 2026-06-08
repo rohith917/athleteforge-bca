@@ -123,13 +123,31 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 _extra_origins = [
     o.strip() for o in os.getenv('CORS_ALLOWED_ORIGINS', '').split(',') if o.strip()
 ]
-CORS_ALLOWED_ORIGINS = [
+_frontend_url = os.getenv('FRONTEND_URL', '').strip()
+_default_origins = [
     'http://localhost:3000',
     'http://localhost:5173',
     'http://127.0.0.1:3000',
     'http://127.0.0.1:5173',
-] + _extra_origins
+    'https://athleteforge-frontend.onrender.com',
+    'https://athleteforge-bca.onrender.com',
+]
+if _frontend_url:
+    _default_origins.append(_frontend_url)
+
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys(_default_origins + _extra_origins))
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Django REST Framework
 REST_FRAMEWORK = {
@@ -154,20 +172,24 @@ if DEBUG:
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
 else:
+    # Required for cross-origin SPA (frontend + API on different Render URLs)
     SESSION_COOKIE_SAMESITE = 'None'
     CSRF_COOKIE_SAMESITE = 'None'
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
+# Cross-site frontend cannot read HttpOnly session cookie — only API domain stores it
+SESSION_COOKIE_PATH = '/'
+CSRF_COOKIE_PATH = '/'
+
 _extra_csrf = [
     o.strip() for o in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
 ]
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:5173',
-] + _extra_csrf
+CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(CORS_ALLOWED_ORIGINS + _extra_csrf))
+
+# Keep sessions alive during active use (helps mobile browsers)
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_NAME = 'athleteforge_sessionid'
 
 # Render.com sits behind a proxy
 if not DEBUG:
