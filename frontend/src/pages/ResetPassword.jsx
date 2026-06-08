@@ -1,11 +1,13 @@
 /**
- * Reset password with token from forgot-password flow.
+ * Reset password — Dribbble-style auth card
  */
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { authAPI } from '../services/api'
 import { FaLock, FaCheck, FaArrowLeft } from 'react-icons/fa'
 import Logo from '../components/Logo'
+import { scaleIn } from '../components/motion/Motion'
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams()
@@ -39,40 +41,42 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="login-page">
-      <Link to="/" className="login-back-home"><FaArrowLeft /> Back to Home</Link>
-      <div className="login-card">
-        <Logo size="lg" showTagline />
-        <h2 className="login-title mt-3">Reset Password</h2>
-        <p className="login-subtitle">Enter your new password</p>
+    <div className="auth-split-page">
+      <Link to="/login" className="auth-back-link"><FaArrowLeft /> Back to Login</Link>
+      <div className="auth-split-form-side" style={{ gridColumn: '1 / -1' }}>
+        <motion.div className="auth-form-card" initial="hidden" animate="visible" variants={scaleIn}>
+          <Logo size="lg" showTagline />
+          <h2 className="login-title mt-3">Reset Password</h2>
+          <p className="login-subtitle">Enter your new password</p>
 
-        {error && <div className="alert-custom alert-danger-custom">{error}</div>}
-        {message && <div className="alert-custom" style={{ background: 'rgba(34,197,94,0.1)', color: 'var(--af-success)', border: '1px solid rgba(34,197,94,0.3)' }}>{message}</div>}
+          {error && <div className="alert-custom alert-danger-custom">{error}</div>}
+          {message && <div className="alert-custom" style={{ background: 'rgba(34,197,94,0.1)', color: '#22C55E', border: '1px solid rgba(34,197,94,0.3)' }}>{message}</div>}
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label-custom">Reset Token</label>
-            <input type="text" className="form-control-custom" value={token}
-              onChange={(e) => setToken(e.target.value)} required placeholder="Paste reset token" />
-          </div>
-          <div className="mb-3">
-            <label className="form-label-custom"><FaLock className="me-1" /> New Password</label>
-            <input type="password" className="form-control-custom" value={password}
-              onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-          </div>
-          <div className="mb-4">
-            <label className="form-label-custom"><FaLock className="me-1" /> Confirm Password</label>
-            <input type="password" className="form-control-custom" value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)} required />
-          </div>
-          <button type="submit" className="btn-gold w-100 justify-content-center" disabled={loading} style={{ width: '100%' }}>
-            {loading ? 'Resetting...' : <><FaCheck /> Reset Password</>}
-          </button>
-        </form>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label-custom">Reset Token</label>
+              <input type="text" className="form-control-custom" value={token}
+                onChange={(e) => setToken(e.target.value)} required placeholder="Paste reset token" />
+            </div>
+            <div className="mb-3">
+              <label className="form-label-custom"><FaLock className="me-1" /> New Password</label>
+              <input type="password" className="form-control-custom" value={password}
+                onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+            </div>
+            <div className="mb-4">
+              <label className="form-label-custom"><FaLock className="me-1" /> Confirm Password</label>
+              <input type="password" className="form-control-custom" value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)} required />
+            </div>
+            <button type="submit" className="btn-gold w-100 justify-content-center" disabled={loading} style={{ width: '100%' }}>
+              {loading ? 'Resetting...' : <><FaCheck /> Reset Password</>}
+            </button>
+          </form>
 
-        <p className="auth-footer">
-          <Link to="/login" className="auth-link">Back to Sign In</Link>
-        </p>
+          <p className="auth-footer">
+            <Link to="/login" className="auth-link">Back to Sign In</Link>
+          </p>
+        </motion.div>
       </div>
     </div>
   )

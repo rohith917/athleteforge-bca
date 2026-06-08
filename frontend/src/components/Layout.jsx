@@ -1,14 +1,17 @@
 /**
- * Main layout — sidebar, navbar, content area, and footer.
+ * Main layout — sidebar, navbar, animated content area
  */
 import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
 import Sidebar from './Sidebar'
 import Navbar from './Navbar'
 import Footer from './Footer'
+import { MotionPage } from './motion/Motion'
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const location = useLocation()
 
   return (
     <div className="app-layout">
@@ -17,7 +20,11 @@ export default function Layout() {
       <div className="main-content">
         <Navbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         <div className="page-content">
-          <Outlet />
+          <AnimatePresence mode="wait">
+            <MotionPage key={location.pathname}>
+              <Outlet />
+            </MotionPage>
+          </AnimatePresence>
         </div>
         <Footer />
       </div>

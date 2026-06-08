@@ -3,11 +3,11 @@
    ================================================================ */
 
 :root {
-  --af-black: #0A0A0A;
-  --af-dark: #111827;
-  --af-card: #1A1A1A;
-  --af-elevated: #222222;
-  --af-border: rgba(148, 163, 184, 0.12);
+  --af-black: #050508;
+  --af-dark: #0c0a14;
+  --af-card: #12101c;
+  --af-elevated: #1a1628;
+  --af-border: rgba(139, 92, 246, 0.14);
   --af-gold: #D4AF37;
   --af-gold-dark: #B8962E;
   --af-gold-hover: #F5C542;
