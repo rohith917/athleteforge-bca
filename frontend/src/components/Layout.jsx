@@ -7,6 +7,7 @@ import { AnimatePresence } from 'framer-motion'
 import Sidebar from './Sidebar'
 import Navbar from './Navbar'
 import Footer from './Footer'
+import ChartThemeSync from './ChartThemeSync'
 import { MotionPage } from './motion/Motion'
 
 export default function Layout() {
@@ -15,6 +16,7 @@ export default function Layout() {
 
   return (
     <div className="app-layout">
+      <ChartThemeSync />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
       <div className="main-content">

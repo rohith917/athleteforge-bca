@@ -97,7 +97,7 @@ export default function Landing() {
 
       <section className="cta-luxury">
         <h2 className="section-headline">Built for elite performance</h2>
-        <p className="section-sub" style={{ margin: '0 auto 40px' }}>
+        <p className="section-sub section-sub-cta">
           Join coaches and athletes using AthleteForge to train smarter.
         </p>
         <div className="hero-actions">

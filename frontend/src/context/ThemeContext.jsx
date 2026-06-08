@@ -12,7 +12,12 @@ export function ThemeProvider({ children }) {
   const effectiveTheme = forcedLight ? 'light' : theme
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', effectiveTheme)
+    const root = document.documentElement
+    root.setAttribute('data-theme', effectiveTheme)
+    root.style.colorScheme = effectiveTheme
+    document.body.setAttribute('data-theme', effectiveTheme)
+    root.classList.toggle('theme-dark', effectiveTheme === 'dark')
+    root.classList.toggle('theme-light', effectiveTheme === 'light')
     if (!forcedLight) localStorage.setItem('athleteforge-theme', theme)
   }, [effectiveTheme, forcedLight, theme])
 

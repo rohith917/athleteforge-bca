@@ -24,12 +24,14 @@ import WellnessCheckIn from '../components/analytics/WellnessCheckIn'
 import PerformanceRadar from '../components/analytics/PerformanceRadar'
 import { ACCENT, baseChartOptions } from '../utils/chartTheme'
 import { calcRecoveryScore } from '../utils/metricsEngine'
+import { useTheme } from '../context/ThemeContext'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Filler, Tooltip, Legend)
-ChartJS.defaults.color = '#6B7280'
-ChartJS.defaults.borderColor = '#F3F4F6'
 
 export default function Dashboard() {
+  const { isDark } = useTheme()
+  const tickColor = isDark ? '#9CA3AF' : '#9CA3AF'
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [wellness, setWellness] = useState(null)
@@ -132,8 +134,8 @@ export default function Dashboard() {
         <div className="col-lg-6">
           <div className="chart-panel-premium" style={{ height: '100%' }}>
             <h6>Attendance Intelligence</h6>
-            <div style={{ height: 280 }}>
-              <Line data={attendanceChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: '#9CA3AF' }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: '#9CA3AF' }, grid: { color: '#F3F4F6' } } } }} />
+            <div style={{ height: 280 }} key={`att-${isDark}`}>
+              <Line data={attendanceChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: tickColor }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: tickColor }, grid: { color: gridColor } } } }} />
             </div>
           </div>
         </div>
@@ -143,16 +145,16 @@ export default function Dashboard() {
         <div className="col-lg-6">
           <div className="chart-panel-premium">
             <h6>Performance Distribution</h6>
-            <div style={{ height: 260 }}>
-              <Bar data={perfChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: '#9CA3AF' }, grid: { display: false } }, y: { ticks: { color: '#9CA3AF' }, grid: { color: '#F3F4F6' } } } }} />
+            <div style={{ height: 260 }} key={`perf-${isDark}`}>
+              <Bar data={perfChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: tickColor }, grid: { display: false } }, y: { ticks: { color: tickColor }, grid: { color: gridColor } } } }} />
             </div>
           </div>
         </div>
         <div className="col-lg-6">
           <div className="chart-panel-premium">
             <h6>Sport Composition</h6>
-            <div style={{ height: 260 }}>
-              <Doughnut data={sportChart} options={{ ...baseChartOptions, cutout: '68%', plugins: { legend: { position: 'bottom', labels: { color: '#6B7280', padding: 12 } } } }} />
+            <div style={{ height: 260 }} key={`sport-${isDark}`}>
+              <Doughnut data={sportChart} options={{ ...baseChartOptions, cutout: '68%', plugins: { legend: { position: 'bottom', labels: { color: isDark ? '#9CA3AF' : '#6B7280', padding: 12 } } } }} />
             </div>
           </div>
         </div>

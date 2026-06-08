@@ -11,8 +11,11 @@ export default function ThemeRoleGuard() {
   const { setForcedLight } = useTheme()
 
   useEffect(() => {
-    if (loading) return
-    setForcedLight(!user || !isAdmin)
+    if (loading) {
+      setForcedLight(true)
+      return
+    }
+    setForcedLight(!isAdmin)
   }, [user, isAdmin, loading, setForcedLight])
 
   return null

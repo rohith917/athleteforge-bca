@@ -8,7 +8,7 @@ from .models import (
     Athlete, Performance, Injury, Competition,
     CompetitionResult, Attendance, WeightTracking, UserProfile, PasswordResetToken
 )
-from .permissions import get_user_role, get_athlete_for_user
+from .permissions import get_user_role, get_athlete_for_user, is_admin_role
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -19,12 +19,13 @@ class UserSerializer(serializers.ModelSerializer):
     athlete_name = serializers.SerializerMethodField()
     profile_photo = serializers.SerializerMethodField()
     is_staff_role = serializers.SerializerMethodField()
+    is_admin = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
-            'role', 'athlete_id', 'athlete_name', 'profile_photo', 'is_staff_role',
+            'role', 'athlete_id', 'athlete_name', 'profile_photo', 'is_staff_role', 'is_admin',
         ]
 
     def get_role(self, obj):
@@ -50,6 +51,9 @@ class UserSerializer(serializers.ModelSerializer):
     def get_is_staff_role(self, obj):
         from .permissions import is_staff_role
         return is_staff_role(obj)
+
+    def get_is_admin(self, obj):
+        return is_admin_role(obj)
 
 
 class AthleteSerializer(serializers.ModelSerializer):
