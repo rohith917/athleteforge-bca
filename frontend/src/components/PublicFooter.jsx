@@ -6,7 +6,7 @@ import TeamCredits from './TeamCredits'
 export default function PublicFooter() {
   return (
     <footer className="landing-site-footer">
-      <div className="landing-site-footer-inner">
+      <div className="landing-container landing-site-footer-inner">
         <span className="footer-brand">ATHLETEFORGE</span>
         <span className="footer-tag">Track. Recover. Perform.</span>
         <TeamCredits />

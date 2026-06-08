@@ -673,22 +673,13 @@ body {
 }
 
 @media (max-width: 768px) {
-  .public-navbar-inner {
-    padding: 10px 12px;
-    gap: 8px;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .public-navbar-inner .af-logo { gap: 8px; min-width: 0; }
+  .public-navbar-inner .af-logo { gap: 10px; min-width: 0; }
   .public-navbar-inner .af-brand-name {
-    font-size: 0.72rem !important;
-    letter-spacing: 1px;
+    font-size: 0.85rem !important;
+    letter-spacing: -0.03em;
     white-space: nowrap;
   }
-  .public-navbar-inner .af-shield { width: 32px !important; height: 32px !important; }
   .public-nav-links {
-    gap: 6px;
     flex-wrap: nowrap;
     justify-content: flex-end;
     flex-shrink: 0;

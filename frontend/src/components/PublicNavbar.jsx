@@ -25,7 +25,7 @@ export default function PublicNavbar() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="public-navbar-inner">
+      <div className="landing-container public-navbar-inner">
         <Link to="/" className="text-decoration-none">
           <Logo size="sm" showTagline={false} />
         </Link>
