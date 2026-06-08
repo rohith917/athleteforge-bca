@@ -1,6 +1,6 @@
 """
 Django settings for AthleteForge - Athlete Performance and Injury Tracking System.
-BCA Final Year Project
+AthleteForge - Athlete Performance System
 """
 import os
 from pathlib import Path

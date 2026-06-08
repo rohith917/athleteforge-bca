@@ -9,6 +9,7 @@ import {
   FaArrowLeft, FaTachometerAlt, FaSignOutAlt
 } from 'react-icons/fa'
 import Logo from '../components/Logo'
+import { FounderLine } from '../components/FounderCredit'
 
 const emptyForm = {
   email: '', password: '', password_confirm: '', first_name: '', last_name: '', role: 'student',
@@ -146,6 +147,7 @@ export default function Register() {
         <p className="auth-footer">
           Already have an account? <Link to="/login" className="auth-link">Sign in</Link>
         </p>
+        <FounderLine className="auth-founder" />
       </div>
     </div>
   )

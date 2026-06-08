@@ -1,6 +1,6 @@
 /**
  * Application entry point.
- * BCA Final Year Project - Athlete Performance and Injury Tracking System
+ * AthleteForge - Athlete Performance and Injury Tracking System
  */
 import React from 'react'
 import ReactDOM from 'react-dom/client'

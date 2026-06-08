@@ -8,9 +8,9 @@ export default function Footer() {
         <span className="footer-brand">ATHLETEFORGE</span>
         <span className="footer-tag">Track. Recover. Perform.</span>
         <span>·</span>
-        <span className="footer-founder">Founded by Rohith Gowda V</span>
+        <span className="footer-founder">Founder — Rohith Gowda V</span>
         <span>·</span>
-        <span>BCA Final Year Project © {new Date().getFullYear()}</span>
+        <span>© {new Date().getFullYear()} AthleteForge</span>
       </div>
     </footer>
   )

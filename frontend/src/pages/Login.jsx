@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { FaEnvelope, FaLock, FaSignInAlt, FaArrowLeft, FaTachometerAlt, FaSignOutAlt } from 'react-icons/fa'
 import Logo from '../components/Logo'
+import { FounderLine } from '../components/FounderCredit'
 
 export default function Login() {
   const [identifier, setIdentifier] = useState('')
@@ -125,6 +126,7 @@ export default function Login() {
         <p className="auth-footer">
           Don't have an account? <Link to="/register" className="auth-link">Register here</Link>
         </p>
+        <FounderLine className="auth-founder" />
       </div>
     </div>
   )

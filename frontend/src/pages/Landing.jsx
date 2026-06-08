@@ -4,10 +4,11 @@
 import { Link } from 'react-router-dom'
 import {
   FaChartLine, FaBandAid, FaUsers, FaTrophy, FaBrain,
-  FaClipboardCheck, FaArrowRight, FaShieldAlt
+  FaClipboardCheck, FaArrowRight, FaUserTie
 } from 'react-icons/fa'
 import PublicNavbar from '../components/PublicNavbar'
 import Logo from '../components/Logo'
+import { FounderBadge } from '../components/FounderCredit'
 
 const features = [
   { icon: FaUsers, title: 'Athlete Management', desc: 'Complete profiles, photos, and team organization.' },
@@ -34,8 +35,7 @@ export default function Landing() {
         <div className="container landing-hero-content animate-in">
           <div className="row align-items-center g-5">
             <div className="col-lg-7">
-              <span className="landing-badge"><FaShieldAlt /> BCA Final Year Project 2026</span>
-              <p className="landing-founder">Founded by <strong>Rohith Gowda V</strong></p>
+              <FounderBadge className="landing-founder-badge" />
               <h1 className="landing-headline">
                 Train Smarter.<br />
                 <span className="gold-text">Recover Faster.</span><br />
@@ -70,6 +70,13 @@ export default function Landing() {
                   <div className="landing-stat">
                     <span className="val">24/7</span>
                     <span className="lbl">Access</span>
+                  </div>
+                </div>
+                <div className="landing-founder-card">
+                  <div className="landing-founder-avatar"><FaUserTie /></div>
+                  <div>
+                    <span className="landing-founder-label">Founder</span>
+                    <strong className="landing-founder-name">Rohith Gowda V</strong>
                   </div>
                 </div>
                 <p className="landing-hero-note">
@@ -134,8 +141,8 @@ export default function Landing() {
         <div className="container">
           <span className="footer-brand">ATHLETEFORGE</span>
           <span className="footer-tag">Track. Recover. Perform.</span>
-          <span className="footer-founder">Founded by Rohith Gowda V</span>
-          <span className="footer-copy">© 2026 BCA Final Year Project</span>
+          <span className="footer-founder">Founder — Rohith Gowda V</span>
+          <span className="footer-copy">© 2026 AthleteForge. All rights reserved.</span>
         </div>
       </footer>
     </div>

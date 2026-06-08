@@ -1,7 +1,7 @@
 /* ================================================================
    ATHLETEFORGE — Track. Recover. Perform.
    Dark Professional Sports Dashboard Theme
-   BCA Final Year Project
+   AthleteForge — Athlete Performance System
    ================================================================ */
 
 :root {
@@ -731,10 +731,45 @@ body {
   border-radius: 50%; pointer-events: none;
 }
 .landing-hero-content { position: relative; z-index: 1; }
-.landing-founder {
-  font-size: 0.88rem; color: var(--text-secondary); margin: 0 0 20px;
+.founder-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: 20px;
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  color: var(--af-gold); font-size: 0.82rem; font-weight: 700;
+  letter-spacing: 0.4px; margin-bottom: 20px;
 }
-.landing-founder strong { color: var(--af-gold); font-weight: 700; }
+.founder-line {
+  text-align: center; margin: 16px 0 0;
+  font-size: 0.78rem; color: var(--text-muted);
+}
+.founder-line strong { color: var(--af-gold); font-weight: 700; }
+.auth-founder { margin-top: 12px; }
+
+.landing-founder-badge { font-size: 0.9rem !important; padding: 10px 18px !important; }
+
+.landing-founder-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px; margin-bottom: 16px;
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: var(--radius-sm);
+}
+.landing-founder-avatar {
+  width: 48px; height: 48px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--af-gold); color: var(--af-black);
+  border-radius: 50%; font-size: 1.2rem;
+}
+.landing-founder-label {
+  display: block; font-size: 0.68rem; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text-muted); margin-bottom: 2px;
+}
+.landing-founder-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.1rem; color: var(--af-gold); letter-spacing: 0.5px;
+}
+.sidebar-founder { color: var(--af-gold) !important; font-weight: 600; }
 
 .landing-badge {
   display: inline-block; padding: 6px 14px;

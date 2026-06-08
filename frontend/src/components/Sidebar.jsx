@@ -82,8 +82,8 @@ export default function Sidebar({ isOpen, onClose }) {
       </nav>
 
       <div className="sidebar-footer">
-        <small>AthleteForge · Founded by Rohith Gowda V</small>
-        <small>BCA Final Year Project 2026</small>
+        <small className="sidebar-founder">Founder — Rohith Gowda V</small>
+        <small>© 2026 AthleteForge</small>
       </div>
     </aside>
   )
