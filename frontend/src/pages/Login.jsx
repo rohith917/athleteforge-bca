@@ -65,7 +65,7 @@ export default function Login() {
         </p>
 
         <p className="text-center mt-3 mb-0" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-          Admin: <span style={{ color: 'var(--af-cyan)' }}>admin@athleteforge.com</span> / admin123<br />
+          Admin: <span style={{ color: 'var(--af-cyan)' }}>admin@athletetracking.com</span> / admin123<br />
           Coach: <span style={{ color: 'var(--af-cyan)' }}>coach@athleteforge.com</span> / coach123<br />
           Student: <span style={{ color: 'var(--af-cyan)' }}>rahul.sharma@email.com</span> / student123
         </p>
