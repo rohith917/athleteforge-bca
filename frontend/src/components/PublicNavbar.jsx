@@ -8,10 +8,10 @@ import { useAuth } from '../context/AuthContext'
 import Logo from './Logo'
 
 export default function PublicNavbar() {
-  const { user, initializing } = useAuth()
+  const { user, authChecked } = useAuth()
   const location = useLocation()
   const [scrolled, setScrolled] = useState(false)
-  const isAuthenticated = Boolean(!initializing && user)
+  const isAuthenticated = Boolean(authChecked && user)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -31,17 +31,24 @@ export default function PublicNavbar() {
           <Logo size="sm" showTagline={false} />
         </Link>
 
-        <nav className="public-nav-links">
-          <Link to="/" className={`public-nav-home ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
+        <nav className="public-nav-links public-nav-auth-group" aria-label="Main navigation">
+          <Link
+            to="/"
+            className={`public-nav-home ${location.pathname === '/' ? 'active' : ''}`}
+          >
+            Home
+          </Link>
           {isAuthenticated ? (
-            <Link to="/dashboard" className="btn-gold btn-sm-public public-nav-dashboard">Dashboard</Link>
+            <Link to="/dashboard" className="btn-gold btn-sm-public public-nav-dashboard">
+              Dashboard
+            </Link>
           ) : (
             <>
               <Link
                 to="/login"
-                className={`public-nav-login ${location.pathname === '/login' ? 'active' : ''}`}
+                className={`public-nav-login public-nav-signin ${location.pathname === '/login' ? 'active' : ''}`}
               >
-                Login
+                Sign In
               </Link>
               <Link
                 to="/register"

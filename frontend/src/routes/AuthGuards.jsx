@@ -9,14 +9,10 @@ import StudentDashboard from '../pages/StudentDashboard'
 import Dashboard from '../pages/Dashboard'
 
 export function PrivateRoute({ children }) {
-  const { user, initializing, bootstrapMessage, retryBootstrap } = useAuth()
+  const { user, authChecked, bootstrapMessage, retryBootstrap } = useAuth()
   const location = useLocation()
 
-  if (!initializing && !user) {
-    return <Navigate to="/login" state={{ from: location }} replace />
-  }
-
-  if (initializing && !user) {
+  if (!authChecked) {
     return (
       <div className="auth-check-screen">
         <LoadingSpinner
@@ -28,14 +24,18 @@ export function PrivateRoute({ children }) {
     )
   }
 
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />
+  }
+
   return children
 }
 
 export function GuestRoute({ children }) {
-  const { user, initializing } = useAuth()
+  const { user, authChecked } = useAuth()
   const location = useLocation()
 
-  if (!initializing && user) {
+  if (authChecked && user) {
     const dest = location.state?.from?.pathname || '/dashboard'
     return <Navigate to={dest} replace />
   }
@@ -44,10 +44,10 @@ export function GuestRoute({ children }) {
 }
 
 export function StaffRoute({ children }) {
-  const { user, initializing, isStaff } = useAuth()
+  const { user, authChecked, isStaff } = useAuth()
   const location = useLocation()
 
-  if (initializing) {
+  if (!authChecked) {
     return <LoadingSpinner message="Checking your session..." fullScreen />
   }
 
@@ -63,10 +63,10 @@ export function StaffRoute({ children }) {
 }
 
 export function AdminRoute({ children }) {
-  const { user, initializing, isAdmin } = useAuth()
+  const { user, authChecked, isAdmin } = useAuth()
   const location = useLocation()
 
-  if (initializing) {
+  if (!authChecked) {
     return <LoadingSpinner message="Checking your session..." fullScreen />
   }
 
@@ -82,17 +82,13 @@ export function AdminRoute({ children }) {
 }
 
 export function DashboardRouter() {
-  const { user, initializing, isAdmin, isStudent, bootstrapMessage, retryBootstrap } = useAuth()
+  const { user, authChecked, isAdmin, isStudent } = useAuth()
+
+  if (!authChecked) {
+    return <LoadingSpinner message="Loading dashboard..." />
+  }
 
   if (!user) {
-    if (initializing) {
-      return (
-        <LoadingSpinner
-          message={bootstrapMessage || 'Loading dashboard...'}
-          onRetry={retryBootstrap}
-        />
-      )
-    }
     return <Navigate to="/login" replace />
   }
 
@@ -102,11 +98,11 @@ export function DashboardRouter() {
 }
 
 export function FallbackRoute() {
-  const { user, initializing } = useAuth()
+  const { user, authChecked } = useAuth()
 
-  if (initializing) {
+  if (!authChecked) {
     return <Navigate to="/" replace />
   }
 
-  return <Navigate to={user ? '/dashboard' : '/login'} replace />
+  return <Navigate to={user ? '/dashboard' : '/'} replace />
 }

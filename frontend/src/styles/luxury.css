@@ -664,9 +664,18 @@ body {
 .role-select-duo { grid-template-columns: repeat(2, 1fr) !important; }
 
 .public-nav-login,
-.public-nav-signup {
+.public-nav-signin,
+.public-nav-signup,
+.public-nav-dashboard,
+.public-nav-auth-group a {
   display: inline-flex !important;
   align-items: center;
+  visibility: visible !important;
+  flex-shrink: 0;
+}
+
+.public-nav-auth-group {
+  flex-shrink: 0;
 }
 
 .role-select-trio .role-card-trio {

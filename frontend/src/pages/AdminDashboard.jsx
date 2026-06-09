@@ -2,7 +2,8 @@
  * Admin Control Panel — premium system analytics
  */
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
 import { adminAPI } from '../services/api'
@@ -36,6 +37,8 @@ const quickLinks = [
 ]
 
 export default function AdminDashboard() {
+  const { logout } = useAuth()
+  const navigate = useNavigate()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
@@ -45,8 +48,20 @@ export default function AdminDashboard() {
     setLoadError('')
     fetchWithTimeout(adminAPI.getStats(), 30000, 'Admin dashboard')
       .then((res) => setStats(res.data))
-      .catch(() => setLoadError('Could not load admin panel. The server may still be waking up.'))
+      .catch((err) => {
+        const status = err?.response?.status
+        if (status === 401 || status === 403) {
+          setLoadError('Your session expired. Please sign in again as admin.')
+        } else {
+          setLoadError('Could not load admin panel. The server may still be waking up.')
+        }
+      })
       .finally(() => setLoading(false))
+  }
+
+  const handleReLogin = async () => {
+    await logout()
+    navigate('/login', { replace: true })
   }
 
   useEffect(() => { loadStats() }, [])
@@ -63,6 +78,7 @@ export default function AdminDashboard() {
         <div className="alert-custom alert-danger-custom">
           {loadError || 'Failed to load admin dashboard.'}
           <button type="button" className="btn-gold ms-3" onClick={loadStats}>Retry</button>
+          <button type="button" className="btn-outline-gold ms-2" onClick={handleReLogin}>Sign In Again</button>
         </div>
       </div>
     )

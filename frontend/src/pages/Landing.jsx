@@ -24,8 +24,8 @@ const features = [
 ]
 
 export default function Landing() {
-  const { user, initializing } = useAuth()
-  const isAuthenticated = Boolean(!initializing && user)
+  const { user, authChecked } = useAuth()
+  const isAuthenticated = Boolean(authChecked && user)
 
   return (
     <PublicLayout>
@@ -55,7 +55,7 @@ export default function Landing() {
               ) : (
                 <>
                   <Link to="/register" className="btn-gold">Sign Up</Link>
-                  <Link to="/login" className="btn-outline-gold">Login</Link>
+                  <Link to="/login" className="btn-outline-gold">Sign In</Link>
                 </>
               )}
             </div>

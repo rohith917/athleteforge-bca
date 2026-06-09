@@ -14,8 +14,6 @@ import {
 
 const AuthContext = createContext(null)
 
-const BOOTSTRAP_UI_MAX_MS = 8000
-
 function isNotLoggedInError(err) {
   const status = err?.response?.status
   return status === 401 || status === 403
@@ -23,13 +21,12 @@ function isNotLoggedInError(err) {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
-  const [initializing, setInitializing] = useState(true)
+  const [authChecked, setAuthChecked] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
   const [apiStatus, setApiStatus] = useState('waking')
   const [bootstrapMessage, setBootstrapMessage] = useState('Connecting to server...')
 
   const authGeneration = useRef(0)
-  const userFromAction = useRef(false)
 
   const clearUser = useCallback(() => {
     setUser(null)
@@ -43,14 +40,10 @@ export function AuthProvider({ children }) {
     return response.data
   }, [])
 
-  const finishInitializing = useCallback(() => {
-    setInitializing(false)
-  }, [])
-
   const bootstrapAuth = useCallback(async ({ silent = false } = {}) => {
     const gen = ++authGeneration.current
     if (!silent) {
-      setInitializing(true)
+      setAuthChecked(false)
       setBootstrapMessage('Waking server (first visit may take up to 60s)...')
     }
     setApiStatus('waking')
@@ -65,11 +58,10 @@ export function AuthProvider({ children }) {
 
       try {
         await fetchCurrentUser()
-        userFromAction.current = false
       } catch (err) {
         if (gen !== authGeneration.current) return
         if (isNotLoggedInError(err)) {
-          if (!userFromAction.current) clearUser()
+          clearUser()
           setApiStatus('ok')
           return
         }
@@ -79,30 +71,21 @@ export function AuthProvider({ children }) {
       setApiStatus('ok')
     } catch {
       if (gen !== authGeneration.current) return
-      if (!userFromAction.current) clearUser()
+      clearUser()
       setApiStatus('error')
     } finally {
-      if (gen === authGeneration.current && !silent) {
-        finishInitializing()
+      if (gen === authGeneration.current) {
+        setAuthChecked(true)
       }
     }
-  }, [clearUser, fetchCurrentUser, finishInitializing])
+  }, [clearUser, fetchCurrentUser])
 
   useEffect(() => {
     bootstrapAuth()
   }, [bootstrapAuth])
 
-  /** Never block the UI longer than BOOTSTRAP_UI_MAX_MS — fixes stuck "Checking session". */
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (initializing) finishInitializing()
-    }, BOOTSTRAP_UI_MAX_MS)
-    return () => clearTimeout(timer)
-  }, [initializing, finishInitializing])
-
   useEffect(() => {
     setUnauthorizedHandler(() => {
-      userFromAction.current = false
       clearUser()
     })
     return () => setUnauthorizedHandler(null)
@@ -139,11 +122,13 @@ export function AuthProvider({ children }) {
       if (!loggedInUser) {
         throw new Error('Login succeeded but no user data was returned.')
       }
-      userFromAction.current = true
-      setUser(loggedInUser)
+      const verified = await fetchCurrentUser()
+      if (!verified?.id) {
+        throw new Error('Session could not be established. Please try again.')
+      }
       markServerAwake()
       setApiStatus('ok')
-      finishInitializing()
+      setAuthChecked(true)
       return response.data
     } finally {
       setActionLoading(false)
@@ -163,12 +148,13 @@ export function AuthProvider({ children }) {
       if (!newUser) {
         throw new Error('Registration succeeded but no user data was returned.')
       }
-      userFromAction.current = true
-      setUser(newUser)
+      const verified = await fetchCurrentUser()
+      if (!verified?.id) {
+        throw new Error('Session could not be established. Please try again.')
+      }
       markServerAwake()
       setApiStatus('ok')
-      finishInitializing()
-      await fetchCurrentUser()
+      setAuthChecked(true)
       return response.data
     } finally {
       setActionLoading(false)
@@ -184,28 +170,28 @@ export function AuthProvider({ children }) {
     } catch {
       // Always clear client state even if server session already expired
     } finally {
-      userFromAction.current = false
       clearUser()
       setApiStatus('ok')
+      setAuthChecked(true)
       setActionLoading(false)
     }
   }
 
-  const isAdmin = Boolean(user?.is_admin || user?.role === 'admin')
+  const isAdmin = user?.role === 'admin'
   const isStudent = user?.role === 'student'
   const isCoach = user?.role === 'coach'
   const isStaff = isCoach || isAdmin
 
   const retryBootstrap = useCallback(() => {
-    userFromAction.current = Boolean(user)
     bootstrapAuth({ silent: false })
-  }, [bootstrapAuth, user])
+  }, [bootstrapAuth])
 
   return (
     <AuthContext.Provider value={{
       user,
-      loading: initializing || actionLoading,
-      initializing,
+      loading: !authChecked || actionLoading,
+      initializing: !authChecked,
+      authChecked,
       actionLoading,
       apiStatus,
       bootstrapMessage,

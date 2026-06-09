@@ -685,7 +685,6 @@ body {
     flex-shrink: 0;
   }
   .public-nav-links a:not(.btn-gold) { font-size: 0.76rem; padding: 4px 2px; }
-  .public-nav-links .active { display: none; }
   .btn-sm-public { padding: 7px 10px !important; font-size: 0.7rem !important; white-space: nowrap; }
 
   .landing-page { width: 100%; overflow-x: hidden; }
@@ -816,7 +815,7 @@ body {
 }
 
 @media (max-width: 576px) {
-  .public-nav-links a:not(.btn-gold):first-child { display: none; }
+  .public-nav-links .public-nav-home { display: none; }
   .landing-headline { font-size: 1.65rem; }
   .page-title { display: none; }
   .user-chip > span:not(.role-badge) { display: none; }

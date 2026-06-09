@@ -23,10 +23,9 @@ export default function Navbar({ onMenuToggle }) {
     try {
       await logout()
       navigate('/', { replace: true })
-      window.location.replace('/')
     } catch (err) {
       showToast(getErrorMessage(err, 'Logout failed. Please try again.'), 'error')
-      navigate('/login', { replace: true })
+      navigate('/', { replace: true })
     } finally {
       setLoggingOut(false)
     }
