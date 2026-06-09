@@ -631,6 +631,14 @@ body {
 .login-title { font-size: 1.5rem !important; font-weight: 700 !important; text-align: center; color: var(--lux-text) !important; }
 .login-subtitle { color: var(--lux-text-muted) !important; text-transform: none !important; letter-spacing: 0 !important; }
 
+.role-select-duo { grid-template-columns: repeat(2, 1fr) !important; }
+
+.public-nav-login,
+.public-nav-signup {
+  display: inline-flex !important;
+  align-items: center;
+}
+
 .role-select-trio .role-card-trio {
   border: 1px solid var(--lux-border) !important;
   background: var(--lux-bg) !important;

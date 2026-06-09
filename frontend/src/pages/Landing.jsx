@@ -8,7 +8,7 @@ import {
   FaClipboardCheck, FaTrophy, FaBolt, FaArrowRight
 } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
-import PublicNavbar from '../components/PublicNavbar'
+import PublicLayout from '../components/PublicLayout'
 import PublicFooter from '../components/PublicFooter'
 import HeroShowcase from '../components/landing/HeroShowcase'
 
@@ -24,12 +24,12 @@ const features = [
 ]
 
 export default function Landing() {
-  const { user } = useAuth()
-  const exploreLink = user ? '/dashboard' : '/login'
+  const { user, initializing } = useAuth()
+  const isAuthenticated = Boolean(!initializing && user)
 
   return (
+    <PublicLayout>
     <div className="landing-luxury">
-      <PublicNavbar />
 
       <section className="hero-split">
         <div className="landing-container hero-split-inner">
@@ -50,8 +50,14 @@ export default function Landing() {
               built for coaches, academies, and elite athletes.
             </p>
             <div className="hero-actions">
-              <Link to="/register" className="btn-gold">Get Started</Link>
-              <Link to={exploreLink} className="btn-outline-gold">Explore Platform</Link>
+              {isAuthenticated ? (
+                <Link to="/dashboard" className="btn-gold">Go to Dashboard</Link>
+              ) : (
+                <>
+                  <Link to="/register" className="btn-gold">Sign Up</Link>
+                  <Link to="/login" className="btn-outline-gold">Login</Link>
+                </>
+              )}
             </div>
             <div className="hero-stats-row">
               <div className="hero-stat"><strong>500+</strong><small>Athletes</small></div>
@@ -109,13 +115,14 @@ export default function Landing() {
             Join coaches and athletes using AthleteForge to train smarter.
           </p>
           <div className="hero-actions cta-actions">
-            <Link to="/register" className="btn-gold">Get Started</Link>
-            <Link to="/login" className="btn-outline-gold">Sign In</Link>
+            <Link to="/register" className="btn-gold">Create Free Account</Link>
+            <Link to="/login" className="btn-outline-gold">Login</Link>
           </div>
         </div>
       </section>
 
       <PublicFooter />
     </div>
+    </PublicLayout>
   )
 }

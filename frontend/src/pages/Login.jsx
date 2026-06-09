@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { FaEnvelope, FaLock, FaSignInAlt, FaArrowLeft, FaTachometerAlt, FaSignOutAlt } from 'react-icons/fa'
 import Logo from '../components/Logo'
-import { redirectTo } from '../utils/navigation'
+import PublicLayout from '../components/PublicLayout'
 
 export default function Login() {
   const [identifier, setIdentifier] = useState('')
@@ -36,7 +36,7 @@ export default function Login() {
       await logout()
       setIdentifier('')
       setPassword('')
-      redirectTo('/login')
+      navigate('/login', { replace: true })
     } catch (err) {
       setError(getErrorMessage(err, 'Could not sign out. Please try again.'))
     }
@@ -47,6 +47,7 @@ export default function Login() {
   }
 
   return (
+    <PublicLayout>
     <div className="auth-luxury-page">
       <Link to="/" className="auth-back-luxury"><FaArrowLeft /> Home</Link>
       <motion.div
@@ -129,5 +130,6 @@ export default function Login() {
         )}
       </motion.div>
     </div>
+    </PublicLayout>
   )
 }

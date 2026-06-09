@@ -138,6 +138,7 @@ export function AuthProvider({ children }) {
       // Always clear client state even if server session already expired
     } finally {
       clearUser()
+      setApiStatus('ok')
       setActionLoading(false)
     }
   }

@@ -76,8 +76,12 @@ export function AdminRoute({ children }) {
 export function DashboardRouter() {
   const { user, initializing, isAdmin, isStudent } = useAuth()
 
-  if (initializing || !user) {
+  if (initializing) {
     return <LoadingSpinner message="Loading dashboard..." />
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />
   }
 
   if (isAdmin) return <AdminDashboard />
@@ -92,5 +96,5 @@ export function FallbackRoute() {
     return <Navigate to="/" replace />
   }
 
-  return <Navigate to={user ? '/dashboard' : '/'} replace />
+  return <Navigate to={user ? '/dashboard' : '/login'} replace />
 }

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { authAPI } from '../services/api'
 import { FaEnvelope, FaKey, FaArrowLeft } from 'react-icons/fa'
 import Logo from '../components/Logo'
+import PublicLayout from '../components/PublicLayout'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -29,6 +30,7 @@ export default function ForgotPassword() {
   }
 
   return (
+    <PublicLayout>
     <div className="auth-luxury-page">
       <Link to="/login" className="auth-back-luxury"><FaArrowLeft /> Back</Link>
       <motion.div className="auth-luxury-card" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
@@ -52,5 +54,6 @@ export default function ForgotPassword() {
         )}
       </motion.div>
     </div>
+    </PublicLayout>
   )
 }

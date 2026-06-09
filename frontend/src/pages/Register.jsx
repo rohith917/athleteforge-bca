@@ -6,15 +6,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import {
-  FaEnvelope, FaLock, FaUser, FaUserPlus, FaUserTie, FaUserGraduate,
+  FaEnvelope, FaLock, FaUser, FaUserPlus, FaUserTie,
   FaArrowLeft, FaRunning
 } from 'react-icons/fa'
 import Logo from '../components/Logo'
+import PublicLayout from '../components/PublicLayout'
 
 const ROLES = [
-  { id: 'coach', label: 'Coach', desc: 'Manage teams', icon: FaUserTie, apiRole: 'coach' },
-  { id: 'athlete', label: 'Athlete', desc: 'Track performance', icon: FaRunning, apiRole: 'student' },
-  { id: 'student', label: 'Student', desc: 'Academy portal', icon: FaUserGraduate, apiRole: 'student' },
+  { id: 'coach', label: 'Coach', desc: 'Manage teams & athletes', icon: FaUserTie, apiRole: 'coach' },
+  { id: 'athlete', label: 'Athlete', desc: 'Track your performance', icon: FaRunning, apiRole: 'student' },
 ]
 
 export default function Register() {
@@ -46,18 +46,19 @@ export default function Register() {
   }
 
   return (
+    <PublicLayout>
     <div className="auth-luxury-page">
       <Link to="/" className="auth-back-luxury"><FaArrowLeft /> Home</Link>
       <motion.div className="auth-luxury-card" style={{ maxWidth: 460 }}
         initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
         <Logo size="lg" showTagline />
-        <h2 className="login-title mt-3">Create account</h2>
-        <p className="login-subtitle">Choose your role</p>
+        <h2 className="login-title mt-3">Sign Up</h2>
+        <p className="login-subtitle">Create your account — select Coach or Athlete</p>
         {error && <div className="alert-custom alert-danger-custom">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <label className="form-label-custom mb-2">Register as</label>
-          <div className="role-select-trio mb-3">
+          <div className="role-select-trio role-select-duo mb-3">
             {ROLES.map((r) => (
               <div key={r.id} className={`role-card-trio ${form.accountType === r.id ? 'selected' : ''}`}
                 onClick={() => setForm({ ...form, accountType: r.id })} role="button" tabIndex={0}>
@@ -97,5 +98,6 @@ export default function Register() {
         </p>
       </motion.div>
     </div>
+    </PublicLayout>
   )
 }
