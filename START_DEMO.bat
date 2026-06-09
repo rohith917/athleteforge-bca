@@ -26,6 +26,6 @@ echo.
 echo Two windows opened (Backend + Frontend).
 echo Browser opening http://localhost:5173
 echo.
-echo For CLOUD deploy: double-click deploy-railway.bat
+echo For CLOUD deploy: double-click redeploy-render.bat
 echo.
 pause

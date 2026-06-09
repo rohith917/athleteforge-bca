@@ -1,0 +1,51 @@
+RENDER — FIX EVERYTHING CHECKLIST
+==================================
+
+QUICK FIX (do these in order)
+-----------------------------
+1. Root Directory = BLANK (empty field)
+2. Build Command  = bash build.sh
+3. Start Command  = bash start.sh
+4. DATABASE_URL linked from athleteforge-db PostgreSQL
+5. DEBUG = False, SAME_ORIGIN_DEPLOY = True
+6. Manual Deploy → Deploy latest commit
+
+COMMON ERRORS
+-------------
+"Root Directory invalid"
+  → Clear the field completely. Do NOT type pip install or backend.
+
+"DATABASE_URL is required"
+  → Environment → Add DATABASE_URL from PostgreSQL database
+
+White screen after landing
+  → Fixed in latest main. Redeploy + Ctrl+Shift+R
+
+Slow / timeout on first visit
+  → Normal on Render free tier (30-60s cold start)
+  → GitHub keep-alive workflow pings every 10 min
+
+Build succeeds but 502
+  → Check Deploy logs for migration errors
+  → Ensure Postgres is in same region (Singapore)
+
+VERIFY DEPLOY WORKED
+--------------------
+curl https://athleteforge-bca.onrender.com/api/health/
+→ status ok
+
+Open https://athleteforge-bca.onrender.com
+→ Landing page stays visible (not white)
+
+Login admin / admin123
+→ Dashboard loads
+
+DEMO ACCOUNTS
+-------------
+Admin:   admin / admin123
+Coach:   coach / coach123
+Student: rahul.sharma@email.com / student123
+
+LOCAL BACKUP (no cloud)
+-----------------------
+Double-click START_DEMO.bat → http://localhost:5173

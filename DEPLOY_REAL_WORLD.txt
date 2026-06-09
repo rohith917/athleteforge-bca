@@ -2,108 +2,46 @@ ATHLETEFORGE — REAL WORLD PRODUCTION DEPLOY
 ============================================
 Goal: Public HTTPS website anyone can open worldwide.
 
-BEST CHOICE FOR YOU: RAILWAY (Docker, GitHub deploy, fast)
-Your URL: https://your-app.up.railway.app
+BEST CHOICE: RENDER
+Your URL: https://athleteforge-bca.onrender.com
 
 ============================================================
-PATH 1 — RAILWAY (RECOMMENDED — 10 minutes)
+PATH 1 — RENDER (RECOMMENDED — 10 minutes)
 ============================================================
 
-1. Double-click deploy-railway.bat (or open https://railway.com)
+1. Double-click redeploy-render.bat
 
-2. New Project → Deploy from GitHub → athleteforge-bca
+2. Render Dashboard → athleteforge-bca service
+   Root Directory: BLANK
+   Build Command:  bash build.sh
+   Start Command:  bash start.sh
 
-3. + New → Database → PostgreSQL
+3. PostgreSQL database athleteforge-db (if not created):
+   New + → PostgreSQL → Free → Singapore
 
-4. Web service → Variables:
-   DATABASE_URL       = (reference from Postgres)
-   SECRET_KEY         = athleteforge-prod-secret-2026-xyz
+4. Web service → Environment:
+   DATABASE_URL       = (from PostgreSQL)
+   SECRET_KEY         = (generate)
    DEBUG              = False
    SAME_ORIGIN_DEPLOY = True
+   FRONTEND_URL       = https://athleteforge-bca.onrender.com
 
-5. Settings → Networking → Generate Domain
+5. Manual Deploy → Deploy latest commit
 
-6. Wait for deploy (5-10 min) → open your .railway.app URL
+6. Wait 5-10 min → open https://athleteforge-bca.onrender.com
 
-7. Test login: admin / admin123
+7. Test: admin / admin123
 
-Full steps: RAILWAY_DEPLOY.txt
-
-============================================================
-PATH 2 — KOYEB (alternative — 15 minutes)
-============================================================
-
-1. https://app.koyeb.com → Sign in with GitHub
-
-2. Create Web Service:
-   - Repo: athleteforge-bca
-   - Branch: main
-   - Builder: Dockerfile
-   - Exposed port: 8000
-   - Region: Singapore (closest to India)
-
-3. Create PostgreSQL:
-   - Dashboard → Create → Database → PostgreSQL
-   - Copy the connection URL
-
-4. Web Service → Variables:
-   DATABASE_URL       = (postgresql URL from step 3)
-   SECRET_KEY         = athleteforge-prod-secret-2026-xyz
-   DEBUG              = False
-   SAME_ORIGIN_DEPLOY = True
-   PORT               = 8000
-
-5. Deploy → wait 10-15 min
-
-6. Your real-world URL:
-   https://athleteforge-bca-xxxxx.koyeb.app
-
-7. Test login: admin / admin123
-
-Put this URL in your BCA report, resume, and presentation.
+Full settings: RENDER_SETTINGS.txt
+Troubleshooting: RENDER_FIX_ALL.txt
 
 ============================================================
-PATH 2 — FLY.IO + NEON DB (professional, free)
+PATH 2 — LOCAL DEMO (backup)
 ============================================================
+  START_DEMO.bat → http://localhost:5173
 
-PART A — Free database (Neon):
-1. https://neon.tech → Sign up with GitHub
-2. New Project → name: athleteforge
-3. Copy connection string (starts with postgresql://)
-
-PART B — Deploy app:
-1. Double-click: deploy-fly.bat
-2. Login when browser opens
-3. When asked for DATABASE_URL run in terminal:
-   fly secrets set DATABASE_URL="YOUR_NEON_URL" -a athleteforge-bca
-   fly secrets set SECRET_KEY=athleteforge-prod-2026 -a athleteforge-bca
-4. fly deploy -a athleteforge-bca
-
-Your URL: https://athleteforge-bca.fly.dev
-
-============================================================
-PATH 3 — AUTO DEPLOY (GitHub → Fly.io every push)
-============================================================
-
-One-time setup:
-1. fly auth login
-2. fly tokens create deploy -a athleteforge-bca
-3. GitHub repo → Settings → Secrets → Actions
-4. New secret: FLY_API_TOKEN = (paste token)
-5. Every git push auto-deploys to Fly.io
-
-============================================================
 WHAT TO WRITE IN BCA REPORT
 ============================================================
-
-Live Application URL: https://your-actual-url.koyeb.app
-GitHub Repository:    https://github.com/rohith917/athleteforge-bca
-Tech Stack:           React, Django REST, PostgreSQL, Docker
-Deployment:           Cloud (Koyeb / Fly.io), HTTPS enabled
-
-============================================================
-EMERGENCY BACKUP (presentation day)
-============================================================
-
-Double-click START_DEMO.bat → http://localhost:5173
-Works offline on your laptop if cloud is down.
+  Production URL: https://athleteforge-bca.onrender.com
+  Stack: React + Django REST + PostgreSQL on Render
+  Features: Auth, role dashboards, analytics, injury tracking

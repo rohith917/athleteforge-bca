@@ -16,6 +16,7 @@ services:
     # Root Directory left empty — uses /build.sh and /start.sh at repo root
     buildCommand: bash build.sh
     startCommand: bash start.sh
+    healthCheckPath: /api/health/
     envVars:
       - key: DATABASE_URL
         fromDatabase:

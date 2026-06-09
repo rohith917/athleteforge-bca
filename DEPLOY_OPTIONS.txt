@@ -1,62 +1,36 @@
-ATHLETEFORGE — ALL DEPLOY OPTIONS (pick one)
-=============================================
+ATHLETEFORGE — DEPLOY OPTIONS
+==============================
 
-PRIMARY: RAILWAY (recommended cloud deploy)
-  Double-click: deploy-railway.bat
-  Guide: RAILWAY_DEPLOY.txt
-  URL: https://your-app.up.railway.app
+PRIMARY: RENDER (recommended)
+  Double-click: redeploy-render.bat
+  Guide:        RENDER_SETTINGS.txt
+  URL:          https://athleteforge-bca.onrender.com
 
 ------------------------------------------------------------
-OPTION A — LOCAL ON YOUR LAPTOP (easiest, 100% works)
+OPTION A — LOCAL ON YOUR LAPTOP (100%% works, no cloud)
 ------------------------------------------------------------
   Double-click: START_DEMO.bat
   URL: http://localhost:5173
   Login: admin / admin123
-  Best for: BCA viva on your own laptop
-  Cost: Free
 
 ------------------------------------------------------------
-OPTION B — PUBLIC URL FROM YOUR LAPTOP (ngrok) ~5 min
+OPTION B — PUBLIC URL FROM LAPTOP (ngrok) ~5 min
 ------------------------------------------------------------
-  1. Double-click START_DEMO.bat (keep it running)
-  2. Download ngrok: https://ngrok.com/download
-  3. Sign up free, copy your auth token
-  4. Run: ngrok config add-authtoken YOUR_TOKEN
-  5. Run: ngrok http 5173
-  6. Copy the https://xxxx.ngrok-free.app URL — share in report!
-
-  Best for: Online URL today without cloud deploy
-  Cost: Free
+  1. START_DEMO.bat (keep running)
+  2. ngrok http 5173
+  3. Share the https://xxxx.ngrok-free.app URL
 
 ------------------------------------------------------------
-OPTION C — FLY.IO (Docker, like Railway) ~15 min
+OPTION C — RAILWAY (alternative)
 ------------------------------------------------------------
-  Guide: FLY_DEPLOY.txt
-  URL: https://your-app.fly.dev
-  Cost: Free allowance (~$5/month credit)
+  deploy-railway.bat + RAILWAY_DEPLOY.txt
 
 ------------------------------------------------------------
-OPTION D — RENDER (if it works again) ~10 min
+OPTION D — KOYEB / FLY.IO (alternatives)
 ------------------------------------------------------------
-  Guide: RENDER_SETTINGS.txt
-  URL: https://athleteforge-bca.onrender.com
-  Root Directory: BLANK
-  Build: bash build.sh
-  Start: bash start.sh
+  KOYEB_DEPLOY.txt / FLY_DEPLOY.txt
 
-------------------------------------------------------------
-OPTION E — KOYEB (Docker, free tier) ~15 min
-------------------------------------------------------------
-  1. https://www.koyeb.com → Sign up with GitHub
-  2. Create App → GitHub → athleteforge-bca
-  3. Builder: Dockerfile
-  4. Add PostgreSQL from Koyeb marketplace
-  5. Env: DATABASE_URL, SECRET_KEY, DEBUG=False, SAME_ORIGIN_DEPLOY=True
-  6. Deploy
-
-------------------------------------------------------------
 RECOMMENDATION FOR BCA DEMO
 ------------------------------------------------------------
-  Plan 1: deploy-railway.bat → public .railway.app URL
-  Plan 2: START_DEMO.bat on laptop (backup)
-  Plan 3: ngrok if you need a URL without cloud setup
+  Plan 1: redeploy-render.bat → https://athleteforge-bca.onrender.com
+  Plan 2: START_DEMO.bat (laptop backup)

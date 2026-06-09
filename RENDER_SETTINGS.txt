@@ -1,48 +1,63 @@
-ATHLETEFORGE — RENDER DASHBOARD SETTINGS (copy exactly)
+ATHLETEFORGE — RENDER DEPLOY (PRIMARY — copy exactly)
 ======================================================
 
-Service name: athleteforge-bca
-Repository:   rohith917/athleteforge-bca
-Branch:       main
+LIVE URL: https://athleteforge-bca.onrender.com
+Login:    admin / admin123
 
---- BUILD & DEPLOY (use OPTION A — easiest) ---
+SERVICE SETTINGS
+----------------
+Service name:     athleteforge-bca
+Repository:       rohith917/athleteforge-bca
+Branch:           main
+Region:           Singapore (closest to India)
 
-OPTION A (recommended — leave Root Directory EMPTY):
-  Root Directory:  [leave completely BLANK / empty]
-  Build Command:     bash build.sh
-  Start Command:     bash start.sh
+BUILD & DEPLOY (OPTION A — recommended)
+---------------------------------------
+Root Directory:   [leave BLANK / empty]
+Build Command:    bash build.sh
+Start Command:    bash start.sh
 
-OPTION B (alternative):
-  Root Directory:  backend
-  Build Command:     bash build.sh
-  Start Command:     gunicorn athlete_system.wsgi:application --bind 0.0.0.0:$PORT
+NEVER put these in Root Directory:
+  - pip install -r requirements.txt
+  - backend (with trailing space)
 
-DO NOT put "pip install -r requirements.txt" in Root Directory.
-DO NOT type "backend " with a space at the end.
+DATABASE (required)
+-------------------
+1. Dashboard → New + → PostgreSQL → name: athleteforge-db → Free
+2. Web service athleteforge-bca → Environment
+3. Add DATABASE_URL → "Add from database" → athleteforge-db
 
---- ENVIRONMENT VARIABLES ---
-
+ENVIRONMENT VARIABLES (web service)
+-----------------------------------
 DEBUG=False
 SAME_ORIGIN_DEPLOY=True
 ALLOWED_HOSTS=athleteforge-bca.onrender.com,.onrender.com
 FRONTEND_URL=https://athleteforge-bca.onrender.com
 CORS_ALLOWED_ORIGINS=https://athleteforge-bca.onrender.com
 CSRF_TRUSTED_ORIGINS=https://athleteforge-bca.onrender.com
-SECRET_KEY=(any long random string — or Generate in Render)
-DATABASE_URL=(link from PostgreSQL database — see below)
+SECRET_KEY=(Generate in Render or any long random string)
+DATABASE_URL=(from PostgreSQL — step above)
 
---- DATABASE (required) ---
+AFTER SAVING
+------------
+Manual Deploy → Deploy latest commit
+Wait 5-10 minutes on first deploy
 
-1. Render Dashboard -> New + -> PostgreSQL -> name: athleteforge-db -> Free
-2. Open web service athleteforge-bca -> Environment
-3. Add DATABASE_URL -> "Add from database" -> athleteforge-db -> Connection String
+VERIFY
+------
+1. https://athleteforge-bca.onrender.com/api/health/
+   → {"status":"ok","service":"AthleteForge"}
+2. https://athleteforge-bca.onrender.com/
+   → Landing page with Sign In / Sign Up
+3. Login: admin / admin123 → Dashboard
 
---- AFTER SAVING ---
+TROUBLESHOOTING
+---------------
+White screen?       → Hard refresh Ctrl+Shift+R
+Slow first load?    → Wait 30-60s (free tier cold start)
+502 / timeout?      → Wait 2 min, refresh
+Build failed?       → Check Root Directory is BLANK
+No login/data?      → Check DATABASE_URL is linked
+Service won't start → Deploy logs → look for DATABASE_URL error
 
-Manual Deploy -> Deploy latest commit
-
---- LIVE URL ---
-
-https://athleteforge-bca.onrender.com
-
-Login: admin / admin123
+See also: RENDER_FIX_ALL.txt

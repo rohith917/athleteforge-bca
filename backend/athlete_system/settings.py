@@ -23,6 +23,13 @@ _railway_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN', '').strip()
 if _railway_domain and _railway_domain not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(_railway_domain)
 
+_render_external = os.getenv('RENDER_EXTERNAL_URL', '').strip()
+if _render_external:
+    from urllib.parse import urlparse
+    _render_host = urlparse(_render_external).netloc
+    if _render_host and _render_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_render_host)
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -130,6 +137,8 @@ _extra_origins = [
     o.strip() for o in os.getenv('CORS_ALLOWED_ORIGINS', '').split(',') if o.strip()
 ]
 _frontend_url = os.getenv('FRONTEND_URL', '').strip()
+if not _frontend_url and _render_external:
+    _frontend_url = _render_external.rstrip('/')
 if not _frontend_url and _railway_domain:
     _frontend_url = f'https://{_railway_domain}'
 _default_origins = [
