@@ -26,4 +26,4 @@ ENV SAME_ORIGIN_DEPLOY=True
 RUN python manage.py collectstatic --no-input
 
 EXPOSE 8000
-CMD sh -c "python manage.py migrate --no-input && python manage.py setup_admin && gunicorn athlete_system.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 2 --timeout 120 --preload"
+CMD sh -c "python manage.py migrate --no-input && python manage.py setup_admin && python manage.py seed_data && gunicorn athlete_system.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 2 --timeout 120 --preload"

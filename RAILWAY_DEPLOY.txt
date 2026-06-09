@@ -1,0 +1,66 @@
+ATHLETEFORGE — DEPLOY ON RAILWAY (instead of Render)
+====================================================
+Faster, simpler, one Docker deploy. Good for BCA demo.
+
+TIME: ~10 minutes (one-time setup)
+
+STEP 1 — Create account
+  Open: https://railway.com
+  Sign in with GitHub (same account: rohith917)
+
+STEP 2 — New project from GitHub
+  Click: New Project
+  Choose: Deploy from GitHub repo
+  Select: athleteforge-bca
+  Railway auto-detects Dockerfile — no Root Directory needed!
+
+STEP 3 — Add PostgreSQL database
+  In your project click: + New
+  Choose: Database → PostgreSQL
+  Wait until it shows "Active"
+
+STEP 4 — Link database to web service
+  Click your WEB service (not Postgres)
+  Go to: Variables tab
+  Click: + New Variable → Add Reference
+  Select: Postgres → DATABASE_URL
+  (This connects the database automatically)
+
+STEP 5 — Add other variables (web service → Variables)
+  SECRET_KEY     = athleteforge-bca-secret-2026-change-me
+  DEBUG          = False
+  SAME_ORIGIN_DEPLOY = True
+
+  (FRONTEND_URL is optional — Railway domain is auto-detected)
+
+STEP 6 — Get your public URL
+  Click web service → Settings → Networking
+  Click: Generate Domain
+  You get a URL like:
+    https://athleteforge-bca-production.up.railway.app
+
+STEP 7 — Wait for deploy
+  Deploy tab → wait until Status = Success (5-10 min first time)
+
+STEP 8 — Open your site
+  Use the .railway.app URL from Step 6
+
+DEMO LOGINS (same as before):
+  Admin:   admin / admin123
+  Coach:   coach / coach123
+  Student: rahul.sharma@email.com / student123
+
+TROUBLESHOOTING
+  Build failed? → Deploy tab → View logs → copy error and ask for help
+  502 error?    → Wait 2 min, refresh (first boot runs migrations)
+  No data?      → seed_data runs automatically on deploy
+
+WHY RAILWAY INSTEAD OF RENDER?
+  - No "Root Directory" confusion
+  - Faster cold starts
+  - Dockerfile handles everything automatically
+  - Free trial credit ($5/month) — enough for BCA project demo
+
+LOCAL RUN (no cloud):
+  run-backend.bat + run-frontend.bat
+  Open http://localhost:5173
