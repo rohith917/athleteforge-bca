@@ -647,6 +647,19 @@ body {
 .spinner-hint { margin: 0; font-size: 0.85rem; }
 .spinner-hint a { color: var(--lux-accent); font-weight: 600; text-decoration: none; }
 .spinner-hint a:hover { text-decoration: underline; }
+.spinner-coldstart {
+  margin: 0;
+  max-width: 320px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--lux-text-muted);
+  line-height: 1.5;
+}
+.spinner-retry-btn {
+  margin-top: 8px;
+  padding: 8px 18px !important;
+  font-size: 0.82rem !important;
+}
 
 .role-select-duo { grid-template-columns: repeat(2, 1fr) !important; }
 

@@ -9,17 +9,21 @@ import StudentDashboard from '../pages/StudentDashboard'
 import Dashboard from '../pages/Dashboard'
 
 export function PrivateRoute({ children }) {
-  const { user, initializing } = useAuth()
+  const { user, initializing, bootstrapMessage, retryBootstrap } = useAuth()
   const location = useLocation()
 
   if (!initializing && !user) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  if (initializing) {
+  if (initializing && !user) {
     return (
       <div className="auth-check-screen">
-        <LoadingSpinner message="Checking your session..." fullScreen />
+        <LoadingSpinner
+          message={bootstrapMessage || 'Checking your session...'}
+          fullScreen
+          onRetry={retryBootstrap}
+        />
       </div>
     )
   }
@@ -78,13 +82,17 @@ export function AdminRoute({ children }) {
 }
 
 export function DashboardRouter() {
-  const { user, initializing, isAdmin, isStudent } = useAuth()
-
-  if (initializing) {
-    return <LoadingSpinner message="Loading dashboard..." />
-  }
+  const { user, initializing, isAdmin, isStudent, bootstrapMessage, retryBootstrap } = useAuth()
 
   if (!user) {
+    if (initializing) {
+      return (
+        <LoadingSpinner
+          message={bootstrapMessage || 'Loading dashboard...'}
+          onRetry={retryBootstrap}
+        />
+      )
+    }
     return <Navigate to="/login" replace />
   }
 

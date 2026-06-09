@@ -27,14 +27,37 @@ function resolveApiBase() {
 const API_BASE = resolveApiBase()
 
 const isRenderHost = typeof window !== 'undefined'
-  && window.location.hostname.includes('onrender.com')
+  && (window.location.hostname.includes('onrender.com')
+    || window.location.hostname.includes('railway.app'))
+
+/** Render free tier cold starts can take 50–90s on first request. */
+const RENDER_TIMEOUT = 90000
+const DEFAULT_TIMEOUT = isRenderHost ? RENDER_TIMEOUT : 12000
 
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
-  timeout: isRenderHost ? 25000 : 12000,
+  timeout: DEFAULT_TIMEOUT,
 })
+
+let serverAwake = !isRenderHost
+
+/** Ping health endpoint to wake sleeping Render instance before auth. */
+export async function wakeServer() {
+  if (serverAwake) return true
+  try {
+    await api.get('/health/', { timeout: RENDER_TIMEOUT })
+    serverAwake = true
+    return true
+  } catch {
+    return false
+  }
+}
+
+export function markServerAwake() {
+  serverAwake = true
+}
 
 let csrfToken = ''
 let onUnauthorized = null
@@ -68,7 +91,8 @@ export function setUnauthorizedHandler(handler) {
 
 export async function initCsrf() {
   try {
-    const res = await api.get('/auth/csrf/')
+    const res = await api.get('/auth/csrf/', { timeout: DEFAULT_TIMEOUT })
+    markServerAwake()
     const token = res.data?.csrfToken || ''
     setCsrfToken(token)
     return token

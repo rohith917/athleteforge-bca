@@ -6,6 +6,7 @@ import { Link, Navigate } from 'react-router-dom'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import { dashboardAPI } from '../services/api'
+import { fetchWithTimeout } from '../utils/fetchWithTimeout'
 import { useAuth } from '../context/AuthContext'
 import { FaBandAid, FaClipboardCheck, FaChartLine, FaUser, FaTrophy, FaMedal } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
@@ -30,11 +31,23 @@ export default function StudentDashboard() {
   const [stats, setStats] = useState(null)
   const [wellness, setWellness] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+
+  const loadStats = () => {
+    setLoading(true)
+    setLoadError('')
+    fetchWithTimeout(dashboardAPI.getStats(), 30000, 'Dashboard')
+      .then((res) => setStats(res.data))
+      .catch(() => setLoadError('Could not load your dashboard. The server may still be waking up.'))
+      .finally(() => setLoading(false))
+  }
 
   useEffect(() => {
-    if (!isStudent) return
-    dashboardAPI.getStats().then((res) => setStats(res.data))
-      .catch(console.error).finally(() => setLoading(false))
+    if (!isStudent) {
+      setLoading(false)
+      return
+    }
+    loadStats()
   }, [isStudent])
 
   if (!isStudent) return <Navigate to="/dashboard" replace />
@@ -46,7 +59,16 @@ export default function StudentDashboard() {
     </div>
   )
 
-  if (!stats) return <div className="alert-custom alert-danger-custom">Failed to load dashboard.</div>
+  if (!stats) {
+    return (
+      <div className="animate-in dashboard-luxury student-panel">
+        <div className="alert-custom alert-danger-custom">
+          {loadError || 'Failed to load dashboard.'}
+          <button type="button" className="btn-gold ms-3" onClick={loadStats}>Retry</button>
+        </div>
+      </div>
+    )
+  }
 
   const notLinked = stats.linked === false || !stats.athlete
 

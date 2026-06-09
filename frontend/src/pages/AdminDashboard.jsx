@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
 import { adminAPI } from '../services/api'
+import { fetchWithTimeout } from '../utils/fetchWithTimeout'
 import {
   FaUsers, FaUserShield, FaUserGraduate, FaUserTie,
   FaBandAid, FaTrophy, FaChartLine, FaClipboardCheck,
@@ -37,11 +38,18 @@ const quickLinks = [
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
 
-  useEffect(() => {
-    adminAPI.getStats().then((res) => setStats(res.data))
-      .catch(console.error).finally(() => setLoading(false))
-  }, [])
+  const loadStats = () => {
+    setLoading(true)
+    setLoadError('')
+    fetchWithTimeout(adminAPI.getStats(), 30000, 'Admin dashboard')
+      .then((res) => setStats(res.data))
+      .catch(() => setLoadError('Could not load admin panel. The server may still be waking up.'))
+      .finally(() => setLoading(false))
+  }
+
+  useEffect(() => { loadStats() }, [])
 
   if (loading) return (
     <div className="animate-in dashboard-luxury">
@@ -49,7 +57,16 @@ export default function AdminDashboard() {
       <KpiSkeletonGrid count={8} />
     </div>
   )
-  if (!stats) return <div className="alert-custom alert-danger-custom">Failed to load admin dashboard.</div>
+  if (!stats) {
+    return (
+      <div className="animate-in dashboard-luxury admin-panel">
+        <div className="alert-custom alert-danger-custom">
+          {loadError || 'Failed to load admin dashboard.'}
+          <button type="button" className="btn-gold ms-3" onClick={loadStats}>Retry</button>
+        </div>
+      </div>
+    )
+  }
 
   const roles = stats.users_by_role || {}
   const roleChart = {

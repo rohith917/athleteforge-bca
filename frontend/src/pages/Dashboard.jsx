@@ -7,6 +7,7 @@ import CoachQuickActions from '../components/dashboard/CoachQuickActions'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Bar, Line, Doughnut } from 'react-chartjs-2'
 import { dashboardAPI } from '../services/api'
+import { fetchWithTimeout } from '../utils/fetchWithTimeout'
 import {
   FaUsers, FaBandAid, FaTrophy, FaClipboardCheck, FaHeartbeat,
   FaExclamationTriangle, FaChartLine, FaMedal
@@ -36,12 +37,19 @@ export default function Dashboard() {
   const gridColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [wellness, setWellness] = useState(null)
 
-  useEffect(() => {
-    dashboardAPI.getStats().then((res) => setStats(res.data))
-      .catch(console.error).finally(() => setLoading(false))
-  }, [])
+  const loadStats = () => {
+    setLoading(true)
+    setLoadError('')
+    fetchWithTimeout(dashboardAPI.getStats(), 30000, 'Dashboard')
+      .then((res) => setStats(res.data))
+      .catch(() => setLoadError('Could not load team analytics. The server may still be waking up.'))
+      .finally(() => setLoading(false))
+  }
+
+  useEffect(() => { loadStats() }, [])
 
   if (loading) return (
     <div className="animate-in">
@@ -49,7 +57,16 @@ export default function Dashboard() {
       <KpiSkeletonGrid count={8} />
     </div>
   )
-  if (!stats) return <div className="alert-custom alert-danger-custom">Failed to load dashboard.</div>
+  if (!stats) {
+    return (
+      <div className="animate-in dashboard-luxury coach-panel">
+        <div className="alert-custom alert-danger-custom">
+          {loadError || 'Failed to load dashboard.'}
+          <button type="button" className="btn-gold ms-3" onClick={loadStats}>Retry</button>
+        </div>
+      </div>
+    )
+  }
 
   const recovery = calcRecoveryScore(stats)
   const attRate = stats.monthly_attendance?.slice(-1)[0]?.rate ?? 0

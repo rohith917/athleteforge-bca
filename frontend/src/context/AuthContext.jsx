@@ -1,10 +1,12 @@
 /**
  * Authentication context — session bootstrap, login, logout, role state.
  */
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import {
   authAPI,
   initCsrf,
+  wakeServer,
+  markServerAwake,
   clearAuthTokens,
   setUnauthorizedHandler,
   getErrorMessage,
@@ -12,24 +14,11 @@ import {
 
 const AuthContext = createContext(null)
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+const BOOTSTRAP_UI_MAX_MS = 8000
 
 function isNotLoggedInError(err) {
   const status = err?.response?.status
   return status === 401 || status === 403
-}
-
-async function withRetry(fn, { attempts = 3, delayMs = 2000 } = {}) {
-  let lastError
-  for (let i = 0; i < attempts; i += 1) {
-    try {
-      return await fn()
-    } catch (err) {
-      lastError = err
-      if (i < attempts - 1) await sleep(delayMs)
-    }
-  }
-  throw lastError
 }
 
 export function AuthProvider({ children }) {
@@ -37,6 +26,10 @@ export function AuthProvider({ children }) {
   const [initializing, setInitializing] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
   const [apiStatus, setApiStatus] = useState('waking')
+  const [bootstrapMessage, setBootstrapMessage] = useState('Connecting to server...')
+
+  const authGeneration = useRef(0)
+  const userFromAction = useRef(false)
 
   const clearUser = useCallback(() => {
     setUser(null)
@@ -46,45 +39,70 @@ export function AuthProvider({ children }) {
   const fetchCurrentUser = useCallback(async () => {
     const response = await authAPI.getUser()
     setUser(response.data)
+    markServerAwake()
     return response.data
   }, [])
 
+  const finishInitializing = useCallback(() => {
+    setInitializing(false)
+  }, [])
+
   const bootstrapAuth = useCallback(async ({ silent = false } = {}) => {
-    if (!silent) setInitializing(true)
-    setApiStatus('waking')
-    try {
-      await Promise.race([
-        (async () => {
-          await withRetry(initCsrf, { attempts: 2, delayMs: 800 })
-          try {
-            await fetchCurrentUser()
-          } catch (err) {
-            if (isNotLoggedInError(err)) {
-              clearUser()
-              return
-            }
-            throw err
-          }
-        })(),
-        sleep(15000).then(() => {
-          throw new Error('Auth bootstrap timeout')
-        }),
-      ])
-      setApiStatus('ok')
-    } catch (err) {
-      clearUser()
-      setApiStatus(err?.response ? 'ok' : 'error')
-    } finally {
-      if (!silent) setInitializing(false)
+    const gen = ++authGeneration.current
+    if (!silent) {
+      setInitializing(true)
+      setBootstrapMessage('Waking server (first visit may take up to 60s)...')
     }
-  }, [clearUser, fetchCurrentUser])
+    setApiStatus('waking')
+
+    try {
+      await wakeServer()
+      if (gen !== authGeneration.current) return
+
+      setBootstrapMessage('Checking your session...')
+      await initCsrf()
+      if (gen !== authGeneration.current) return
+
+      try {
+        await fetchCurrentUser()
+        userFromAction.current = false
+      } catch (err) {
+        if (gen !== authGeneration.current) return
+        if (isNotLoggedInError(err)) {
+          if (!userFromAction.current) clearUser()
+          setApiStatus('ok')
+          return
+        }
+        throw err
+      }
+      if (gen !== authGeneration.current) return
+      setApiStatus('ok')
+    } catch {
+      if (gen !== authGeneration.current) return
+      if (!userFromAction.current) clearUser()
+      setApiStatus('error')
+    } finally {
+      if (gen === authGeneration.current && !silent) {
+        finishInitializing()
+      }
+    }
+  }, [clearUser, fetchCurrentUser, finishInitializing])
 
   useEffect(() => {
     bootstrapAuth()
   }, [bootstrapAuth])
 
+  /** Never block the UI longer than BOOTSTRAP_UI_MAX_MS — fixes stuck "Checking session". */
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (initializing) finishInitializing()
+    }, BOOTSTRAP_UI_MAX_MS)
+    return () => clearTimeout(timer)
+  }, [initializing, finishInitializing])
+
   useEffect(() => {
     setUnauthorizedHandler(() => {
+      userFromAction.current = false
       clearUser()
     })
     return () => setUnauthorizedHandler(null)
@@ -92,6 +110,7 @@ export function AuthProvider({ children }) {
 
   const checkAuth = async () => {
     try {
+      await wakeServer()
       await initCsrf()
       return await fetchCurrentUser()
     } catch (err) {
@@ -106,8 +125,11 @@ export function AuthProvider({ children }) {
   }
 
   const login = async (emailOrUsername, password, useEmail = false) => {
+    authGeneration.current += 1
     setActionLoading(true)
+    setBootstrapMessage('Signing in...')
     try {
+      await wakeServer()
       await initCsrf()
       const payload = useEmail
         ? { email: emailOrUsername, password }
@@ -117,18 +139,11 @@ export function AuthProvider({ children }) {
       if (!loggedInUser) {
         throw new Error('Login succeeded but no user data was returned.')
       }
+      userFromAction.current = true
       setUser(loggedInUser)
-      // Confirm session cookie works (critical on mobile / cross-origin Render)
-      try {
-        await withRetry(fetchCurrentUser, { attempts: 3, delayMs: 1500 })
-        setApiStatus('ok')
-      } catch {
-        // Keep login response user if cookie verification is slow (Render cold start)
-        if (!loggedInUser?.id) {
-          throw new Error('Session could not be established. Please try again.')
-        }
-        setApiStatus('error')
-      }
+      markServerAwake()
+      setApiStatus('ok')
+      finishInitializing()
       return response.data
     } finally {
       setActionLoading(false)
@@ -138,15 +153,21 @@ export function AuthProvider({ children }) {
   const loginWithEmail = async (email, password) => login(email, password, true)
 
   const register = async (data) => {
+    authGeneration.current += 1
     setActionLoading(true)
     try {
+      await wakeServer()
       await initCsrf()
       const response = await authAPI.register(data)
       const newUser = response.data?.user
       if (!newUser) {
         throw new Error('Registration succeeded but no user data was returned.')
       }
+      userFromAction.current = true
       setUser(newUser)
+      markServerAwake()
+      setApiStatus('ok')
+      finishInitializing()
       await fetchCurrentUser()
       return response.data
     } finally {
@@ -155,6 +176,7 @@ export function AuthProvider({ children }) {
   }
 
   const logout = async () => {
+    authGeneration.current += 1
     setActionLoading(true)
     try {
       await initCsrf()
@@ -162,6 +184,7 @@ export function AuthProvider({ children }) {
     } catch {
       // Always clear client state even if server session already expired
     } finally {
+      userFromAction.current = false
       clearUser()
       setApiStatus('ok')
       setActionLoading(false)
@@ -174,8 +197,9 @@ export function AuthProvider({ children }) {
   const isStaff = isCoach || isAdmin
 
   const retryBootstrap = useCallback(() => {
-    bootstrapAuth({ silent: true })
-  }, [bootstrapAuth])
+    userFromAction.current = Boolean(user)
+    bootstrapAuth({ silent: false })
+  }, [bootstrapAuth, user])
 
   return (
     <AuthContext.Provider value={{
@@ -184,6 +208,7 @@ export function AuthProvider({ children }) {
       initializing,
       actionLoading,
       apiStatus,
+      bootstrapMessage,
       retryBootstrap,
       login,
       loginWithEmail,

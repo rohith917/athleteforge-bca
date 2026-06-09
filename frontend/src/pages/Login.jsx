@@ -13,7 +13,7 @@ export default function Login() {
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const { user, login, logout, actionLoading, getErrorMessage } = useAuth()
+  const { user, login, logout, actionLoading, getErrorMessage, bootstrapMessage } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -117,7 +117,7 @@ export default function Login() {
                 disabled={actionLoading}
                 style={{ width: '100%' }}
               >
-                {actionLoading ? 'Signing in...' : <><FaSignInAlt /> Sign In</>}
+                {actionLoading ? (bootstrapMessage || 'Signing in...') : <><FaSignInAlt /> Sign In</>}
               </button>
             </form>
             <p className="text-center mt-3 mb-0">
