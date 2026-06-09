@@ -1,0 +1,25 @@
+# Fly.io deploy — AthleteForge (Docker)
+# See FLY_DEPLOY.txt for steps
+
+app = 'athleteforge-bca'
+primary_region = 'sin'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  DEBUG = 'False'
+  SAME_ORIGIN_DEPLOY = 'True'
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1

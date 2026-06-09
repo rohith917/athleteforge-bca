@@ -1,0 +1,29 @@
+ATHLETEFORGE — DEPLOY ON FLY.IO
+===============================
+
+1. Install Fly CLI (Windows PowerShell):
+   powershell -Command "iwr https://fly.io/install.ps1 -useb | iex"
+
+2. Login:
+   fly auth login
+
+3. Create Postgres (free dev database):
+   fly postgres create --name athleteforge-db --region sin --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 1
+
+4. Attach DB to app (run from project folder):
+   cd C:\BCA_Project\athlete-performance-system
+   fly launch --no-deploy --copy-config --name athleteforge-bca
+   fly postgres attach athleteforge-db -a athleteforge-bca
+
+5. Set secrets:
+   fly secrets set SECRET_KEY=athleteforge-fly-secret-2026 -a athleteforge-bca
+
+6. Deploy:
+   fly deploy -a athleteforge-bca
+
+7. Open site:
+   fly open -a athleteforge-bca
+
+Your URL: https://athleteforge-bca.fly.dev
+
+Login: admin / admin123
