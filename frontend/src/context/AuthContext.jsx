@@ -10,7 +10,14 @@ import {
   clearAuthTokens,
   setUnauthorizedHandler,
   getErrorMessage,
+  setAuthenticating,
 } from '../services/api'
+import {
+  clearAllClientAuth,
+  markNewSession,
+  signalLogoutAllTabs,
+  AUTH_LOGOUT_KEY,
+} from '../utils/authSession'
 
 const AuthContext = createContext(null)
 
@@ -30,12 +37,13 @@ export function AuthProvider({ children }) {
 
   const clearUser = useCallback(() => {
     setUser(null)
-    clearAuthTokens()
+    clearAllClientAuth()
   }, [])
 
   const fetchCurrentUser = useCallback(async () => {
     const response = await authAPI.getUser()
     setUser(response.data)
+    markNewSession(response.data?.id)
     markServerAwake()
     return response.data
   }, [])
@@ -98,8 +106,21 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     setUnauthorizedHandler(() => {
       clearUser()
+      setAuthChecked(true)
     })
     return () => setUnauthorizedHandler(null)
+  }, [clearUser])
+
+  useEffect(() => {
+    const onStorage = (event) => {
+      if (event.key === AUTH_LOGOUT_KEY) {
+        clearUser()
+        setAuthChecked(true)
+        window.location.assign('/')
+      }
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
   }, [clearUser])
 
   const checkAuth = async () => {
@@ -120,8 +141,11 @@ export function AuthProvider({ children }) {
 
   const login = async (emailOrUsername, password, useEmail = false) => {
     authGeneration.current += 1
+    setAuthenticating(true)
     setActionLoading(true)
     setBootstrapMessage('Signing in...')
+    clearAllClientAuth()
+
     try {
       await wakeServer()
       await initCsrf()
@@ -133,6 +157,7 @@ export function AuthProvider({ children }) {
       if (!loggedInUser) {
         throw new Error('Login succeeded but no user data was returned.')
       }
+      await initCsrf()
       const verified = await fetchCurrentUser()
       if (!verified?.id) {
         throw new Error('Session could not be established. Please try again.')
@@ -140,8 +165,9 @@ export function AuthProvider({ children }) {
       markServerAwake()
       setApiStatus('ok')
       setAuthChecked(true)
-      return response.data
+      return { ...response.data, user: verified }
     } finally {
+      setAuthenticating(false)
       setActionLoading(false)
     }
   }
@@ -150,7 +176,10 @@ export function AuthProvider({ children }) {
 
   const register = async (data) => {
     authGeneration.current += 1
+    setAuthenticating(true)
     setActionLoading(true)
+    clearAllClientAuth()
+
     try {
       await wakeServer()
       await initCsrf()
@@ -159,6 +188,7 @@ export function AuthProvider({ children }) {
       if (!newUser) {
         throw new Error('Registration succeeded but no user data was returned.')
       }
+      await initCsrf()
       const verified = await fetchCurrentUser()
       if (!verified?.id) {
         throw new Error('Session could not be established. Please try again.')
@@ -166,25 +196,30 @@ export function AuthProvider({ children }) {
       markServerAwake()
       setApiStatus('ok')
       setAuthChecked(true)
-      return response.data
+      return { ...response.data, user: verified }
     } finally {
+      setAuthenticating(false)
       setActionLoading(false)
     }
   }
 
-  const logout = async () => {
+  const logout = async ({ hardRedirect = false } = {}) => {
     authGeneration.current += 1
     setActionLoading(true)
     try {
       await initCsrf()
       await authAPI.logout()
     } catch {
-      // Always clear client state even if server session already expired
+      /* always clear client state */
     } finally {
       clearUser()
+      signalLogoutAllTabs()
       setApiStatus('ok')
       setAuthChecked(true)
       setActionLoading(false)
+      if (hardRedirect) {
+        window.location.assign('/')
+      }
     }
   }
 

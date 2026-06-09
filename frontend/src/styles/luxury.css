@@ -1529,6 +1529,59 @@ html.theme-dark textarea,
 }
 .api-status-retry:hover { background: rgba(0, 0, 0, 0.12); }
 
+.student-injury-panel,
+.student-tips-panel {
+  padding: 20px;
+  height: 100%;
+}
+.student-injury-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.student-injury-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--lux-accent-soft);
+  border: 1px solid var(--lux-border);
+  font-size: 0.85rem;
+}
+.student-injury-clear {
+  font-size: 0.9rem;
+  color: var(--lux-text-secondary);
+}
+.student-tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.student-tip-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.student-tip-icon {
+  color: var(--lux-accent);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.student-tip-item strong {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--lux-text);
+  margin-bottom: 2px;
+}
+.student-tip-item p {
+  font-size: 0.82rem;
+  color: var(--lux-text-secondary);
+}
+
 .error-boundary-screen {
   min-height: 100vh;
   display: flex;

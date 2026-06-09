@@ -21,12 +21,17 @@ import Avatar from '../components/Avatar'
 import RoleWelcomeBar from '../components/dashboard/RoleWelcomeBar'
 import StudentQuickActions from '../components/dashboard/StudentQuickActions'
 import StudentLinkAlert from '../components/dashboard/StudentLinkAlert'
+import StudentInjuryStatus from '../components/dashboard/StudentInjuryStatus'
+import StudentTrainingTips from '../components/dashboard/StudentTrainingTips'
+import ChartMount from '../components/charts/ChartMount'
+import useChartsReady from '../hooks/useChartsReady'
 import { GOLD, baseChartOptions } from '../utils/chartTheme'
 import { calcRecoveryScore } from '../utils/metricsEngine'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip, Legend)
 
 export default function StudentDashboard() {
+  const chartsReady = useChartsReady()
   const { user, isStudent } = useAuth()
   const [stats, setStats] = useState(null)
   const [wellness, setWellness] = useState(null)
@@ -149,8 +154,13 @@ export default function StudentDashboard() {
 
       <div className="row g-4 mb-4">
         <div className="col-lg-4"><ReadinessGauge wellness={wellness} /></div>
-        <div className="col-lg-4"><RecoveryPanel stats={stats} /></div>
+        <div className="col-lg-4"><StudentInjuryStatus /></div>
         <div className="col-lg-4"><WellnessCheckIn onUpdate={setWellness} /></div>
+      </div>
+
+      <div className="row g-4 mb-4">
+        <div className="col-lg-8"><RecoveryPanel stats={stats} /></div>
+        <div className="col-lg-4"><StudentTrainingTips /></div>
       </div>
 
       <AIInsights athleteId={athlete?.id} />
@@ -165,15 +175,17 @@ export default function StudentDashboard() {
         <div className="col-lg-7">
           <div className="chart-panel-premium glass-card" style={{ minHeight: 320 }}>
             <h6>My Attendance Trend</h6>
-            <div style={{ height: 260 }}>
-              <Line data={attendanceChart} options={{
-                ...baseChartOptions,
-                scales: {
-                  x: { ticks: { color: '#94A3B8' }, grid: { display: false } },
-                  y: { min: 0, max: 100, ticks: { color: '#94A3B8' }, grid: { color: 'rgba(148,163,184,0.08)' } },
-                },
-              }} />
-            </div>
+            <ChartMount height={260}>
+              {chartsReady && (
+                <Line data={attendanceChart} options={{
+                  ...baseChartOptions,
+                  scales: {
+                    x: { ticks: { color: '#94A3B8' }, grid: { display: false } },
+                    y: { min: 0, max: 100, ticks: { color: '#94A3B8' }, grid: { color: 'rgba(148,163,184,0.08)' } },
+                  },
+                }} />
+              )}
+            </ChartMount>
           </div>
         </div>
       </div>

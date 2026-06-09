@@ -24,6 +24,7 @@ import {
   GuestRoute,
   StaffRoute,
   AdminRoute,
+  CoachRoute,
   DashboardRouter,
   FallbackRoute,
 } from './routes/AuthGuards'
@@ -49,10 +50,10 @@ export default function App() {
           <Route path="athletes/:id/edit" element={<StaffRoute><AthleteForm /></StaffRoute>} />
           <Route path="performance" element={<Performance />} />
           <Route path="injuries" element={<Injuries />} />
-          <Route path="competitions" element={<StaffRoute><Competitions /></StaffRoute>} />
+          <Route path="competitions" element={<CoachRoute><Competitions /></CoachRoute>} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="weight" element={<StaffRoute><WeightTracking /></StaffRoute>} />
-          <Route path="reports" element={<StaffRoute><Reports /></StaffRoute>} />
+          <Route path="reports" element={<CoachRoute><Reports /></CoachRoute>} />
         </Route>
 
         <Route path="*" element={<FallbackRoute />} />

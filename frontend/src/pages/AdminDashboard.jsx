@@ -23,6 +23,7 @@ import TrainingPrograms from '../components/TrainingPrograms'
 import CoachTips from '../components/CoachTips'
 import NotificationCenter from '../components/analytics/NotificationCenter'
 import { GOLD, baseChartOptions } from '../utils/chartTheme'
+import useChartsReady from '../hooks/useChartsReady'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -37,6 +38,7 @@ const quickLinks = [
 ]
 
 export default function AdminDashboard() {
+  const chartsReady = useChartsReady()
   const { logout } = useAuth()
   const navigate = useNavigate()
   const [stats, setStats] = useState(null)
@@ -153,11 +155,13 @@ export default function AdminDashboard() {
           <div className="chart-panel-premium glass-card">
             <h6>Users by Role</h6>
             <div style={{ height: 200 }}>
-              <Doughnut data={roleChart} options={{
-                ...baseChartOptions,
-                cutout: '65%',
-                plugins: { ...baseChartOptions.plugins, legend: { position: 'bottom', labels: { color: '#94A3B8' } } },
-              }} />
+              {chartsReady && (
+                <Doughnut data={roleChart} options={{
+                  ...baseChartOptions,
+                  cutout: '65%',
+                  plugins: { ...baseChartOptions.plugins, legend: { position: 'bottom', labels: { color: '#94A3B8' } } },
+                }} />
+              )}
             </div>
             <div className="mt-3 text-center" style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
               {stats.active_users} active · {stats.inactive_users} inactive

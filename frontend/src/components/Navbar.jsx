@@ -2,7 +2,6 @@
  * Top navbar with role badge, avatar, and theme toggle.
  */
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import { useToast } from '../context/ToastContext'
@@ -11,7 +10,6 @@ import Avatar from './Avatar'
 const roleLabels = { admin: 'Admin', coach: 'Coach', student: 'Student' }
 
 export default function Navbar({ onMenuToggle }) {
-  const navigate = useNavigate()
   const { user, logout, isStudent, isCoach, isAdmin, actionLoading, getErrorMessage } = useAuth()
   const { isDark, toggleTheme, canToggleTheme } = useTheme()
   const { showToast } = useToast()
@@ -21,11 +19,10 @@ export default function Navbar({ onMenuToggle }) {
     if (loggingOut || actionLoading) return
     setLoggingOut(true)
     try {
-      await logout()
-      navigate('/', { replace: true })
+      await logout({ hardRedirect: true })
     } catch (err) {
-      showToast(getErrorMessage(err, 'Logout failed. Please try again.'), 'error')
-      navigate('/', { replace: true })
+      showToast(getErrorMessage(err, 'Logout failed. Clearing session...'), 'error')
+      window.location.assign('/')
     } finally {
       setLoggingOut(false)
     }

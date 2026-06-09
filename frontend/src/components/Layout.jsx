@@ -3,12 +3,11 @@
  */
 import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import { AnimatePresence } from 'framer-motion'
 import Sidebar from './Sidebar'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import ChartThemeSync from './ChartThemeSync'
-import { MotionPage } from './motion/Motion'
+import ErrorBoundary from './ErrorBoundary'
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -22,11 +21,9 @@ export default function Layout() {
       <div className="main-content">
         <Navbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         <div className="page-content">
-          <AnimatePresence mode="wait">
-            <MotionPage key={location.pathname}>
-              <Outlet />
-            </MotionPage>
-          </AnimatePresence>
+          <ErrorBoundary key={location.pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </div>
         <Footer />
       </div>

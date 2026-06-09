@@ -28,10 +28,14 @@ import PerformanceRadar from '../components/analytics/PerformanceRadar'
 import { ACCENT, baseChartOptions } from '../utils/chartTheme'
 import { calcRecoveryScore } from '../utils/metricsEngine'
 import { useTheme } from '../context/ThemeContext'
+import useChartsReady from '../hooks/useChartsReady'
+import UpcomingTournaments from '../components/UpcomingTournaments'
+import ChartMount from '../components/charts/ChartMount'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Filler, Tooltip, Legend)
 
 export default function Dashboard() {
+  const chartsReady = useChartsReady()
   const { isDark } = useTheme()
   const tickColor = isDark ? '#9CA3AF' : '#9CA3AF'
   const gridColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
@@ -150,15 +154,21 @@ export default function Dashboard() {
       <AIInsights />
 
       <div className="row g-4 mb-4">
+        <div className="col-12"><UpcomingTournaments /></div>
+      </div>
+
+      <div className="row g-4 mb-4">
         <div className="col-lg-6">
           <PerformanceRadar scores={radarScores} />
         </div>
         <div className="col-lg-6">
           <div className="chart-panel-premium" style={{ height: '100%' }}>
             <h6>Attendance Intelligence</h6>
-            <div style={{ height: 280 }} key={`att-${isDark}`}>
-              <Line data={attendanceChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: tickColor }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: tickColor }, grid: { color: gridColor } } } }} />
-            </div>
+            <ChartMount height={280} key={`att-${isDark}`}>
+              {chartsReady && (
+                <Line data={attendanceChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: tickColor }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: tickColor }, grid: { color: gridColor } } } }} />
+              )}
+            </ChartMount>
           </div>
         </div>
       </div>
@@ -167,17 +177,21 @@ export default function Dashboard() {
         <div className="col-lg-6">
           <div className="chart-panel-premium">
             <h6>Performance Distribution</h6>
-            <div style={{ height: 260 }} key={`perf-${isDark}`}>
-              <Bar data={perfChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: tickColor }, grid: { display: false } }, y: { ticks: { color: tickColor }, grid: { color: gridColor } } } }} />
-            </div>
+            <ChartMount height={260} key={`perf-${isDark}`}>
+              {chartsReady && (
+                <Bar data={perfChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: tickColor }, grid: { display: false } }, y: { ticks: { color: tickColor }, grid: { color: gridColor } } } }} />
+              )}
+            </ChartMount>
           </div>
         </div>
         <div className="col-lg-6">
           <div className="chart-panel-premium">
             <h6>Sport Composition</h6>
-            <div style={{ height: 260 }} key={`sport-${isDark}`}>
-              <Doughnut data={sportChart} options={{ ...baseChartOptions, cutout: '68%', plugins: { legend: { position: 'bottom', labels: { color: isDark ? '#9CA3AF' : '#6B7280', padding: 12 } } } }} />
-            </div>
+            <ChartMount height={260} key={`sport-${isDark}`}>
+              {chartsReady && (
+                <Doughnut data={sportChart} options={{ ...baseChartOptions, cutout: '68%', plugins: { legend: { position: 'bottom', labels: { color: isDark ? '#9CA3AF' : '#6B7280', padding: 12 } } } }} />
+              )}
+            </ChartMount>
           </div>
         </div>
       </div>

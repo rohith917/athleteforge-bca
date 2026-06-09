@@ -23,8 +23,12 @@ export default function Login() {
     e.preventDefault()
     setError('')
     try {
-      await login(identifier.trim(), password, identifier.includes('@'))
-      navigate(returnPath, { replace: true })
+      const result = await login(identifier.trim(), password, identifier.includes('@'))
+      const role = result?.user?.role
+      const dest = role === 'admin' || role === 'coach' || role === 'student'
+        ? '/dashboard'
+        : returnPath
+      navigate(dest, { replace: true })
     } catch (err) {
       setError(getErrorMessage(err, 'Invalid email/username or password.'))
     }
@@ -33,7 +37,7 @@ export default function Login() {
   const handleSwitchAccount = async () => {
     setError('')
     try {
-      await logout()
+      await logout({ hardRedirect: false })
       setIdentifier('')
       setPassword('')
       navigate('/login', { replace: true })

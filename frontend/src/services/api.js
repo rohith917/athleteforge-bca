@@ -72,7 +72,7 @@ function readCookieCsrf() {
 }
 
 export function getCsrfToken() {
-  return csrfToken || sessionStorage.getItem('af_csrf') || readCookieCsrf()
+  return readCookieCsrf() || csrfToken || sessionStorage.getItem('af_csrf') || ''
 }
 
 export function setCsrfToken(token) {
@@ -86,7 +86,21 @@ export function setCsrfToken(token) {
 
 export function clearAuthTokens() {
   csrfToken = ''
-  sessionStorage.removeItem('af_csrf')
+  try {
+    sessionStorage.removeItem('af_csrf')
+  } catch {
+    /* ignore */
+  }
+}
+
+let authenticating = false
+
+export function setAuthenticating(value) {
+  authenticating = Boolean(value)
+}
+
+export function isAuthenticating() {
+  return authenticating
 }
 
 export function setUnauthorizedHandler(handler) {
@@ -139,8 +153,10 @@ api.interceptors.response.use(
 
     if (
       status === 401 &&
+      !authenticating &&
       !url.includes('/auth/login/') &&
       !url.includes('/auth/register/') &&
+      !url.includes('/auth/logout/') &&
       !url.includes('/auth/csrf/') &&
       !url.includes('/auth/user/')
     ) {
