@@ -35,6 +35,7 @@ echo Opening Railway dashboard and deploy guide...
 start https://railway.com/dashboard
 start https://railway.com/new/github
 start notepad "%~dp0RAILWAY_DEPLOY.txt"
+if exist "%~dp0RAILWAY_FIX_OFFLINE.txt" start notepad "%~dp0RAILWAY_FIX_OFFLINE.txt"
 echo.
 echo QUICK SETUP in Railway dashboard:
 echo   1. New Project - Deploy from GitHub - athleteforge-bca

@@ -1,0 +1,41 @@
+RAILWAY "SERVICE OFFLINE" — FIX CHECKLIST
+=========================================
+
+If dashboard shows "Service offline" (US West, 1 Replica):
+
+1. DATABASE_URL (most common fix)
+   Web service → Variables tab
+   Must have: DATABASE_URL = (reference from Postgres service)
+   If missing → + New Variable → Add Reference → Postgres → DATABASE_URL
+   Then click Redeploy on the web service.
+
+2. Required variables on WEB service (not Postgres):
+   SECRET_KEY         = athleteforge-bca-secret-2026-change-me
+   DEBUG              = False
+   SAME_ORIGIN_DEPLOY = True
+   Do NOT set PORT manually — Railway sets it automatically.
+
+3. Check deploy logs
+   Web service → Deployments → latest → View logs
+   Look for:
+   - "DATABASE_URL is required" → add Postgres reference (step 1)
+   - "ImproperlyConfigured" → missing env vars
+   - Build failed → wait and Redeploy (Railway had build issues June 9)
+
+4. Check Postgres is Active
+   Postgres service must show green / Active before web service can start.
+
+5. Generate public domain
+   Web service → Settings → Networking → Generate Domain
+   Open the .up.railway.app URL (not Google search).
+
+6. After fix: Redeploy
+   Deployments → three dots → Redeploy
+   First boot: wait 2-3 minutes (migrations + seed).
+
+7. Test health endpoint
+   https://YOUR-APP.up.railway.app/api/health/
+   Should return: {"status":"ok","service":"AthleteForge"}
+
+8. Credits
+   Project → Usage — if $0 balance, add payment method or use START_DEMO.bat locally.

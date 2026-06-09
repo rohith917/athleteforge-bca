@@ -16,10 +16,11 @@ STEP 3 — PostgreSQL database
   In project: + New → Database → PostgreSQL
   Wait until status = Active
 
-STEP 4 — Link database to web service
+STEP 4 — Link database to web service (REQUIRED — service stays offline without this)
   Click the WEB service (not Postgres)
   Variables tab → + New Variable → Add Reference
   Pick: Postgres → DATABASE_URL
+  You must see DATABASE_URL listed on the web service variables.
 
 STEP 5 — Web service variables (Variables tab)
   SECRET_KEY         = athleteforge-bca-secret-2026-change-me
@@ -49,11 +50,12 @@ LOCAL CLI (optional, after railway login):
   railway link
   railway up
 
-TROUBLESHOOTING
-  Build failed?     → Deployments → View logs
-  Application Error → Check DATABASE_URL is linked from Postgres
-  502 on first load → Wait 1-2 min (migrations + seed run on start)
-  White screen?     → Hard refresh (Ctrl+Shift+R); latest main has the fix
+TROUBLESHOOTING — "Service offline"
+  See: RAILWAY_FIX_OFFLINE.txt
+  #1 fix: DATABASE_URL reference missing on web service → add it → Redeploy
+  Build failed?     → Deployments → View logs → Redeploy
+  502 on first load → Wait 2-3 min (migrations on first boot)
+  White screen?     → Hard refresh (Ctrl+Shift+R)
 
 WHY RAILWAY?
   - No Render Root Directory confusion

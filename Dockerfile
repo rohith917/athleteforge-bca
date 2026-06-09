@@ -23,7 +23,11 @@ ENV PYTHONUNBUFFERED=1
 ENV DEBUG=False
 ENV SAME_ORIGIN_DEPLOY=True
 
-RUN python manage.py collectstatic --no-input
+# collectstatic does not need Postgres at image build time
+RUN USE_SQLITE=True python manage.py collectstatic --no-input
+
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 8000
-CMD sh -c "python manage.py migrate --no-input && python manage.py setup_admin && python manage.py seed_data && gunicorn athlete_system.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 2 --timeout 120 --preload"
+CMD ["/docker-entrypoint.sh"]
