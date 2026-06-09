@@ -19,23 +19,30 @@ echo STEP 1: Login to Fly.io (browser will open)...
 if errorlevel 1 goto fail
 
 echo.
-echo STEP 2: Create app and Postgres (first time only)...
-echo If app already exists, skip errors and continue.
+echo STEP 2: Create app (first time only)...
 "%FLYCTL%" apps create athleteforge-bca --org personal 2>nul
-"%FLYCTL%" postgres create --name athleteforge-db --region sin --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 1 2>nul
-"%FLYCTL%" postgres attach athleteforge-db -a athleteforge-bca 2>nul
 
 echo.
-echo STEP 3: Set secrets...
+echo STEP 3: Database — use FREE Neon PostgreSQL:
+echo   1. Open https://neon.tech and create a project
+echo   2. Copy the postgresql:// connection string
+echo.
+set /p NEON_URL=Paste Neon DATABASE_URL here (or press Enter to skip): 
+if not "%NEON_URL%"=="" (
+  "%FLYCTL%" secrets set DATABASE_URL="%NEON_URL%" -a athleteforge-bca
+)
+
+echo.
+echo STEP 4: Set secrets...
 "%FLYCTL%" secrets set SECRET_KEY=athleteforge-fly-secret-2026 DEBUG=False SAME_ORIGIN_DEPLOY=True -a athleteforge-bca
 
 echo.
-echo STEP 4: Deploying (5-10 min)...
+echo STEP 5: Deploying (5-10 min)...
 "%FLYCTL%" deploy -a athleteforge-bca
 if errorlevel 1 goto fail
 
 echo.
-echo STEP 5: Opening your site...
+echo STEP 6: Opening your site...
 "%FLYCTL%" open -a athleteforge-bca
 echo.
 echo DONE! URL: https://athleteforge-bca.fly.dev

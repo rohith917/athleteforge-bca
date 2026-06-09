@@ -1,0 +1,85 @@
+ATHLETEFORGE — REAL WORLD PRODUCTION DEPLOY
+============================================
+Goal: Public HTTPS website anyone can open worldwide.
+
+BEST CHOICE FOR YOU: KOYEB (all-in-one, browser only, free tier)
+Your URL: https://your-name.koyeb.app
+
+============================================================
+PATH 1 — KOYEB (RECOMMENDED — 15 minutes)
+============================================================
+
+1. https://app.koyeb.com → Sign in with GitHub
+
+2. Create Web Service:
+   - Repo: athleteforge-bca
+   - Branch: main
+   - Builder: Dockerfile
+   - Exposed port: 8000
+   - Region: Singapore (closest to India)
+
+3. Create PostgreSQL:
+   - Dashboard → Create → Database → PostgreSQL
+   - Copy the connection URL
+
+4. Web Service → Variables:
+   DATABASE_URL       = (postgresql URL from step 3)
+   SECRET_KEY         = athleteforge-prod-secret-2026-xyz
+   DEBUG              = False
+   SAME_ORIGIN_DEPLOY = True
+   PORT               = 8000
+
+5. Deploy → wait 10-15 min
+
+6. Your real-world URL:
+   https://athleteforge-bca-xxxxx.koyeb.app
+
+7. Test login: admin / admin123
+
+Put this URL in your BCA report, resume, and presentation.
+
+============================================================
+PATH 2 — FLY.IO + NEON DB (professional, free)
+============================================================
+
+PART A — Free database (Neon):
+1. https://neon.tech → Sign up with GitHub
+2. New Project → name: athleteforge
+3. Copy connection string (starts with postgresql://)
+
+PART B — Deploy app:
+1. Double-click: deploy-fly.bat
+2. Login when browser opens
+3. When asked for DATABASE_URL run in terminal:
+   fly secrets set DATABASE_URL="YOUR_NEON_URL" -a athleteforge-bca
+   fly secrets set SECRET_KEY=athleteforge-prod-2026 -a athleteforge-bca
+4. fly deploy -a athleteforge-bca
+
+Your URL: https://athleteforge-bca.fly.dev
+
+============================================================
+PATH 3 — AUTO DEPLOY (GitHub → Fly.io every push)
+============================================================
+
+One-time setup:
+1. fly auth login
+2. fly tokens create deploy -a athleteforge-bca
+3. GitHub repo → Settings → Secrets → Actions
+4. New secret: FLY_API_TOKEN = (paste token)
+5. Every git push auto-deploys to Fly.io
+
+============================================================
+WHAT TO WRITE IN BCA REPORT
+============================================================
+
+Live Application URL: https://your-actual-url.koyeb.app
+GitHub Repository:    https://github.com/rohith917/athleteforge-bca
+Tech Stack:           React, Django REST, PostgreSQL, Docker
+Deployment:           Cloud (Koyeb / Fly.io), HTTPS enabled
+
+============================================================
+EMERGENCY BACKUP (presentation day)
+============================================================
+
+Double-click START_DEMO.bat → http://localhost:5173
+Works offline on your laptop if cloud is down.
