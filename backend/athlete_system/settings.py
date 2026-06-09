@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIST = BASE_DIR / 'frontend_dist'
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-bca-athlete-tracking-change-in-production')
 
@@ -167,13 +168,20 @@ SESSION_COOKIE_AGE = 86400
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = False  # React needs to read csrftoken cookie
 
+_same_origin = os.getenv('SAME_ORIGIN_DEPLOY', 'True').lower() == 'true'
+
 if DEBUG:
     SESSION_COOKIE_SAMESITE = 'Lax'
     CSRF_COOKIE_SAMESITE = 'Lax'
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
+elif _same_origin:
+    # Frontend served from same domain — works on mobile Safari
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 else:
-    # Required for cross-origin SPA (frontend + API on different Render URLs)
     SESSION_COOKIE_SAMESITE = 'None'
     CSRF_COOKIE_SAMESITE = 'None'
     SESSION_COOKIE_SECURE = True

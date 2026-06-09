@@ -44,18 +44,18 @@ export function AuthProvider({ children }) {
     return response.data
   }, [])
 
-  const bootstrapAuth = useCallback(async () => {
-    setInitializing(true)
+  const bootstrapAuth = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) setInitializing(true)
     setApiStatus('waking')
     try {
-      await withRetry(initCsrf, { attempts: 4, delayMs: 2500 })
+      await withRetry(initCsrf, { attempts: 3, delayMs: 2000 })
       await fetchCurrentUser()
       setApiStatus('ok')
     } catch {
       clearUser()
       setApiStatus('error')
     } finally {
-      setInitializing(false)
+      if (!silent) setInitializing(false)
     }
   }, [clearUser, fetchCurrentUser])
 
@@ -148,7 +148,7 @@ export function AuthProvider({ children }) {
   const isStaff = isCoach || isAdmin
 
   const retryBootstrap = useCallback(() => {
-    bootstrapAuth()
+    bootstrapAuth({ silent: true })
   }, [bootstrapAuth])
 
   return (

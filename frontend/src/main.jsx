@@ -4,7 +4,7 @@
  */
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { HashRouter } from 'react-router-dom'
+import { BrowserRouter, HashRouter } from 'react-router-dom'
 import App from './App'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
@@ -14,9 +14,13 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './styles/App.css'
 import './styles/luxury.css'
 
+const useHashRouter = typeof window !== 'undefined'
+  && window.location.hostname.includes('athleteforge-frontend.onrender.com')
+const Router = useHashRouter ? HashRouter : BrowserRouter
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <HashRouter>
+    <Router>
       <ThemeProvider>
         <AuthProvider>
           <ToastProvider>
@@ -24,6 +28,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           </ToastProvider>
         </AuthProvider>
       </ThemeProvider>
-    </HashRouter>
+    </Router>
   </React.StrictMode>
 )

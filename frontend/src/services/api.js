@@ -3,13 +3,16 @@
  */
 import axios from 'axios'
 
-/** Resolve API base — fixes Render when VITE_API_URL points at wrong/dead backend. */
+/** Resolve API base — same-origin when SPA is served by Django backend. */
 function resolveApiBase() {
+  const host = typeof window !== 'undefined' ? window.location.hostname : ''
+  if (host === 'localhost' || host === '127.0.0.1' || host.includes('athleteforge-bca.onrender.com')) {
+    return '/api'
+  }
   const envUrl = import.meta.env.VITE_API_URL
   if (envUrl && !envUrl.includes('YOUR-BACKEND') && !envUrl.includes('athleteforge-api.onrender.com')) {
     return envUrl
   }
-  const host = typeof window !== 'undefined' ? window.location.hostname : ''
   if (host.includes('onrender.com') || host.includes('athleteforge')) {
     return 'https://athleteforge-bca.onrender.com/api'
   }

@@ -27,13 +27,9 @@ export function GuestRoute({ children }) {
   const { user, initializing } = useAuth()
   const location = useLocation()
 
-  if (initializing) {
-    return <LoadingSpinner message="Loading..." fullScreen />
-  }
-
-  if (user) {
-    const redirectTo = location.state?.from?.pathname || '/dashboard'
-    return <Navigate to={redirectTo} replace />
+  if (!initializing && user) {
+    const dest = location.state?.from?.pathname || '/dashboard'
+    return <Navigate to={dest} replace />
   }
 
   return children
@@ -93,7 +89,7 @@ export function FallbackRoute() {
   const { user, initializing } = useAuth()
 
   if (initializing) {
-    return <LoadingSpinner message="Loading..." fullScreen />
+    return <Navigate to="/" replace />
   }
 
   return <Navigate to={user ? '/dashboard' : '/'} replace />
