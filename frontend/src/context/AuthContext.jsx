@@ -12,10 +12,26 @@ import {
 
 const AuthContext = createContext(null)
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+async function withRetry(fn, { attempts = 3, delayMs = 2000 } = {}) {
+  let lastError
+  for (let i = 0; i < attempts; i += 1) {
+    try {
+      return await fn()
+    } catch (err) {
+      lastError = err
+      if (i < attempts - 1) await sleep(delayMs)
+    }
+  }
+  throw lastError
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [initializing, setInitializing] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
+  const [apiStatus, setApiStatus] = useState('waking')
 
   const clearUser = useCallback(() => {
     setUser(null)
@@ -29,11 +45,15 @@ export function AuthProvider({ children }) {
   }, [])
 
   const bootstrapAuth = useCallback(async () => {
+    setInitializing(true)
+    setApiStatus('waking')
     try {
-      await initCsrf()
+      await withRetry(initCsrf, { attempts: 4, delayMs: 2500 })
       await fetchCurrentUser()
+      setApiStatus('ok')
     } catch {
       clearUser()
+      setApiStatus('error')
     } finally {
       setInitializing(false)
     }
@@ -74,9 +94,15 @@ export function AuthProvider({ children }) {
       }
       setUser(loggedInUser)
       // Confirm session cookie works (critical on mobile / cross-origin Render)
-      const verified = await fetchCurrentUser()
-      if (!verified) {
-        throw new Error('Session could not be established. Please try again.')
+      try {
+        await withRetry(fetchCurrentUser, { attempts: 3, delayMs: 1500 })
+        setApiStatus('ok')
+      } catch {
+        // Keep login response user if cookie verification is slow (Render cold start)
+        if (!loggedInUser?.id) {
+          throw new Error('Session could not be established. Please try again.')
+        }
+        setApiStatus('error')
       }
       return response.data
     } finally {
@@ -121,12 +147,18 @@ export function AuthProvider({ children }) {
   const isCoach = user?.role === 'coach' || user?.is_staff_role
   const isStaff = isCoach || isAdmin
 
+  const retryBootstrap = useCallback(() => {
+    bootstrapAuth()
+  }, [bootstrapAuth])
+
   return (
     <AuthContext.Provider value={{
       user,
       loading: initializing || actionLoading,
       initializing,
       actionLoading,
+      apiStatus,
+      retryBootstrap,
       login,
       loginWithEmail,
       register,

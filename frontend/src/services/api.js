@@ -113,6 +113,15 @@ api.interceptors.response.use(
 )
 
 export function getErrorMessage(error, fallback = 'Something went wrong. Please try again.') {
+  if (!error?.response) {
+    if (error?.code === 'ECONNABORTED') {
+      return 'Server is taking too long to respond. Wait 30 seconds and try again (free tier cold start).'
+    }
+    if (error?.message?.toLowerCase().includes('network')) {
+      return 'Cannot reach the server. Check your internet connection or wait for the API to wake up.'
+    }
+    return fallback
+  }
   const data = error?.response?.data
   if (!data) return fallback
   if (typeof data === 'string') return data

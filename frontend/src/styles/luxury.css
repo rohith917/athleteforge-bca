@@ -1163,6 +1163,43 @@ html.theme-dark textarea,
   .mobile-menu-btn { flex-shrink: 0; }
 }
 
+/* API connection banner (cold start / unreachable backend) */
+.api-status-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+.api-status-waking {
+  background: #FEF3C7;
+  color: #92400E;
+  border-bottom: 1px solid #FCD34D;
+}
+.api-status-error {
+  background: #FEE2E2;
+  color: #991B1B;
+  border-bottom: 1px solid #FCA5A5;
+}
+.api-status-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+.api-status-inner p { margin: 4px 0 10px; font-size: 0.85rem; opacity: 0.9; }
+.api-status-retry {
+  background: rgba(0, 0, 0, 0.08);
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.api-status-retry:hover { background: rgba(0, 0, 0, 0.12); }
+
 @media (max-width: 640px) {
   .landing-container { padding-left: 20px; padding-right: 20px; }
   .hero-split { padding: 96px 0 64px; }

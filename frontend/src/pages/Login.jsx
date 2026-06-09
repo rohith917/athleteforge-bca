@@ -17,14 +17,14 @@ export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const redirectTo = location.state?.from?.pathname || '/dashboard'
+  const returnPath = location.state?.from?.pathname || '/dashboard'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     try {
       await login(identifier.trim(), password, identifier.includes('@'))
-      navigate(redirectTo, { replace: true })
+      navigate(returnPath, { replace: true })
     } catch (err) {
       setError(getErrorMessage(err, 'Invalid email/username or password.'))
     }
@@ -43,7 +43,7 @@ export default function Login() {
   }
 
   const handleGoDashboard = () => {
-    navigate(redirectTo, { replace: true })
+    navigate(returnPath, { replace: true })
   }
 
   return (
