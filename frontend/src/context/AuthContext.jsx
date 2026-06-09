@@ -14,6 +14,11 @@ const AuthContext = createContext(null)
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
+function isNotLoggedInError(err) {
+  const status = err?.response?.status
+  return status === 401 || status === 403
+}
+
 async function withRetry(fn, { attempts = 3, delayMs = 2000 } = {}) {
   let lastError
   for (let i = 0; i < attempts; i += 1) {
@@ -51,9 +56,17 @@ export function AuthProvider({ children }) {
       await Promise.race([
         (async () => {
           await withRetry(initCsrf, { attempts: 2, delayMs: 800 })
-          await fetchCurrentUser()
+          try {
+            await fetchCurrentUser()
+          } catch (err) {
+            if (isNotLoggedInError(err)) {
+              clearUser()
+              return
+            }
+            throw err
+          }
         })(),
-        sleep(5000).then(() => {
+        sleep(8000).then(() => {
           throw new Error('Auth bootstrap timeout')
         }),
       ])
@@ -81,8 +94,13 @@ export function AuthProvider({ children }) {
     try {
       await initCsrf()
       return await fetchCurrentUser()
-    } catch {
+    } catch (err) {
+      if (isNotLoggedInError(err)) {
+        clearUser()
+        return null
+      }
       clearUser()
+      setApiStatus('error')
       return null
     }
   }
