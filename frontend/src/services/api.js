@@ -1,5 +1,5 @@
 /**
- * API service layer — session auth with CSRF for cross-origin Render deploy.
+ * API service layer — session auth with CSRF for same-origin cloud deploy.
  */
 import axios from 'axios'
 
@@ -28,15 +28,15 @@ function resolveApiBase() {
 
 const API_BASE = resolveApiBase()
 
-const isRenderHost = typeof window !== 'undefined'
+const isCloudHost = typeof window !== 'undefined'
   && (window.location.hostname.includes('onrender.com')
     || window.location.hostname.includes('railway.app')
     || window.location.hostname.includes('fly.dev')
     || window.location.hostname.includes('koyeb.app'))
 
-/** Render free tier cold starts can take 50–90s on first request. */
-const RENDER_TIMEOUT = 90000
-const DEFAULT_TIMEOUT = isRenderHost ? RENDER_TIMEOUT : 12000
+/** Cloud cold starts can take up to 60s on first request. */
+const CLOUD_TIMEOUT = 90000
+const DEFAULT_TIMEOUT = isCloudHost ? CLOUD_TIMEOUT : 12000
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -45,13 +45,13 @@ const api = axios.create({
   timeout: DEFAULT_TIMEOUT,
 })
 
-let serverAwake = !isRenderHost
+let serverAwake = !isCloudHost
 
 /** Ping health endpoint to wake sleeping Render instance before auth. */
 export async function wakeServer() {
   if (serverAwake) return true
   try {
-    await api.get('/health/', { timeout: RENDER_TIMEOUT })
+    await api.get('/health/', { timeout: CLOUD_TIMEOUT })
     serverAwake = true
     return true
   } catch {

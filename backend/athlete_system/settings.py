@@ -73,9 +73,10 @@ from django.core.exceptions import ImproperlyConfigured
 
 DATABASE_URL = os.getenv('DATABASE_URL')
 IS_RENDER = os.getenv('RENDER', '').lower() in ('true', '1', 'yes')
+IS_RAILWAY = bool(os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY_PROJECT_ID'))
+IS_PRODUCTION = not DEBUG or IS_RENDER or IS_RAILWAY
 
 if DATABASE_URL:
-    # Production: Render PostgreSQL (recommended for free deploy)
     DATABASES = {'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
 elif os.getenv('USE_SQLITE', 'False').lower() == 'true':
     DATABASES = {
@@ -84,11 +85,11 @@ elif os.getenv('USE_SQLITE', 'False').lower() == 'true':
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-elif not DEBUG or IS_RENDER:
+elif IS_PRODUCTION:
     raise ImproperlyConfigured(
-        'DATABASE_URL is required on Render/production. '
-        'Create a PostgreSQL database on Render, copy the Internal Database URL, '
-        'and add it as the DATABASE_URL environment variable on your web service.'
+        'DATABASE_URL is required in production. '
+        'On Railway: add PostgreSQL, then reference DATABASE_URL on the web service. '
+        'On Render: add a PostgreSQL database and set DATABASE_URL on the web service.'
     )
 else:
     DATABASES = {
@@ -206,6 +207,6 @@ CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(CORS_ALLOWED_ORIGINS + _extra_csrf))
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_NAME = 'athleteforge_sessionid'
 
-# Render.com sits behind a proxy
+# Railway / Render sit behind a reverse proxy
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

@@ -2,11 +2,35 @@ ATHLETEFORGE — REAL WORLD PRODUCTION DEPLOY
 ============================================
 Goal: Public HTTPS website anyone can open worldwide.
 
-BEST CHOICE FOR YOU: KOYEB (all-in-one, browser only, free tier)
-Your URL: https://your-name.koyeb.app
+BEST CHOICE FOR YOU: RAILWAY (Docker, GitHub deploy, fast)
+Your URL: https://your-app.up.railway.app
 
 ============================================================
-PATH 1 — KOYEB (RECOMMENDED — 15 minutes)
+PATH 1 — RAILWAY (RECOMMENDED — 10 minutes)
+============================================================
+
+1. Double-click deploy-railway.bat (or open https://railway.com)
+
+2. New Project → Deploy from GitHub → athleteforge-bca
+
+3. + New → Database → PostgreSQL
+
+4. Web service → Variables:
+   DATABASE_URL       = (reference from Postgres)
+   SECRET_KEY         = athleteforge-prod-secret-2026-xyz
+   DEBUG              = False
+   SAME_ORIGIN_DEPLOY = True
+
+5. Settings → Networking → Generate Domain
+
+6. Wait for deploy (5-10 min) → open your .railway.app URL
+
+7. Test login: admin / admin123
+
+Full steps: RAILWAY_DEPLOY.txt
+
+============================================================
+PATH 2 — KOYEB (alternative — 15 minutes)
 ============================================================
 
 1. https://app.koyeb.com → Sign in with GitHub

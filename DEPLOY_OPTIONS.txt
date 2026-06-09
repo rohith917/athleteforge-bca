@@ -1,7 +1,10 @@
 ATHLETEFORGE — ALL DEPLOY OPTIONS (pick one)
 =============================================
 
-RAILWAY / RENDER having problems? Use one of these:
+PRIMARY: RAILWAY (recommended cloud deploy)
+  Double-click: deploy-railway.bat
+  Guide: RAILWAY_DEPLOY.txt
+  URL: https://your-app.up.railway.app
 
 ------------------------------------------------------------
 OPTION A — LOCAL ON YOUR LAPTOP (easiest, 100% works)
@@ -42,13 +45,7 @@ OPTION D — RENDER (if it works again) ~10 min
   Start: bash start.sh
 
 ------------------------------------------------------------
-OPTION E — RAILWAY (when outage fixed) ~10 min
-------------------------------------------------------------
-  Guide: RAILWAY_DEPLOY.txt
-  Check: https://status.railway.com first
-
-------------------------------------------------------------
-OPTION F — KOYEB (Docker, free tier) ~15 min
+OPTION E — KOYEB (Docker, free tier) ~15 min
 ------------------------------------------------------------
   1. https://www.koyeb.com → Sign up with GitHub
   2. Create App → GitHub → athleteforge-bca
@@ -58,8 +55,8 @@ OPTION F — KOYEB (Docker, free tier) ~15 min
   6. Deploy
 
 ------------------------------------------------------------
-RECOMMENDATION FOR BCA DEMO TOMORROW
+RECOMMENDATION FOR BCA DEMO
 ------------------------------------------------------------
-  Plan 1: START_DEMO.bat on laptop (always works)
-  Plan 2: ngrok public URL (if examiner wants online link)
-  Plan 3: Fly.io or Koyeb when Railway is down
+  Plan 1: deploy-railway.bat → public .railway.app URL
+  Plan 2: START_DEMO.bat on laptop (backup)
+  Plan 3: ngrok if you need a URL without cloud setup
