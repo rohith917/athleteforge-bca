@@ -6,7 +6,7 @@ venv/
 *.sqlite3
 media/
 staticfiles/
-frontend_dist/
+
 
 # Node
 node_modules/

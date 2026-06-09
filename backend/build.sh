@@ -13,9 +13,12 @@ if command -v npm >/dev/null 2>&1; then
   rm -rf frontend_dist
   mkdir -p frontend_dist
   cp -r ../frontend/dist/* frontend_dist/
-  echo "Frontend copied to backend/frontend_dist"
+  echo "Frontend built and copied to backend/frontend_dist"
+elif [ -f frontend_dist/index.html ]; then
+  echo "Using pre-built frontend_dist from repository"
 else
-  echo "WARN: npm missing — API only, no SPA"
+  echo "ERROR: No npm and no frontend_dist — SPA will not load"
+  exit 1
 fi
 
 python manage.py collectstatic --no-input

@@ -48,8 +48,15 @@ export function AuthProvider({ children }) {
     if (!silent) setInitializing(true)
     setApiStatus('waking')
     try {
-      await withRetry(initCsrf, { attempts: 3, delayMs: 2000 })
-      await fetchCurrentUser()
+      await Promise.race([
+        (async () => {
+          await withRetry(initCsrf, { attempts: 2, delayMs: 800 })
+          await fetchCurrentUser()
+        })(),
+        sleep(5000).then(() => {
+          throw new Error('Auth bootstrap timeout')
+        }),
+      ])
       setApiStatus('ok')
     } catch {
       clearUser()

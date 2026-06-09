@@ -12,12 +12,16 @@ export function PrivateRoute({ children }) {
   const { user, initializing } = useAuth()
   const location = useLocation()
 
-  if (initializing) {
-    return <LoadingSpinner message="Checking your session..." fullScreen />
+  if (!initializing && !user) {
+    return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />
+  if (initializing) {
+    return (
+      <div className="auth-check-screen">
+        <LoadingSpinner message="Checking your session..." fullScreen />
+      </div>
+    )
   }
 
   return children

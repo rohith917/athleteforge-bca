@@ -631,6 +631,23 @@ body {
 .login-title { font-size: 1.5rem !important; font-weight: 700 !important; text-align: center; color: var(--lux-text) !important; }
 .login-subtitle { color: var(--lux-text-muted) !important; text-transform: none !important; letter-spacing: 0 !important; }
 
+.auth-check-screen {
+  min-height: 100vh;
+  background: var(--lux-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loading-spinner-wrap.fullscreen { min-height: 50vh; }
+.spinner-ring {
+  border-color: var(--lux-border) !important;
+  border-top-color: var(--lux-accent) !important;
+}
+.spinner-text { color: var(--lux-text-secondary) !important; }
+.spinner-hint { margin: 0; font-size: 0.85rem; }
+.spinner-hint a { color: var(--lux-accent); font-weight: 600; text-decoration: none; }
+.spinner-hint a:hover { text-decoration: underline; }
+
 .role-select-duo { grid-template-columns: repeat(2, 1fr) !important; }
 
 .public-nav-login,
