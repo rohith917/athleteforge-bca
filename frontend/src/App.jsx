@@ -27,12 +27,9 @@ import {
   DashboardRouter,
   FallbackRoute,
 } from './routes/AuthGuards'
-import ApiStatusBanner from './components/ApiStatusBanner'
-
 export default function App() {
   return (
     <>
-      <ApiStatusBanner />
       <ThemeRoleGuard />
       <Routes>
         {/* Public routes */}

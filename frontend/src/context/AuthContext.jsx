@@ -66,14 +66,14 @@ export function AuthProvider({ children }) {
             throw err
           }
         })(),
-        sleep(8000).then(() => {
+        sleep(15000).then(() => {
           throw new Error('Auth bootstrap timeout')
         }),
       ])
       setApiStatus('ok')
-    } catch {
+    } catch (err) {
       clearUser()
-      setApiStatus('error')
+      setApiStatus(err?.response ? 'ok' : 'error')
     } finally {
       if (!silent) setInitializing(false)
     }

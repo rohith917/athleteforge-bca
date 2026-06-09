@@ -21,11 +21,14 @@ function resolveApiBase() {
 
 const API_BASE = resolveApiBase()
 
+const isRenderHost = typeof window !== 'undefined'
+  && window.location.hostname.includes('onrender.com')
+
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
-  timeout: 12000,
+  timeout: isRenderHost ? 25000 : 12000,
 })
 
 let csrfToken = ''
