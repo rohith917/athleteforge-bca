@@ -3,7 +3,20 @@
  */
 import axios from 'axios'
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api'
+/** Resolve API base — fixes Render when VITE_API_URL points at wrong/dead backend. */
+function resolveApiBase() {
+  const envUrl = import.meta.env.VITE_API_URL
+  if (envUrl && !envUrl.includes('YOUR-BACKEND') && !envUrl.includes('athleteforge-api.onrender.com')) {
+    return envUrl
+  }
+  const host = typeof window !== 'undefined' ? window.location.hostname : ''
+  if (host.includes('onrender.com') || host.includes('athleteforge')) {
+    return 'https://athleteforge-bca.onrender.com/api'
+  }
+  return envUrl || '/api'
+}
+
+const API_BASE = resolveApiBase()
 
 const api = axios.create({
   baseURL: API_BASE,

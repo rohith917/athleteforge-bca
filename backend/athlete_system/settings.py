@@ -14,8 +14,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-bca-athlete-tracking-chang
 
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
+_default_hosts = 'localhost,127.0.0.1,athleteforge-bca.onrender.com,.onrender.com'
 ALLOWED_HOSTS = [
-    h.strip() for h in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if h.strip()
+    h.strip() for h in os.getenv('ALLOWED_HOSTS', _default_hosts).split(',') if h.strip()
 ]
 
 INSTALLED_APPS = [

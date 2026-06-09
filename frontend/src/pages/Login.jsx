@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { FaEnvelope, FaLock, FaSignInAlt, FaArrowLeft, FaTachometerAlt, FaSignOutAlt } from 'react-icons/fa'
 import Logo from '../components/Logo'
+import { redirectTo } from '../utils/navigation'
 
 export default function Login() {
   const [identifier, setIdentifier] = useState('')
@@ -35,7 +36,7 @@ export default function Login() {
       await logout()
       setIdentifier('')
       setPassword('')
-      window.location.href = '/login'
+      redirectTo('/login')
     } catch (err) {
       setError(getErrorMessage(err, 'Could not sign out. Please try again.'))
     }

@@ -7,6 +7,7 @@ import { useTheme } from '../context/ThemeContext'
 import { useToast } from '../context/ToastContext'
 import { FaSignOutAlt, FaMoon, FaSun, FaBars } from 'react-icons/fa'
 import Avatar from './Avatar'
+import { redirectTo } from '../utils/navigation'
 
 const roleLabels = { admin: 'Admin', coach: 'Coach', student: 'Student' }
 
@@ -21,10 +22,10 @@ export default function Navbar({ onMenuToggle }) {
     setLoggingOut(true)
     try {
       await logout()
-      window.location.href = '/login'
+      redirectTo('/login')
     } catch (err) {
       showToast(getErrorMessage(err, 'Logout failed. Please try again.'), 'error')
-      window.location.href = '/login'
+      redirectTo('/login')
     } finally {
       setLoggingOut(false)
     }
