@@ -26,7 +26,7 @@ export default function Attendance() {
   const [dateTo, setDateTo] = useState('')
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
-  const { isCoach } = useAuth()
+  const { isStaff, isStudent } = useAuth()
   const { showToast } = useToast()
 
   useEffect(() => {
@@ -72,20 +72,20 @@ export default function Attendance() {
   } : null
 
   if (loading) return (
-    <div className="animate-in dashboard-luxury">
-      <PageHeader title="Attendance Monitoring" subtitle="Loading..." />
+    <div className={`animate-in dashboard-luxury ${isStudent ? 'student-panel' : 'coach-panel'}`}>
+      <PageHeader title={isStudent ? 'My Attendance' : 'Attendance Monitoring'} subtitle="Loading..." />
       <Skeleton className="skeleton-kpi" />
     </div>
   )
 
   return (
-    <div className="animate-in dashboard-luxury">
+    <div className={`animate-in dashboard-luxury ${isStudent ? 'student-panel' : 'coach-panel'}`}>
       <PageHeader
-        title="Attendance Monitoring"
-        subtitle="Session tracking · Attendance rates · Team compliance"
+        title={isStudent ? 'My Attendance' : 'Attendance Monitoring'}
+        subtitle={isStudent ? 'Your session history and attendance rate' : 'Session tracking · Attendance rates · Team compliance'}
       />
 
-      {isCoach && (
+      {isStaff && (
         <div className="glass-card mb-4">
           <h6 className="analytics-card-title"><FaClipboardCheck /> Mark Daily Attendance</h6>
           <div className="filter-bar-premium mb-3" style={{ marginBottom: 16 }}>
@@ -121,7 +121,7 @@ export default function Attendance() {
       )}
 
       <div className="glass-card">
-        <h6 className="analytics-card-title">{isCoach ? 'Attendance Analytics' : 'My Attendance History'}</h6>
+        <h6 className="analytics-card-title">{isStaff ? 'Attendance Analytics' : 'My Attendance History'}</h6>
         <div className="filter-bar-premium mb-4">
           <input type="date" className="form-control-custom" style={{ maxWidth: 180 }}
             value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />

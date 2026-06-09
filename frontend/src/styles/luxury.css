@@ -1188,6 +1188,288 @@ html.theme-dark textarea,
   .mobile-menu-btn { flex-shrink: 0; }
 }
 
+/* ---- Role-aware panels (coach / student / admin) ---- */
+.role-welcome-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+  border-radius: 16px;
+  border: 1px solid var(--lux-border);
+  background: var(--lux-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.role-welcome-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 4px 0 0 4px;
+}
+
+.role-welcome-coach::before { background: linear-gradient(180deg, #6366F1, #818CF8); }
+.role-welcome-student::before { background: linear-gradient(180deg, #22C55E, #4ADE80); }
+.role-welcome-admin::before { background: linear-gradient(180deg, #C9A962, #E8D5A3); }
+
+.role-welcome-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+.role-welcome-coach .role-welcome-icon {
+  background: rgba(99, 102, 241, 0.12);
+  color: #818CF8;
+}
+
+.role-welcome-student .role-welcome-icon {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ADE80;
+}
+
+.role-welcome-admin .role-welcome-icon {
+  background: rgba(201, 169, 98, 0.15);
+  color: #C9A962;
+}
+
+.role-welcome-text { flex: 1; min-width: 0; }
+
+.role-welcome-eyebrow {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--lux-text-muted);
+  margin-bottom: 4px;
+}
+
+.role-welcome-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: var(--lux-text);
+  letter-spacing: -0.02em;
+}
+
+.role-welcome-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--lux-text-secondary);
+  line-height: 1.5;
+}
+
+.role-welcome-bar .role-badge {
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.role-quick-actions { margin-bottom: 28px; }
+
+.role-section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--lux-text-muted);
+  margin-bottom: 14px;
+}
+
+.role-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.student-quick-grid {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.role-quick-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--lux-border);
+  background: var(--lux-card);
+  text-decoration: none;
+  color: var(--lux-text);
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.role-quick-card:hover {
+  border-color: var(--lux-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  color: var(--lux-text);
+}
+
+.coach-quick-actions .role-quick-card:hover { border-color: #818CF8; }
+.student-quick-actions .role-quick-card:hover { border-color: #4ADE80; }
+
+.role-quick-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.coach-quick-actions .role-quick-icon {
+  background: rgba(99, 102, 241, 0.1);
+  color: #818CF8;
+}
+
+.student-quick-actions .role-quick-icon {
+  background: rgba(34, 197, 94, 0.1);
+  color: #4ADE80;
+}
+
+.role-quick-card strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.role-quick-card small {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--lux-text-muted);
+}
+
+.student-link-alert {
+  padding: 28px 32px;
+  border-radius: 16px;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.08);
+  margin-bottom: 28px;
+}
+
+.student-link-alert h5 {
+  margin: 0 0 10px;
+  color: #F59E0B;
+  font-weight: 700;
+}
+
+.student-link-alert p {
+  margin: 0 0 8px;
+  color: var(--lux-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.student-demo-hint {
+  margin-top: 14px !important;
+  padding-top: 14px;
+  border-top: 1px solid rgba(245, 158, 11, 0.2);
+  font-size: 0.82rem !important;
+}
+
+/* Sidebar role chip */
+.sidebar-role-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 16px 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-role-admin {
+  --role-accent: #C9A962;
+  --role-accent-soft: rgba(201, 169, 98, 0.12);
+}
+
+.sidebar-role-coach {
+  --role-accent: #818CF8;
+  --role-accent-soft: rgba(99, 102, 241, 0.12);
+}
+
+.sidebar-role-student {
+  --role-accent: #4ADE80;
+  --role-accent-soft: rgba(34, 197, 94, 0.12);
+}
+
+.sidebar-role-admin .sidebar-role-chip,
+.sidebar-role-coach .sidebar-role-chip,
+.sidebar-role-student .sidebar-role-chip {
+  background: var(--role-accent-soft);
+  color: var(--role-accent);
+  border: 1px solid color-mix(in srgb, var(--role-accent) 25%, transparent);
+}
+
+.sidebar-nav-divider {
+  padding: 12px 20px 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--lux-text-muted);
+}
+
+.nav-item-home {
+  margin-bottom: 4px !important;
+  border-bottom: 1px solid var(--lux-border) !important;
+  border-radius: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
+/* Panel accent borders */
+.coach-panel .glass-card:hover { border-color: rgba(99, 102, 241, 0.2); }
+.student-panel .glass-card:hover { border-color: rgba(34, 197, 94, 0.2); }
+.admin-panel .glass-card:hover { border-color: rgba(201, 169, 98, 0.25); }
+
+.student-profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 28px !important;
+}
+
+@media (max-width: 768px) {
+  .role-welcome-bar {
+    flex-wrap: wrap;
+    padding: 20px;
+    gap: 14px;
+  }
+
+  .role-welcome-bar .role-badge { display: none; }
+
+  .role-quick-grid,
+  .student-quick-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .student-profile-hero { flex-direction: column; text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .role-quick-grid,
+  .student-quick-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* API connection banner (cold start / unreachable backend) */
 .api-status-banner {
   position: fixed;

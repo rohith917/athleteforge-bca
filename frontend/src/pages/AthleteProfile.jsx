@@ -2,8 +2,9 @@
  * Premium athlete profile — sports science intelligence
  */
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, Navigate } from 'react-router-dom'
 import { athletesAPI } from '../services/api'
+import { useAuth } from '../context/AuthContext'
 import { FaEdit, FaArrowLeft, FaEnvelope, FaPhone, FaRulerVertical, FaBirthdayCake, FaChartLine, FaBandAid } from 'react-icons/fa'
 import AthleteAvatar from '../components/AthleteAvatar'
 import LoadingSpinner from '../components/LoadingSpinner'
@@ -15,13 +16,28 @@ import { calcRecoveryScore } from '../utils/metricsEngine'
 
 export default function AthleteProfile() {
   const { id } = useParams()
+  const { isStudent, isStaff, user } = useAuth()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  const studentOwnsProfile = !isStudent || (user?.athlete_id && String(user.athlete_id) === String(id))
+
   useEffect(() => {
+    if (!studentOwnsProfile) {
+      setLoading(false)
+      return
+    }
     athletesAPI.getProfile(id).then((res) => setProfile(res.data))
       .catch(console.error).finally(() => setLoading(false))
-  }, [id])
+  }, [id, studentOwnsProfile])
+
+  if (isStudent && !user?.athlete_id) {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  if (isStudent && !studentOwnsProfile) {
+    return <Navigate to={`/dashboard/athletes/${user.athlete_id}`} replace />
+  }
 
   if (loading) return <LoadingSpinner message="Loading athlete intelligence..." fullScreen />
   if (!profile) return <div className="alert-custom alert-danger-custom">Athlete not found.</div>
@@ -50,11 +66,16 @@ export default function AthleteProfile() {
   const rtpSteps = ['Injured', 'Rehabilitation', 'Light Training', 'Modified', 'Full Training', 'Comp Ready']
   const activeInjury = profile.active_injuries?.[0]
 
+  const backTo = isStudent ? '/dashboard' : '/dashboard/athletes'
+  const backLabel = isStudent ? 'My Dashboard' : 'Back to Roster'
+
   return (
-    <div className="animate-in">
+    <div className={`animate-in ${isStudent ? 'student-panel' : 'coach-panel'}`}>
       <div className="d-flex justify-content-between mb-3 flex-wrap gap-2">
-        <Link to="/dashboard/athletes" className="btn-outline-gold text-decoration-none"><FaArrowLeft /> Back</Link>
-        <Link to={`/dashboard/athletes/${id}/edit`} className="btn-gold text-decoration-none"><FaEdit /> Edit Profile</Link>
+        <Link to={backTo} className="btn-outline-gold text-decoration-none"><FaArrowLeft /> {backLabel}</Link>
+        {isStaff && (
+          <Link to={`/dashboard/athletes/${id}/edit`} className="btn-gold text-decoration-none"><FaEdit /> Edit Profile</Link>
+        )}
       </div>
 
       <div className="profile-premium-hero glass-card">

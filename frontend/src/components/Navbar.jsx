@@ -12,7 +12,7 @@ const roleLabels = { admin: 'Admin', coach: 'Coach', student: 'Student' }
 
 export default function Navbar({ onMenuToggle }) {
   const navigate = useNavigate()
-  const { user, logout, isStudent, isAdmin, actionLoading, getErrorMessage } = useAuth()
+  const { user, logout, isStudent, isCoach, isAdmin, actionLoading, getErrorMessage } = useAuth()
   const { isDark, toggleTheme, canToggleTheme } = useTheme()
   const { showToast } = useToast()
   const [loggingOut, setLoggingOut] = useState(false)
@@ -43,7 +43,7 @@ export default function Navbar({ onMenuToggle }) {
           <FaBars />
         </button>
         <h4 className="page-title mb-0">
-          {isAdmin ? 'Admin' : isStudent ? 'My Portal' : 'Dashboard'}
+          {isAdmin ? 'Admin Command Center' : isStudent ? 'Athlete Portal' : isCoach ? 'Coach Command Center' : 'Dashboard'}
         </h4>
       </div>
 

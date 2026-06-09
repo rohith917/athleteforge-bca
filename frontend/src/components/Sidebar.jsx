@@ -1,11 +1,12 @@
 /**
- * Role-aware sidebar — admin, coach, and student navigation.
+ * Role-aware sidebar — distinct navigation per admin, coach, and athlete.
  */
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
   FaTachometerAlt, FaUsers, FaChartLine, FaBandAid,
-  FaTrophy, FaClipboardCheck, FaWeight, FaFileAlt, FaUser, FaUserShield, FaHome
+  FaTrophy, FaClipboardCheck, FaWeight, FaFileAlt, FaUser, FaUserShield, FaHome,
+  FaUserTie, FaRunning
 } from 'react-icons/fa'
 import Logo from './Logo'
 
@@ -22,13 +23,13 @@ const adminNav = [
 ]
 
 const coachNav = [
-  { path: '/dashboard', icon: FaTachometerAlt, label: 'Dashboard' },
-  { path: '/dashboard/athletes', icon: FaUsers, label: 'Athletes' },
+  { path: '/dashboard', icon: FaTachometerAlt, label: 'Coach Dashboard' },
+  { path: '/dashboard/athletes', icon: FaUsers, label: 'My Athletes' },
   { path: '/dashboard/performance', icon: FaChartLine, label: 'Performance' },
-  { path: '/dashboard/injuries', icon: FaBandAid, label: 'Injuries' },
+  { path: '/dashboard/injuries', icon: FaBandAid, label: 'Injury Tracking' },
   { path: '/dashboard/competitions', icon: FaTrophy, label: 'Competitions' },
   { path: '/dashboard/attendance', icon: FaClipboardCheck, label: 'Attendance' },
-  { path: '/dashboard/weight', icon: FaWeight, label: 'Weight' },
+  { path: '/dashboard/weight', icon: FaWeight, label: 'Weight Tracking' },
   { path: '/dashboard/reports', icon: FaFileAlt, label: 'Reports' },
 ]
 
@@ -39,15 +40,29 @@ const studentNav = [
   { path: '/dashboard/attendance', icon: FaClipboardCheck, label: 'My Attendance' },
 ]
 
+const ROLE_SIDEBAR = {
+  admin: { label: 'Administrator', icon: FaUserShield, className: 'sidebar-role-admin' },
+  coach: { label: 'Coach Panel', icon: FaUserTie, className: 'sidebar-role-coach' },
+  student: { label: 'Athlete Portal', icon: FaRunning, className: 'sidebar-role-student' },
+}
+
 export default function Sidebar({ isOpen, onClose }) {
-  const { isAdmin, isStudent, user } = useAuth()
+  const { isAdmin, isStudent, isCoach, user } = useAuth()
+  const roleKey = isAdmin ? 'admin' : isStudent ? 'student' : 'coach'
+  const roleMeta = ROLE_SIDEBAR[roleKey]
+  const RoleIcon = roleMeta.icon
   const navItems = isAdmin ? adminNav : isStudent ? studentNav : coachNav
   const profilePath = isStudent && user?.athlete_id ? `/dashboard/athletes/${user.athlete_id}` : null
 
   return (
-    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+    <aside className={`sidebar ${isOpen ? 'open' : ''} ${roleMeta.className}`}>
       <div className="sidebar-brand">
         <Logo size="md" showTagline />
+      </div>
+
+      <div className="sidebar-role-chip">
+        <RoleIcon />
+        <span>{roleMeta.label}</span>
       </div>
 
       <nav className="sidebar-nav">
@@ -58,6 +73,8 @@ export default function Sidebar({ isOpen, onClose }) {
         >
           <FaHome /> <span>Home</span>
         </NavLink>
+
+        <div className="sidebar-nav-divider">{isStudent ? 'My Data' : isCoach ? 'Team Management' : 'System'}</div>
 
         {navItems.map(({ path, icon: Icon, label }) => (
           <NavLink

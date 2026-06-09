@@ -1,13 +1,13 @@
 /**
- * Athlete Dashboard — personal performance, wellness, readiness
+ * Athlete / Student Dashboard — personal performance hub (students only)
  */
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import { dashboardAPI } from '../services/api'
 import { useAuth } from '../context/AuthContext'
-import { FaBandAid, FaClipboardCheck, FaChartLine, FaUser } from 'react-icons/fa'
+import { FaBandAid, FaClipboardCheck, FaChartLine, FaUser, FaTrophy, FaMedal } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
 import KpiCard from '../components/analytics/KpiCard'
 import { KpiSkeletonGrid } from '../components/ui/Skeleton'
@@ -17,33 +17,53 @@ import RecoveryPanel from '../components/analytics/RecoveryPanel'
 import WellnessCheckIn from '../components/analytics/WellnessCheckIn'
 import PerformanceRadar from '../components/analytics/PerformanceRadar'
 import Avatar from '../components/Avatar'
+import RoleWelcomeBar from '../components/dashboard/RoleWelcomeBar'
+import StudentQuickActions from '../components/dashboard/StudentQuickActions'
+import StudentLinkAlert from '../components/dashboard/StudentLinkAlert'
 import { GOLD, baseChartOptions } from '../utils/chartTheme'
 import { calcRecoveryScore } from '../utils/metricsEngine'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip, Legend)
 
 export default function StudentDashboard() {
-  const { user } = useAuth()
+  const { user, isStudent } = useAuth()
   const [stats, setStats] = useState(null)
   const [wellness, setWellness] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!isStudent) return
     dashboardAPI.getStats().then((res) => setStats(res.data))
       .catch(console.error).finally(() => setLoading(false))
-  }, [])
+  }, [isStudent])
+
+  if (!isStudent) return <Navigate to="/dashboard" replace />
 
   if (loading) return (
-    <div className="animate-in dashboard-luxury">
+    <div className="animate-in dashboard-luxury student-panel">
       <PageHeader title="My Performance Hub" subtitle="Loading your analytics..." />
-      <KpiSkeletonGrid count={3} />
+      <KpiSkeletonGrid count={4} />
     </div>
   )
+
   if (!stats) return <div className="alert-custom alert-danger-custom">Failed to load dashboard.</div>
+
+  const notLinked = stats.linked === false || !stats.athlete
+
+  if (notLinked) {
+    return (
+      <div className="animate-in dashboard-luxury student-panel">
+        <RoleWelcomeBar role="student" />
+        <StudentLinkAlert message={stats.message} />
+        <StudentQuickActions />
+      </div>
+    )
+  }
 
   const athlete = stats.athlete
   const recovery = calcRecoveryScore(stats)
   const attRate = stats.monthly_attendance?.slice(-1)[0]?.rate ?? 0
+  const medals = (stats.gold_medals || 0) + (stats.silver_medals || 0) + (stats.bronze_medals || 0)
 
   const radarScores = {
     speed: stats.avg_performance?.speed,
@@ -59,21 +79,19 @@ export default function StudentDashboard() {
     labels: stats.monthly_attendance.map((m) => m.month),
     datasets: [{
       data: stats.monthly_attendance.map((m) => m.rate),
-      borderColor: GOLD,
-      backgroundColor: 'rgba(212, 175, 55, 0.12)',
+      borderColor: '#22C55E',
+      backgroundColor: 'rgba(34, 197, 94, 0.1)',
       fill: true,
       tension: 0.4,
     }],
   }
 
   return (
-    <div className="animate-in dashboard-luxury">
-      <PageHeader
-        title="My Performance Hub"
-        subtitle={`Welcome back, ${user?.first_name || athlete?.first_name || 'Athlete'}`}
-      />
+    <div className="animate-in dashboard-luxury student-panel">
+      <RoleWelcomeBar role="student" />
+      <StudentQuickActions />
 
-      <div className="profile-premium-hero glass-card mb-4">
+      <div className="profile-premium-hero glass-card mb-4 student-profile-hero">
         <Avatar
           src={user?.profile_photo || athlete?.avatar_url}
           name={athlete?.full_name || user?.username}
@@ -81,7 +99,9 @@ export default function StudentDashboard() {
         />
         <div className="flex-grow-1">
           <h2 className="page-heading mb-1">{athlete?.full_name}</h2>
-          <p className="page-subtitle">{athlete?.sport} · {athlete?.team} · <span className="role-badge role-student">Athlete</span></p>
+          <p className="page-subtitle">
+            {athlete?.sport} · {athlete?.team} · <span className="role-badge role-student">Athlete</span>
+          </p>
           {athlete?.id && (
             <Link to={`/dashboard/athletes/${athlete.id}`} className="btn-outline-gold mt-2 text-decoration-none">
               <FaUser className="me-1" /> View Full Profile
@@ -91,14 +111,17 @@ export default function StudentDashboard() {
       </div>
 
       <div className="row g-3 mb-4">
-        <div className="col-sm-4">
-          <KpiCard icon={FaChartLine} label="Endurance Score" value={stats.avg_performance?.endurance || 0} change={5} trend="up" variant="gold" />
+        <div className="col-sm-6 col-lg-3">
+          <KpiCard icon={FaChartLine} label="Avg Performance" value={`${Math.round((stats.avg_performance?.endurance || 0))}%`} change={5} trend="up" variant="gold" />
         </div>
-        <div className="col-sm-4">
+        <div className="col-sm-6 col-lg-3">
           <KpiCard icon={FaBandAid} label="Active Injuries" value={stats.active_injuries} change={0} trend="neutral" variant="danger" />
         </div>
-        <div className="col-sm-4">
+        <div className="col-sm-6 col-lg-3">
           <KpiCard icon={FaClipboardCheck} label="Attendance" value={`${attRate}%`} change={3} trend="up" variant="success" sparkData={stats.monthly_attendance?.map((m) => m.rate)} />
+        </div>
+        <div className="col-sm-6 col-lg-3">
+          <KpiCard icon={FaTrophy} label="Medals Won" value={medals} change={2} trend="up" variant="gold" />
         </div>
       </div>
 
@@ -113,13 +136,13 @@ export default function StudentDashboard() {
       <div className="row g-4 mt-2">
         <div className="col-lg-5">
           <div className="chart-panel-premium glass-card h-100">
-            <h6>My Performance Profile</h6>
+            <h6><FaMedal className="me-2" />My Performance Profile</h6>
             <PerformanceRadar scores={radarScores} />
           </div>
         </div>
         <div className="col-lg-7">
           <div className="chart-panel-premium glass-card" style={{ minHeight: 320 }}>
-            <h6>Attendance Trend</h6>
+            <h6>My Attendance Trend</h6>
             <div style={{ height: 260 }}>
               <Line data={attendanceChart} options={{
                 ...baseChartOptions,

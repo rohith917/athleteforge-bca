@@ -42,7 +42,7 @@ export default function App() {
         {/* Protected app */}
         <Route path="/dashboard" element={<PrivateRoute><Layout /></PrivateRoute>}>
           <Route index element={<DashboardRouter />} />
-          <Route path="athletes" element={<Athletes />} />
+          <Route path="athletes" element={<StaffRoute><Athletes /></StaffRoute>} />
           <Route path="athletes/:id" element={<AthleteProfile />} />
           <Route path="admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
           <Route path="athletes/new" element={<StaffRoute><AthleteForm /></StaffRoute>} />

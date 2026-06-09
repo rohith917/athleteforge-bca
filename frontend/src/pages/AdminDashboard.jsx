@@ -12,6 +12,7 @@ import {
   FaCog, FaExclamationTriangle, FaArrowRight
 } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
+import RoleWelcomeBar from '../components/dashboard/RoleWelcomeBar'
 import KpiCard from '../components/analytics/KpiCard'
 import { KpiSkeletonGrid } from '../components/ui/Skeleton'
 import Avatar from '../components/Avatar'
@@ -61,7 +62,8 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="animate-in dashboard-luxury">
+    <div className="animate-in dashboard-luxury admin-panel">
+      <RoleWelcomeBar role="admin" />
       <PageHeader
         title="Admin Command Center"
         subtitle="System analytics · User management · Platform oversight"

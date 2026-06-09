@@ -16,7 +16,7 @@ export default function Athletes() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [loading, setLoading] = useState(true)
-  const { isCoach } = useAuth()
+  const { isStaff } = useAuth()
   const { showToast } = useToast()
 
   const fetchAthletes = async () => {
@@ -53,7 +53,7 @@ export default function Athletes() {
       <PageHeader
         title="Athlete Management"
         subtitle="Elite roster intelligence · Readiness · Performance profiles"
-        action={isCoach ? <Link to="/dashboard/athletes/new" className="btn-gold text-decoration-none"><FaPlus /> Add Athlete</Link> : null}
+        action={isStaff ? <Link to="/dashboard/athletes/new" className="btn-gold text-decoration-none"><FaPlus /> Add Athlete</Link> : null}
       />
 
       <div className="filter-bar-premium">
@@ -85,7 +85,7 @@ export default function Athletes() {
       ) : (
         <div className="athlete-grid">
           {athletes.map((a) => (
-            <AthleteGridCard key={a.id} athlete={a} isCoach={isCoach} onDelete={handleDelete} />
+            <AthleteGridCard key={a.id} athlete={a} isCoach={isStaff} onDelete={handleDelete} />
           ))}
         </div>
       )}

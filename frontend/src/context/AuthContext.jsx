@@ -170,7 +170,7 @@ export function AuthProvider({ children }) {
 
   const isAdmin = Boolean(user?.is_admin || user?.role === 'admin')
   const isStudent = user?.role === 'student'
-  const isCoach = user?.role === 'coach' || user?.is_staff_role
+  const isCoach = user?.role === 'coach'
   const isStaff = isCoach || isAdmin
 
   const retryBootstrap = useCallback(() => {

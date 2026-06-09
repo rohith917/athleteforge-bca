@@ -27,7 +27,7 @@ export default function Injuries() {
   const [showForm, setShowForm] = useState(false)
   const [filter, setFilter] = useState('')
   const [loading, setLoading] = useState(true)
-  const { isCoach } = useAuth()
+  const { isStaff, isStudent } = useAuth()
   const { showToast } = useToast()
 
   const fetchData = async () => {
@@ -72,11 +72,11 @@ export default function Injuries() {
   const recovered = injuries.filter((i) => i.recovery_status === 'Recovered').length
 
   return (
-    <div className="animate-in dashboard-luxury">
+    <div className={`animate-in dashboard-luxury ${isStudent ? 'student-panel' : 'coach-panel'}`}>
       <PageHeader
-        title="Injury Management"
-        subtitle="Track injuries · Recovery timelines · Return-to-play workflow"
-        action={isCoach ? <button type="button" className="btn-gold" onClick={() => setShowForm(!showForm)}><FaPlus /> Report Injury</button> : null}
+        title={isStudent ? 'My Injuries' : 'Injury Management'}
+        subtitle={isStudent ? 'Your injury history and recovery progress' : 'Track injuries · Recovery timelines · Return-to-play workflow'}
+        action={isStaff ? <button type="button" className="btn-gold" onClick={() => setShowForm(!showForm)}><FaPlus /> Report Injury</button> : null}
       />
 
       <div className="row g-3 mb-4">
@@ -94,7 +94,7 @@ export default function Injuries() {
         </div>
       </div>
 
-      {isCoach && showForm && (
+      {isStaff && showForm && (
         <div className="glass-card mb-4">
           <h6 className="analytics-card-title"><FaBandAid /> Record New Injury</h6>
           <form onSubmit={handleSubmit}>
@@ -152,7 +152,7 @@ export default function Injuries() {
       )}
 
       <div className="row g-4 mb-4">
-        <div className="col-lg-8">
+        <div className={isStudent ? 'col-12' : 'col-lg-8'}>
           <div className="filter-bar-premium mb-3" style={{ marginBottom: 16 }}>
             <select className="form-select-custom" style={{ maxWidth: 220 }} value={filter}
               onChange={(e) => setFilter(e.target.value)}>
@@ -172,15 +172,17 @@ export default function Injuries() {
           ) : (
             <div className="injury-grid">
               {injuries.map((inj) => (
-                <InjuryCard key={inj.id} injury={inj} isCoach={isCoach}
+                <InjuryCard key={inj.id} injury={inj} isCoach={isStaff}
                   onRecoveryUpdate={handleRecoveryUpdate} onDelete={handleDelete} />
               ))}
             </div>
           )}
         </div>
-        <div className="col-lg-4">
-          <InjuryHeatmap injuries={injuries} />
-        </div>
+        {!isStudent && (
+          <div className="col-lg-4">
+            <InjuryHeatmap injuries={injuries} />
+          </div>
+        )}
       </div>
     </div>
   )

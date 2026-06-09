@@ -537,7 +537,25 @@ def dashboard_stats(request):
     else:
         athlete = get_athlete_for_user(user)
         if not athlete:
-            return Response({'error': 'No linked athlete profile'}, status=404)
+            return Response({
+                'role': 'student',
+                'linked': False,
+                'message': 'Your account is not linked to an athlete profile yet. Contact your coach or use the same email as your athlete record.',
+                'total_athletes': 0,
+                'active_athletes': 0,
+                'injured_athletes': 0,
+                'active_injuries': 0,
+                'total_competitions': 0,
+                'gold_medals': 0,
+                'silver_medals': 0,
+                'bronze_medals': 0,
+                'avg_performance': {'speed': 0, 'strength': 0, 'endurance': 0, 'flexibility': 0, 'agility': 0},
+                'sport_distribution': [],
+                'injury_by_severity': [],
+                'monthly_attendance': [],
+                'performance_trend': [],
+                'athlete': None,
+            })
         athletes = Athlete.objects.filter(pk=athlete.pk)
         injuries = athlete.injuries.exclude(recovery_status='Recovered')
         performances = athlete.performances.all()

@@ -33,8 +33,14 @@ export default function Performance() {
   const [chartData, setChartData] = useState(null)
   const [filterAthlete, setFilterAthlete] = useState('')
   const [loading, setLoading] = useState(true)
-  const { isCoach } = useAuth()
+  const { isStaff, isStudent, user } = useAuth()
   const { showToast } = useToast()
+
+  useEffect(() => {
+    if (isStudent && user?.athlete_id) {
+      setFilterAthlete(String(user.athlete_id))
+    }
+  }, [isStudent, user?.athlete_id])
 
   const fetchData = async () => {
     setLoading(true)
@@ -104,20 +110,22 @@ export default function Performance() {
   )
 
   return (
-    <div className="animate-in dashboard-luxury">
+    <div className={`animate-in dashboard-luxury ${isStudent ? 'student-panel' : 'coach-panel'}`}>
       <PageHeader
-        title="Performance Analytics"
-        subtitle="Speed · Strength · Power · Endurance · Agility · Training load"
-        action={isCoach ? <button type="button" className="btn-gold" onClick={() => setShowForm(!showForm)}><FaPlus /> Record Performance</button> : null}
+        title={isStudent ? 'My Performance' : 'Performance Analytics'}
+        subtitle={isStudent ? 'Your training scores, trends, and readiness' : 'Speed · Strength · Power · Endurance · Agility · Training load'}
+        action={isStaff ? <button type="button" className="btn-gold" onClick={() => setShowForm(!showForm)}><FaPlus /> Record Performance</button> : null}
       />
 
-      <div className="filter-bar-premium mb-4">
-        <select className="form-select-custom" style={{ maxWidth: 280 }} value={filterAthlete}
-          onChange={(e) => setFilterAthlete(e.target.value)}>
-          <option value="">All Athletes</option>
-          {athletes.map((a) => <option key={a.id} value={a.id}>{a.full_name || `${a.first_name} ${a.last_name}`}</option>)}
-        </select>
-      </div>
+      {!isStudent && (
+        <div className="filter-bar-premium mb-4">
+          <select className="form-select-custom" style={{ maxWidth: 280 }} value={filterAthlete}
+            onChange={(e) => setFilterAthlete(e.target.value)}>
+            <option value="">All Athletes</option>
+            {athletes.map((a) => <option key={a.id} value={a.id}>{a.full_name || `${a.first_name} ${a.last_name}`}</option>)}
+          </select>
+        </div>
+      )}
 
       <div className="row g-3 mb-4">
         <div className="col-sm-6 col-xl-3">
@@ -134,7 +142,7 @@ export default function Performance() {
         </div>
       </div>
 
-      {isCoach && showForm && (
+      {isStaff && showForm && (
         <div className="glass-card mb-4">
           <h6 className="analytics-card-title"><FaChartLine /> New Performance Record</h6>
           <form onSubmit={handleSubmit}>
@@ -213,7 +221,7 @@ export default function Performance() {
                     <strong>{r.athlete_name}</strong>
                     <small className="d-block text-muted">{r.record_date}</small>
                   </div>
-                  {isCoach && (
+                  {isStaff && (
                     <button type="button" className="btn-icon btn-icon-delete" onClick={() => handleDelete(r.id)}><FaTrash /></button>
                   )}
                 </div>

@@ -1,7 +1,9 @@
 /**
- * Coach Dashboard — Premium enterprise sports analytics
+ * Coach Dashboard — team management, analytics, roster intelligence (coaches only)
  */
 import { useState, useEffect } from 'react'
+import RoleWelcomeBar from '../components/dashboard/RoleWelcomeBar'
+import CoachQuickActions from '../components/dashboard/CoachQuickActions'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Bar, Line, Doughnut } from 'react-chartjs-2'
 import { dashboardAPI } from '../services/api'
@@ -94,10 +96,13 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="animate-in dashboard-luxury">
+    <div className="animate-in dashboard-luxury coach-panel">
+      <RoleWelcomeBar role="coach" />
+      <CoachQuickActions />
+
       <PageHeader
-        title="Overview"
-        subtitle="Team performance, recovery, and readiness at a glance"
+        title="Team Analytics"
+        subtitle="Roster overview · Performance · Injuries · Readiness"
       />
 
       <div className="row g-3 mb-4">
