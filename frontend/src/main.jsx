@@ -6,11 +6,11 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, HashRouter } from 'react-router-dom'
 import App from './App'
+import ErrorBoundary from './components/ErrorBoundary'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { ToastProvider } from './context/ToastContext'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './styles/App.css'
 import './styles/luxury.css'
 
@@ -20,14 +20,16 @@ const Router = useHashRouter ? HashRouter : BrowserRouter
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Router>
-      <ThemeProvider>
-        <AuthProvider>
-          <ToastProvider>
-            <App />
-          </ToastProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <ThemeProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <App />
+            </ToastProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </Router>
+    </ErrorBoundary>
   </React.StrictMode>
 )

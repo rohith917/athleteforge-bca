@@ -1529,6 +1529,39 @@ html.theme-dark textarea,
 }
 .api-status-retry:hover { background: rgba(0, 0, 0, 0.12); }
 
+.error-boundary-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: var(--lux-bg);
+}
+.error-boundary-card {
+  max-width: 420px;
+  text-align: center;
+  background: var(--lux-card);
+  border: 1px solid var(--lux-border);
+  border-radius: var(--lux-radius-sm);
+  padding: 32px 28px;
+  box-shadow: var(--lux-shadow);
+}
+.error-boundary-card h1 {
+  font-size: 1.35rem;
+  margin-bottom: 10px;
+  color: var(--lux-text);
+}
+.error-boundary-card p {
+  color: var(--lux-text-secondary);
+  margin-bottom: 20px;
+}
+.error-boundary-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 640px) {
   .landing-container { padding-left: 20px; padding-right: 20px; }
   .hero-split { padding: 96px 0 64px; }

@@ -40,10 +40,12 @@ export function AuthProvider({ children }) {
     return response.data
   }, [])
 
-  const bootstrapAuth = useCallback(async ({ silent = false } = {}) => {
+  const bootstrapAuth = useCallback(async ({ silent = false, isRetry = false } = {}) => {
     const gen = ++authGeneration.current
-    if (!silent) {
+    if (!silent && isRetry) {
       setAuthChecked(false)
+      setBootstrapMessage('Waking server (first visit may take up to 60s)...')
+    } else if (!silent) {
       setBootstrapMessage('Waking server (first visit may take up to 60s)...')
     }
     setApiStatus('waking')
@@ -81,7 +83,16 @@ export function AuthProvider({ children }) {
   }, [clearUser, fetchCurrentUser])
 
   useEffect(() => {
-    bootstrapAuth()
+    let active = true
+    const run = async () => {
+      await bootstrapAuth({ silent: true })
+      if (!active) return
+    }
+    run()
+    return () => {
+      active = false
+      authGeneration.current += 1
+    }
   }, [bootstrapAuth])
 
   useEffect(() => {
@@ -183,7 +194,7 @@ export function AuthProvider({ children }) {
   const isStaff = isCoach || isAdmin
 
   const retryBootstrap = useCallback(() => {
-    bootstrapAuth({ silent: false })
+    bootstrapAuth({ silent: false, isRetry: true })
   }, [bootstrapAuth])
 
   return (

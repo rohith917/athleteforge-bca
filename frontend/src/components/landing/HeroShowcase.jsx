@@ -1,12 +1,19 @@
+import { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip } from 'chart.js'
-import { ACCENT, baseChartOptions, SUCCESS, DANGER } from '../../utils/chartTheme'
+import { ACCENT, baseChartOptions, SUCCESS } from '../../utils/chartTheme'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip)
 
 const ATHLETE_IMG = 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=80'
 
 export default function HeroShowcase() {
+  const [chartsReady, setChartsReady] = useState(false)
+
+  useEffect(() => {
+    setChartsReady(true)
+  }, [])
+
   const weightChart = {
     labels: ['', '', '', '', '', ''],
     datasets: [{
@@ -62,13 +69,13 @@ export default function HeroShowcase() {
         <div className="hero-mini-chart-card">
           <span className="chart-label">Weight Tracking</span>
           <div style={{ height: 72 }}>
-            <Line data={weightChart} options={chartOpts} />
+            {chartsReady ? <Line data={weightChart} options={chartOpts} /> : null}
           </div>
         </div>
         <div className="hero-mini-chart-card">
           <span className="chart-label">Performance Analytics</span>
           <div style={{ height: 72 }}>
-            <Line data={perfChart} options={chartOpts} />
+            {chartsReady ? <Line data={perfChart} options={chartOpts} /> : null}
           </div>
         </div>
       </div>
