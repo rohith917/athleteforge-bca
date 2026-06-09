@@ -15,7 +15,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-bca-athlete-tracking-chang
 
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-_default_hosts = 'localhost,127.0.0.1,athleteforge-bca.onrender.com,.onrender.com'
+_default_hosts = 'localhost,127.0.0.1,athleteforge-bca.onrender.com,.onrender.com,.railway.app,.up.railway.app'
 ALLOWED_HOSTS = [
     h.strip() for h in os.getenv('ALLOWED_HOSTS', _default_hosts).split(',') if h.strip()
 ]
@@ -134,6 +134,7 @@ _default_origins = [
     'https://athleteforge-frontend.onrender.com',
     'https://athleteforge-bca.onrender.com',
 ]
+# Railway production domains added via env (FRONTEND_URL / CORS_ALLOWED_ORIGINS)
 if _frontend_url:
     _default_origins.append(_frontend_url)
 

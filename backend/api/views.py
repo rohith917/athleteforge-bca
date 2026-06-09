@@ -479,6 +479,14 @@ class WeightTrackingViewSet(viewsets.ModelViewSet):
         return Response({'bmi': bmi, 'category': category})
 
 
+# ==================== Health (keep-alive / deploy checks) ====================
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def health_check(request):
+    return Response({'status': 'ok', 'service': 'AthleteForge'})
+
+
 # ==================== AI Insights ====================
 
 @api_view(['GET'])

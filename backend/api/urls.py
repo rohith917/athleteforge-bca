@@ -24,6 +24,8 @@ urlpatterns = [
     path('auth/logout/', views.LogoutView.as_view(), name='logout'),
     path('auth/user/', views.CurrentUserView.as_view(), name='current-user'),
 
+    path('health/', views.health_check, name='health'),
+
     # AI Insights
     path('ai/insights/', views.ai_insights, name='ai-insights'),
 

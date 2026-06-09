@@ -6,7 +6,12 @@ import axios from 'axios'
 /** Resolve API base — same-origin when SPA is served by Django backend. */
 function resolveApiBase() {
   const host = typeof window !== 'undefined' ? window.location.hostname : ''
-  if (host === 'localhost' || host === '127.0.0.1' || host.includes('athleteforge-bca.onrender.com')) {
+  if (
+    host === 'localhost' ||
+    host === '127.0.0.1' ||
+    host.includes('athleteforge-bca.onrender.com') ||
+    host.includes('railway.app')
+  ) {
     return '/api'
   }
   const envUrl = import.meta.env.VITE_API_URL

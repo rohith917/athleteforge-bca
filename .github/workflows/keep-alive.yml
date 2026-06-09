@@ -1,0 +1,16 @@
+# Keeps Render server warm — free tier sleeps after ~15 min idle (causes slow loads)
+name: Keep Server Warm
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping AthleteForge API
+        run: |
+          curl -fsS -m 30 "https://athleteforge-bca.onrender.com/api/health/" || true
+          curl -fsS -m 30 "https://athleteforge-bca.onrender.com/api/auth/csrf/" || true
