@@ -3,9 +3,8 @@
 set -o errexit
 
 if [ -z "$DATABASE_URL" ]; then
-  echo "ERROR: DATABASE_URL is not set."
-  echo "Fix: Render Dashboard -> athleteforge-api -> Environment -> Add from Database -> athleteforge-db"
-  exit 1
+  echo "WARNING: DATABASE_URL is not set."
+  echo "Fix: Render Dashboard -> athleteforge-bca -> Environment -> Add DATABASE_URL from athleteforge-db"
 fi
 
-exec gunicorn athlete_system.wsgi:application --bind 0.0.0.0:$PORT
+exec gunicorn athlete_system.wsgi:application --bind 0.0.0.0:${PORT:-10000} --workers 2 --threads 2 --timeout 120

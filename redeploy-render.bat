@@ -1,21 +1,26 @@
 @echo off
 echo.
 echo ============================================
-echo  AthleteForge - Render + Auto Keep-Alive
+echo  AthleteForge - Fix Render Deploy
 echo ============================================
 echo.
-echo SLOW LOAD FIX: GitHub now pings your server every 10 min
-echo so Render stays awake (no 60-second cold start).
+echo STEP 1: Open RENDER_SETTINGS.txt in this folder
+echo         Copy the settings EXACTLY into Render Dashboard.
 echo.
-echo 1. Push latest code to GitHub (already done if you pulled)
-echo 2. GitHub Actions -^> "Keep Server Warm" must be enabled
-echo 3. Render -^> athleteforge-bca -^> Manual Deploy
+echo STEP 2: Root Directory must be BLANK (empty) OR exactly: backend
+echo         NEVER: "backend " (with space) or pip install command
 echo.
-echo FASTEST OPTION: Use Railway instead (see deploy-railway.bat)
+echo STEP 3: Build Command:  bash build.sh
+echo         Start Command:  bash start.sh
 echo.
-echo LIVE URL: https://athleteforge-bca.onrender.com/login
+echo STEP 4: Add DATABASE_URL from PostgreSQL database
+echo.
+echo STEP 5: Manual Deploy -^> Deploy latest commit
+echo.
+echo LIVE URL: https://athleteforge-bca.onrender.com
 echo Login: admin / admin123
 echo.
-start https://github.com/rohith917/athleteforge-bca/actions
-start https://athleteforge-bca.onrender.com/login
+start notepad "%~dp0RENDER_SETTINGS.txt"
+start https://dashboard.render.com
+start https://github.com/rohith917/athleteforge-bca
 pause

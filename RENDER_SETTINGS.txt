@@ -1,0 +1,48 @@
+ATHLETEFORGE — RENDER DASHBOARD SETTINGS (copy exactly)
+======================================================
+
+Service name: athleteforge-bca
+Repository:   rohith917/athleteforge-bca
+Branch:       main
+
+--- BUILD & DEPLOY (use OPTION A — easiest) ---
+
+OPTION A (recommended — leave Root Directory EMPTY):
+  Root Directory:  [leave completely BLANK / empty]
+  Build Command:     bash build.sh
+  Start Command:     bash start.sh
+
+OPTION B (alternative):
+  Root Directory:  backend
+  Build Command:     bash build.sh
+  Start Command:     gunicorn athlete_system.wsgi:application --bind 0.0.0.0:$PORT
+
+DO NOT put "pip install -r requirements.txt" in Root Directory.
+DO NOT type "backend " with a space at the end.
+
+--- ENVIRONMENT VARIABLES ---
+
+DEBUG=False
+SAME_ORIGIN_DEPLOY=True
+ALLOWED_HOSTS=athleteforge-bca.onrender.com,.onrender.com
+FRONTEND_URL=https://athleteforge-bca.onrender.com
+CORS_ALLOWED_ORIGINS=https://athleteforge-bca.onrender.com
+CSRF_TRUSTED_ORIGINS=https://athleteforge-bca.onrender.com
+SECRET_KEY=(any long random string — or Generate in Render)
+DATABASE_URL=(link from PostgreSQL database — see below)
+
+--- DATABASE (required) ---
+
+1. Render Dashboard -> New + -> PostgreSQL -> name: athleteforge-db -> Free
+2. Open web service athleteforge-bca -> Environment
+3. Add DATABASE_URL -> "Add from database" -> athleteforge-db -> Connection String
+
+--- AFTER SAVING ---
+
+Manual Deploy -> Deploy latest commit
+
+--- LIVE URL ---
+
+https://athleteforge-bca.onrender.com
+
+Login: admin / admin123

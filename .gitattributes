@@ -1,3 +1,5 @@
 # Ensure Render can run shell scripts (Linux needs LF line endings)
+build.sh text eol=lf
+start.sh text eol=lf
 backend/build.sh text eol=lf
 backend/start.sh text eol=lf
