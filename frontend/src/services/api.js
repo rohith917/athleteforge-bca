@@ -10,7 +10,9 @@ function resolveApiBase() {
     host === 'localhost' ||
     host === '127.0.0.1' ||
     host.includes('athleteforge-bca.onrender.com') ||
-    host.includes('railway.app')
+    host.includes('railway.app') ||
+    host.includes('fly.dev') ||
+    host.includes('koyeb.app')
   ) {
     return '/api'
   }
@@ -28,7 +30,9 @@ const API_BASE = resolveApiBase()
 
 const isRenderHost = typeof window !== 'undefined'
   && (window.location.hostname.includes('onrender.com')
-    || window.location.hostname.includes('railway.app'))
+    || window.location.hostname.includes('railway.app')
+    || window.location.hostname.includes('fly.dev')
+    || window.location.hostname.includes('koyeb.app'))
 
 /** Render free tier cold starts can take 50–90s on first request. */
 const RENDER_TIMEOUT = 90000

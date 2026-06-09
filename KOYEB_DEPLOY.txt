@@ -1,0 +1,55 @@
+ATHLETEFORGE — DEPLOY ON KOYEB (~15 minutes)
+================================================
+
+Koyeb uses your Dockerfile automatically. No Root Directory issues.
+
+STEP 1 — Sign up
+  https://www.koyeb.com
+  Click "Get Started" → Continue with GitHub (rohith917)
+
+STEP 2 — Create web service
+  Click: Create Web Service
+  Choose: GitHub
+  Repository: athleteforge-bca
+  Branch: main
+
+STEP 3 — Build settings
+  Builder:        Dockerfile
+  Dockerfile path: Dockerfile
+  Port:           8000
+  Instance:       Free (Nano) if available, else smallest
+
+STEP 4 — Add PostgreSQL database
+  In Koyeb dashboard: Create → Database → PostgreSQL
+  Name: athleteforge-db
+  Copy the connection string (DATABASE_URL)
+
+STEP 5 — Environment variables (Web Service → Settings → Variables)
+
+  DATABASE_URL       = (paste PostgreSQL connection string)
+  SECRET_KEY         = athleteforge-koyeb-secret-2026
+  DEBUG              = False
+  SAME_ORIGIN_DEPLOY = True
+  PORT               = 8000
+
+STEP 6 — Deploy
+  Click Deploy
+  Wait 8-15 minutes (first build is slow)
+
+STEP 7 — Get your URL
+  Koyeb gives you something like:
+    https://athleteforge-bca-xxx.koyeb.app
+
+STEP 8 — Test
+  Open your .koyeb.app URL
+  Login: admin / admin123
+
+TROUBLESHOOTING
+  Build failed → Logs tab → copy error
+  502 error    → wait 2 min, check PORT=8000
+  DB error     → confirm DATABASE_URL is set
+
+WHY KOYEB?
+  - Free tier available
+  - Dockerfile = same as Railway/Fly
+  - No build machine outage like Railway today
