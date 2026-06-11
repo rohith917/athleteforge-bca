@@ -83,6 +83,7 @@ class CsrfView(APIView):
         return Response({'csrfToken': token})
 
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class LoginView(APIView):
     """Email or username login with session management."""
     permission_classes = [AllowAny]
@@ -102,6 +103,7 @@ class LoginView(APIView):
             return Response({
                 'message': 'Login successful',
                 'user': UserSerializer(user, context={'request': request}).data,
+                'csrfToken': get_token(request),
             })
         return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
 

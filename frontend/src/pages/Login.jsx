@@ -21,7 +21,7 @@ export default function Login() {
     e.preventDefault()
     setError('')
     try {
-      await login(identifier.trim(), password, identifier.includes('@'))
+      await login(identifier.trim(), password)
       navigate('/dashboard', { replace: true })
     } catch (err) {
       setError(getErrorMessage(err, 'Invalid email/username or password.'))
@@ -37,6 +37,24 @@ export default function Login() {
     } catch (err) {
       setError(getErrorMessage(err, 'Could not sign out.'))
     }
+  }
+
+  const handleClearSession = async () => {
+    setError('')
+    try {
+      await logout({ hardRedirect: false })
+    } catch {
+      /* ignore */
+    }
+    try {
+      sessionStorage.clear()
+      localStorage.removeItem('af_logout_signal')
+    } catch {
+      /* ignore */
+    }
+    setIdentifier('admin')
+    setPassword('admin123')
+    setError('Session cleared. Press Sign In again.')
   }
 
   return (
@@ -114,6 +132,14 @@ export default function Login() {
                 </div>
                 <button type="submit" className="btn-hero-primary w-100" disabled={actionLoading}>
                   {actionLoading ? (bootstrapMessage || 'Signing in...') : <><FaSignInAlt /> Sign In</>}
+                </button>
+                <button
+                  type="button"
+                  className="btn-hero-ghost w-100 mt-2"
+                  onClick={handleClearSession}
+                  disabled={actionLoading}
+                >
+                  Clear stuck session &amp; retry
                 </button>
               </form>
               <p className="text-center mt-3 mb-0">

@@ -11,6 +11,7 @@ import {
   setUnauthorizedHandler,
   getErrorMessage,
   setAuthenticating,
+  setCsrfToken,
 } from '../services/api'
 import {
   clearAllClientAuth,
@@ -24,6 +25,10 @@ const AuthContext = createContext(null)
 function isNotLoggedInError(err) {
   const status = err?.response?.status
   return status === 401 || status === 403
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 export function AuthProvider({ children }) {
@@ -47,6 +52,24 @@ export function AuthProvider({ children }) {
     markServerAwake()
     return response.data
   }, [])
+
+  const verifySession = useCallback(async (fallbackUser, retries = 4) => {
+    for (let attempt = 0; attempt < retries; attempt += 1) {
+      try {
+        const verified = await fetchCurrentUser()
+        if (verified?.id) return verified
+      } catch (err) {
+        if (!isNotLoggedInError(err)) throw err
+        if (attempt < retries - 1) await sleep(350)
+      }
+    }
+    if (fallbackUser?.id) {
+      setUser(fallbackUser)
+      markNewSession(fallbackUser.id)
+      return fallbackUser
+    }
+    throw new Error('Session could not be established. Clear cookies and try again.')
+  }, [fetchCurrentUser])
 
   const bootstrapAuth = useCallback(async ({ silent = false, isRetry = false } = {}) => {
     const gen = ++authGeneration.current
@@ -139,7 +162,7 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const login = async (emailOrUsername, password, useEmail = false) => {
+  const login = async (emailOrUsername, password) => {
     authGeneration.current += 1
     setAuthenticating(true)
     setActionLoading(true)
@@ -151,22 +174,28 @@ export function AuthProvider({ children }) {
       await initCsrf()
       const id = emailOrUsername.trim()
       const payload = { password }
-      if (useEmail && id.includes('@')) {
+      if (id.includes('@')) {
         payload.email = id
         payload.username = id.split('@')[0]
       } else {
         payload.username = id
       }
+
       const response = await authAPI.login(payload)
       const loggedInUser = response.data?.user
-      if (!loggedInUser) {
+      if (!loggedInUser?.id) {
         throw new Error('Login succeeded but no user data was returned.')
       }
-      await initCsrf()
-      const verified = await fetchCurrentUser()
-      if (!verified?.id) {
-        throw new Error('Session could not be established. Please try again.')
+
+      if (response.data?.csrfToken) {
+        setCsrfToken(response.data.csrfToken)
+      } else {
+        await initCsrf()
       }
+
+      setUser(loggedInUser)
+      markNewSession(loggedInUser.id)
+      const verified = await verifySession(loggedInUser)
       markServerAwake()
       setApiStatus('ok')
       setAuthChecked(true)
@@ -177,7 +206,7 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const loginWithEmail = async (email, password) => login(email, password, true)
+  const loginWithEmail = async (email, password) => login(email, password)
 
   const register = async (data) => {
     authGeneration.current += 1
@@ -190,14 +219,17 @@ export function AuthProvider({ children }) {
       await initCsrf()
       const response = await authAPI.register(data)
       const newUser = response.data?.user
-      if (!newUser) {
+      if (!newUser?.id) {
         throw new Error('Registration succeeded but no user data was returned.')
       }
-      await initCsrf()
-      const verified = await fetchCurrentUser()
-      if (!verified?.id) {
-        throw new Error('Session could not be established. Please try again.')
+      if (response.data?.csrfToken) {
+        setCsrfToken(response.data.csrfToken)
+      } else {
+        await initCsrf()
       }
+      setUser(newUser)
+      markNewSession(newUser.id)
+      const verified = await verifySession(newUser)
       markServerAwake()
       setApiStatus('ok')
       setAuthChecked(true)
