@@ -19,7 +19,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .ai_insights import get_ai_insights_for_athlete, get_demo_ai_insights
+from .ai_insights import get_ai_insights_for_athlete, get_demo_ai_insights, answer_copilot_question
 from .models import (
     Athlete, Performance, Injury, Competition,
     CompetitionResult, Attendance, WeightTracking, PasswordResetToken, UserProfile
@@ -533,6 +533,44 @@ def ai_insights(request):
 def ai_demo(request):
     """Public AI demo for landing-page copilot — no login required."""
     return Response(get_demo_ai_insights())
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def ai_copilot(request):
+    """Answer a natural-language question using full AI insights bundle."""
+    question = (request.data.get('question') or '').strip()
+    athlete_id = request.data.get('athlete_id')
+
+    if request.user.is_authenticated:
+        if is_staff_role(request.user):
+            if athlete_id:
+                try:
+                    athlete = Athlete.objects.get(pk=athlete_id)
+                except Athlete.DoesNotExist:
+                    return Response({'error': 'Athlete not found'}, status=404)
+            else:
+                athlete = Athlete.objects.first()
+                if not athlete:
+                    return Response({'error': 'No athletes in system'}, status=404)
+        else:
+            athlete = get_athlete_for_user(request.user)
+            if not athlete:
+                return Response({'error': 'No athlete profile linked.'}, status=404)
+        insights = get_ai_insights_for_athlete(athlete)
+    else:
+        insights = get_demo_ai_insights()
+
+    if not question:
+        return Response({
+            'answer': insights.get('coaching_brief', '')[:900],
+            'insights': insights,
+        })
+
+    return Response({
+        'answer': answer_copilot_question(insights, question),
+        'insights': insights,
+    })
 
 
 # ==================== Dashboard ====================

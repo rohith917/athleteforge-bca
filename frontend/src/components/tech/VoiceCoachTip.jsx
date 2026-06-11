@@ -1,18 +1,13 @@
 /**
- * Voice coach tip — Web Speech API reads AI-generated advice aloud
+ * Voice coach tip — reads full AI coaching brief aloud
  */
 import { useState, useEffect } from 'react'
 import { FaVolumeUp, FaStop } from 'react-icons/fa'
 import { aiAPI } from '../../services/api'
 
-const FALLBACK_TIPS = [
-  'Prioritize dynamic warm-up before high-intensity sessions. Monitor hamstring load if speed metrics dipped this week.',
-  'Recovery window: 48 hours between peak training loads reduces injury risk by up to 30% in our dataset.',
-  'Attendance above 90% correlates with faster return-to-play. Keep session consistency this week.',
-]
-
 export default function VoiceCoachTip({ athleteId = null }) {
-  const [tip, setTip] = useState('')
+  const [brief, setBrief] = useState('')
+  const [planItems, setPlanItems] = useState([])
   const [speaking, setSpeaking] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -21,41 +16,26 @@ export default function VoiceCoachTip({ athleteId = null }) {
     const params = athleteId ? { athlete_id: athleteId } : {}
     aiAPI.getInsights(params)
       .then((res) => {
-        const data = res.data
-        const perf = data?.performance_insights
-        const injury = data?.injury_risk
-        const progress = data?.progress_summary
-        if (perf?.available && perf.recommendation) {
-          setTip(`${perf.headline}. ${perf.recommendation}`)
-        } else if (progress?.summary) {
-          setTip(`${progress.summary} ${injury?.message || ''}`.trim())
-        } else {
-          setTip(FALLBACK_TIPS[Math.floor(Math.random() * FALLBACK_TIPS.length)])
-        }
+        const d = res.data
+        setBrief(d.coaching_brief || d.progress_summary?.summary || '')
+        setPlanItems(d.training_plan?.items?.slice(0, 3) || [])
       })
-      .catch(() => {
-        setTip(FALLBACK_TIPS[0])
-      })
+      .catch(() => setBrief('Log performance and attendance data for personalized AI coaching briefs.'))
       .finally(() => setLoading(false))
   }, [athleteId])
 
   const stopSpeech = () => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.cancel()
-    }
+    window.speechSynthesis?.cancel()
     setSpeaking(false)
   }
 
   const playTip = () => {
-    if (speaking) {
-      stopSpeech()
-      return
-    }
-    if (!tip || typeof window === 'undefined' || !window.speechSynthesis) return
-    const utter = new SpeechSynthesisUtterance(tip)
-    utter.rate = 0.92
+    if (speaking) { stopSpeech(); return }
+    const text = [brief, ...planItems.map((item, i) => `Action ${i + 1}: ${item}`)].join(' ')
+    if (!text || !window.speechSynthesis) return
+    const utter = new SpeechSynthesisUtterance(text.slice(0, 600))
+    utter.rate = 0.9
     utter.onend = () => setSpeaking(false)
-    utter.onerror = () => setSpeaking(false)
     setSpeaking(true)
     window.speechSynthesis.cancel()
     window.speechSynthesis.speak(utter)
@@ -65,14 +45,14 @@ export default function VoiceCoachTip({ athleteId = null }) {
 
   return (
     <div className="voice-coach-tip">
-      <p>{loading ? 'Generating coach tip...' : tip}</p>
-      <button
-        type="button"
-        className={`voice-play-btn${speaking ? ' speaking' : ''}`}
-        onClick={playTip}
-        disabled={loading || !tip}
-      >
-        {speaking ? <><FaStop /> Stop</> : <><FaVolumeUp /> Hear Coach Tip</>}
+      <p>{loading ? 'Building AI coaching brief...' : brief}</p>
+      {!loading && planItems.length > 0 && (
+        <ul className="ai-plan-list" style={{ fontSize: '0.82rem', marginBottom: 12 }}>
+          {planItems.map((item, i) => <li key={i}>{item}</li>)}
+        </ul>
+      )}
+      <button type="button" className={`voice-play-btn${speaking ? ' speaking' : ''}`} onClick={playTip} disabled={loading}>
+        {speaking ? <><FaStop /> Stop</> : <><FaVolumeUp /> Hear Full Brief</>}
       </button>
     </div>
   )

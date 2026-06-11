@@ -7,7 +7,8 @@ import LiveReadinessOrb from '../landing/LiveReadinessOrb'
 import VoiceCoachTip from './VoiceCoachTip'
 import SmartRecoveryTimeline from './SmartRecoveryTimeline'
 
-export default function TechCommandHub({ athleteId = null, role = 'coach', readinessScore = null }) {
+export default function TechCommandHub({ athleteId = null, role = 'coach', readinessScore = null, insights = null }) {
+  const score = insights?.readiness_score ?? readinessScore ?? 78
   const marqueeItems = role === 'student'
     ? ['My Readiness', 'AI Coach', 'Voice Tips', 'Recovery AI']
     : role === 'admin'
@@ -31,7 +32,12 @@ export default function TechCommandHub({ athleteId = null, role = 'coach', readi
       <div className="tech-command-grid">
         <div className="tech-command-cell mdnt-readiness-compact">
           <h4>Live Readiness Orb</h4>
-          <LiveReadinessOrb initialScore={readinessScore ?? (role === 'student' ? 82 : 78)} />
+          <LiveReadinessOrb initialScore={score} />
+          {insights?.readiness_analysis && (
+            <p style={{ fontSize: '0.8rem', color: 'var(--mdnt-muted)', textAlign: 'center', marginTop: 12, maxWidth: '32ch' }}>
+              {insights.readiness_analysis.verdict}
+            </p>
+          )}
         </div>
         <div className="tech-command-cell">
           <h4>Voice Coach Tip</h4>

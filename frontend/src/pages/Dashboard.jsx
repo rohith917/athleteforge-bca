@@ -127,6 +127,8 @@ export default function Dashboard() {
         subtitle="Roster overview · Performance · Injuries · Readiness"
       />
 
+      <AIInsights />
+
       <TechCommandHub role="coach" readinessScore={recovery.score} />
 
       <div className="row g-3 mb-4">
@@ -153,8 +155,6 @@ export default function Dashboard() {
         <div className="col-lg-4"><InjuryHeatmap /></div>
         <div className="col-lg-4"><ActivityTimeline /></div>
       </div>
-
-      <AIInsights />
 
       <div className="row g-4 mb-4">
         <div className="col-12"><UpcomingTournaments /></div>

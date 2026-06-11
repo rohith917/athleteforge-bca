@@ -1,5 +1,5 @@
 /**
- * Floating AI Readiness Copilot — landing demo + authenticated dashboard
+ * Floating AI Copilot — uses /api/ai/copilot/ for rich contextual answers
  */
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -7,33 +7,13 @@ import { FaBrain, FaMicrophone, FaPaperPlane, FaTimes } from 'react-icons/fa'
 import { aiAPI } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
 
-const DEMO_REPLIES = {
-  readiness: 'Based on demo data: readiness score is 78%. Speed improved 12% — maintain agility drills and monitor hamstring load before Saturday\'s meet.',
-  injury: 'Injury risk is LOW. No active injuries in 90 days. Recommend dynamic warm-up and 48hr recovery between high-intensity sessions.',
-  performance: 'Performance trend: Strength +8%, Endurance +5%, Flexibility -3%. AI suggests adding 2 mobility sessions per week.',
-  attendance: 'Attendance rate 94% — excellent consistency. Athletes with 90%+ attendance show 23% faster recovery in our dataset.',
-  default: 'I\'m AthleteForge AI Copilot. Ask about readiness, injury risk, performance trends, or attendance.',
-}
-
-function matchReply(text) {
-  const q = text.toLowerCase()
-  if (q.includes('ready') || q.includes('readiness')) return DEMO_REPLIES.readiness
-  if (q.includes('injur') || q.includes('risk')) return DEMO_REPLIES.injury
-  if (q.includes('perform') || q.includes('speed') || q.includes('strength')) return DEMO_REPLIES.performance
-  if (q.includes('attend')) return DEMO_REPLIES.attendance
-  return DEMO_REPLIES.default
-}
-
-function buildInsightsReply(data) {
-  if (!data) return null
-  const parts = []
-  if (data.progress_summary?.summary) parts.push(data.progress_summary.summary)
-  if (data.performance_insights?.available) {
-    parts.push(`${data.performance_insights.headline}. ${data.performance_insights.recommendation}`)
-  }
-  if (data.injury_risk?.message) parts.push(data.injury_risk.message)
-  return parts.join(' ') || null
-}
+const SUGGESTED = [
+  'Give me a full summary',
+  'What is my readiness score?',
+  'Injury risk and prevention tips',
+  'Weekly training plan',
+  'Performance metrics breakdown',
+]
 
 export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
   const { user, isStudent } = useAuth()
@@ -41,9 +21,9 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
 
   const welcome = authenticated
     ? (isStudent
-      ? `Hi ${user.first_name || 'athlete'} — I'm your personal AI coach. Ask about your readiness, injuries, or training focus.`
-      : `Coach ${user.first_name || ''} — AI Copilot online. Ask about team readiness, injury risk, or athlete performance.`.trim())
-    : 'Hey — I\'m your AI Readiness Copilot. Ask "What\'s my readiness?" or tap the mic for voice input.'
+      ? `Hi ${user.first_name || 'athlete'} — I have your full performance, injury, attendance, and competition data loaded. Try "Give me a full summary" or ask anything specific.`
+      : `Coach ${user.first_name || ''} — AI Copilot has deep analytics ready. Ask about readiness, injuries, training plans, or say "full summary".`.trim())
+    : 'AI Copilot online with demo data. Try: "What is my readiness?" · "Injury risk" · "Training plan" · or tap the mic.'
 
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState([{ role: 'bot', text: welcome }])
@@ -60,30 +40,13 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
   const speakTip = (text) => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel()
-      const utter = new SpeechSynthesisUtterance(text.slice(0, 280))
-      utter.rate = 0.95
+      const utter = new SpeechSynthesisUtterance(text.slice(0, 400))
+      utter.rate = 0.92
       window.speechSynthesis.speak(utter)
     }
   }
 
-  const fetchAIReply = async (text) => {
-    if (authenticated) {
-      const params = athleteId ? { athlete_id: athleteId } : {}
-      const res = await aiAPI.getInsights(params)
-      const built = buildInsightsReply(res.data)
-      if (built) return built
-    }
-    try {
-      const res = await aiAPI.getDemo()
-      const built = buildInsightsReply(res.data)
-      if (built) return built
-    } catch {
-      /* fallback */
-    }
-    return matchReply(text)
-  }
-
-  const sendMessage = async (text) => {
+  const askCopilot = async (text) => {
     const trimmed = text?.trim()
     if (!trimmed) return
 
@@ -91,56 +54,47 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
     setInput('')
     setLoading(true)
 
-    let reply = matchReply(trimmed)
     try {
-      reply = await fetchAIReply(trimmed)
+      const payload = { question: trimmed }
+      if (athleteId) payload.athlete_id = athleteId
+      const res = await aiAPI.copilot(payload)
+      const answer = res.data?.answer || 'No response generated.'
+      setMessages(m => [...m, { role: 'bot', text: answer }])
+      speakTip(answer)
     } catch {
-      reply = matchReply(trimmed)
+      setMessages(m => [...m, {
+        role: 'bot',
+        text: 'Could not reach AI engine. Check connection and try again, or ask from the AI Intelligence Report on your dashboard.',
+      }])
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
-    setMessages(m => [...m, { role: 'bot', text: reply }])
-    speakTip(reply)
   }
 
   const toggleVoice = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!SpeechRecognition) {
-      setMessages(m => [...m, { role: 'bot', text: 'Voice input needs Chrome or Edge. Type your question instead.' }])
+      setMessages(m => [...m, { role: 'bot', text: 'Voice needs Chrome or Edge. Type your question instead.' }])
       return
     }
-
     if (listening && recognitionRef.current) {
       recognitionRef.current.stop()
       setListening(false)
       return
     }
-
     const rec = new SpeechRecognition()
     rec.lang = 'en-US'
-    rec.interimResults = false
-    rec.maxAlternatives = 1
-    recognitionRef.current = rec
-
-    rec.onresult = (e) => {
-      sendMessage(e.results[0][0].transcript)
-      setListening(false)
-    }
+    rec.onresult = (e) => askCopilot(e.results[0][0].transcript)
     rec.onerror = () => setListening(false)
     rec.onend = () => setListening(false)
-
+    recognitionRef.current = rec
     rec.start()
     setListening(true)
   }
 
   return (
     <>
-      <button
-        type="button"
-        className="mdnt-copilot-trigger"
-        onClick={() => setOpen(v => !v)}
-        aria-label={open ? 'Close AI Copilot' : 'Open AI Copilot'}
-      >
+      <button type="button" className="mdnt-copilot-trigger" onClick={() => setOpen(v => !v)} aria-label="AI Copilot">
         {!open && <span className="pulse-ring" aria-hidden="true" />}
         <FaBrain />
       </button>
@@ -148,56 +102,44 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="mdnt-copilot-panel"
+            className="mdnt-copilot-panel mdnt-copilot-panel-rich"
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="mdnt-copilot-header">
-              <h3>
-                <FaBrain /> AI Copilot
-                <span className="ai-badge">{authenticated ? 'PERSONAL' : 'LIVE'}</span>
-              </h3>
-              <button type="button" className="mdnt-copilot-close" onClick={() => setOpen(false)} aria-label="Close">
-                <FaTimes />
-              </button>
+              <h3><FaBrain /> AI Copilot <span className="ai-badge">{authenticated ? 'DEEP' : 'DEMO'}</span></h3>
+              <button type="button" className="mdnt-copilot-close" onClick={() => setOpen(false)}><FaTimes /></button>
+            </div>
+
+            <div className="copilot-suggestions">
+              {SUGGESTED.map(s => (
+                <button key={s} type="button" className="copilot-chip" onClick={() => askCopilot(s)} disabled={loading}>
+                  {s}
+                </button>
+              ))}
             </div>
 
             <div className="mdnt-copilot-messages">
               {messages.map((msg, i) => (
-                <div key={i} className={`mdnt-copilot-msg ${msg.role}`}>
-                  {msg.text}
-                </div>
+                <div key={i} className={`mdnt-copilot-msg ${msg.role}`}>{msg.text}</div>
               ))}
-              {loading && (
-                <div className="mdnt-copilot-msg bot">Analyzing athlete data...</div>
-              )}
+              {loading && <div className="mdnt-copilot-msg bot">Analyzing full athlete dataset...</div>}
               <div ref={endRef} />
             </div>
 
             <div className="mdnt-copilot-input-row">
               <input
                 className="mdnt-copilot-input"
-                placeholder="Ask about readiness, injuries..."
+                placeholder="Ask anything — readiness, plan, injuries..."
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && sendMessage(input)}
+                onKeyDown={e => e.key === 'Enter' && askCopilot(input)}
               />
-              <button
-                type="button"
-                className={`mdnt-copilot-voice${listening ? ' listening' : ''}`}
-                onClick={toggleVoice}
-                aria-label="Voice input"
-              >
+              <button type="button" className={`mdnt-copilot-voice${listening ? ' listening' : ''}`} onClick={toggleVoice}>
                 <FaMicrophone />
               </button>
-              <button
-                type="button"
-                className="mdnt-copilot-send"
-                onClick={() => sendMessage(input)}
-                aria-label="Send"
-              >
+              <button type="button" className="mdnt-copilot-send" onClick={() => askCopilot(input)}>
                 <FaPaperPlane />
               </button>
             </div>

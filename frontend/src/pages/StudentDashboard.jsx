@@ -138,6 +138,8 @@ export default function StudentDashboard() {
         </div>
       </div>
 
+      <AIInsights athleteId={athlete?.id} />
+
       <TechCommandHub
         role="student"
         athleteId={athlete?.id}
@@ -169,8 +171,6 @@ export default function StudentDashboard() {
         <div className="col-lg-8"><RecoveryPanel stats={stats} /></div>
         <div className="col-lg-4"><StudentTrainingTips /></div>
       </div>
-
-      <AIInsights athleteId={athlete?.id} />
 
       <div className="row g-4 mt-2">
         <div className="col-lg-5">
