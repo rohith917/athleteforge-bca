@@ -13,23 +13,32 @@ import PublicFooter from '../components/PublicFooter'
 import MarqueeBand from '../components/landing/MarqueeBand'
 import LiveReadinessOrb from '../components/landing/LiveReadinessOrb'
 import AICopilotWidget from '../components/landing/AICopilotWidget'
+import {
+  UpdTrustedMarquee, UpdStatsDelivered, UpdFlipServices, UpdMeetAI,
+} from '../components/landing/UpdLandingSections'
 
 const caseStudies = [
   {
     tag: 'Track & Field',
     title: 'Sprint Academy',
+    metric: '40%',
+    metricLabel: 'less downtime',
     desc: 'Reduced injury downtime 40% with centralized recovery tracking.',
     img: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=800&q=80',
   },
   {
     tag: 'Football',
     title: 'Elite FC',
+    metric: '32',
+    metricLabel: 'athletes live',
     desc: 'Live readiness reports for 32 athletes before every match week.',
     img: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80',
   },
   {
     tag: 'Swimming',
     title: 'Aqua Performance',
+    metric: '2wk',
+    metricLabel: 'early alert',
     desc: 'AI flagged overtraining 2 weeks before regional championships.',
     img: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=800&q=80',
   },
@@ -77,23 +86,29 @@ export default function Landing() {
             variants={fadeUp}
             custom={0}
           >
-            <span className="mdnt-hero-eyebrow">Elite Sports Performance Platform</span>
-            <h1 className="mdnt-hero-title">
-              From data to dominance — we design performance moments that build champions.
+            <div className="upd-hero-locations">
+              <span className="dot" />
+              BCA · AI-First · Performance Platform
+            </div>
+            <span className="upd-badge-ai">AI-First Sports Tech</span>
+            <h1 className="upd-hero-stack">
+              <span className="line line-dim">We bring</span>
+              <span className="line line-lime">performance</span>
+              <span className="line">to athletes.</span>
             </h1>
             <p className="mdnt-hero-desc">
-              Combining coach intelligence with AI-powered execution, AthleteForge helps teams
-              authentically track recovery, performance, and competition readiness.
+              We don&apos;t just track stats — we redefine how teams train. AI strategies.
+              Licensed coaches. Real readiness results.
             </p>
             <div className="mdnt-hero-actions">
               {isAuthenticated ? (
-                <Link to="/dashboard" className="btn-mdnt-cta">
+                <Link to="/dashboard" className="btn-upd-lime">
                   Go to Dashboard <FaArrowRight />
                 </Link>
               ) : (
                 <>
-                  <Link to="/register" className="btn-mdnt-cta">
-                    Get Started <FaArrowRight />
+                  <Link to="/register" className="btn-upd-lime">
+                    Start Your Project <FaArrowRight />
                   </Link>
                   <Link to="/login" className="btn-mdnt-outline">Sign In</Link>
                 </>
@@ -103,6 +118,8 @@ export default function Landing() {
         </section>
 
         <MarqueeBand items={['For Coaches', 'For Athletes', 'AI Powered']} duration={24} />
+
+        <UpdTrustedMarquee />
 
         {/* Split — For Coaches */}
         <section className="mdnt-split">
@@ -205,6 +222,10 @@ export default function Landing() {
 
         <MarqueeBand items={['AI Insights', 'Injury Tracking', 'Live Analytics']} duration={26} />
 
+        <UpdFlipServices />
+
+        <UpdStatsDelivered />
+
         {/* Case studies / work grid */}
         <section className="mdnt-work-section">
           <div className="mdnt-work-header">
@@ -224,6 +245,10 @@ export default function Landing() {
                 transition={{ delay: i * 0.1, duration: 0.5 }}
               >
                 <Link to="/register" className="mdnt-work-card">
+                  <div className="mdnt-work-card-metric">
+                    {c.metric}
+                    <small>{c.metricLabel}</small>
+                  </div>
                   <img src={c.img} alt={c.title} />
                   <div className="mdnt-work-card-overlay">
                     <span className="mdnt-work-card-tag">{c.tag}</span>
@@ -261,9 +286,11 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* CTA — MDNT cream block */}
+        <UpdMeetAI />
+
+        {/* CTA — Up Digital "Let's build" style */}
         <section className="mdnt-cta-block">
-          <h2>Tell us what you&apos;re training for. We&apos;ll show you what&apos;s possible.</h2>
+          <h2>Let&apos;s build something.</h2>
           <p>Join coaches and athletes using AthleteForge for smarter, data-backed decisions.</p>
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/register" className="btn-mdnt-cta">
