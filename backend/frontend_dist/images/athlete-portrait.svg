@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#161616"/>
+  <circle cx="200" cy="160" r="70" fill="#ff3d3d" opacity="0.35"/>
+  <rect x="120" y="240" width="160" height="120" rx="20" fill="#b8ff3c" opacity="0.2"/>
+  <text x="200" y="380" text-anchor="middle" fill="#b8ff3c" font-family="Arial,sans-serif" font-size="14" letter-spacing="4">ATHLETE</text>
+</svg>

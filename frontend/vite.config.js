@@ -18,12 +18,18 @@ export default defineConfig({
   plugins: [react(), spa404Plugin()],
   server: {
     port: 5173,
+    host: true,
+    strictPort: true,
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
         secure: false,
-        cookieDomainRewrite: 'localhost',
+      },
+      '/media': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
       },
     },
   },

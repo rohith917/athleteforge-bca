@@ -14,7 +14,11 @@ function resolveApiBase() {
 
 const API_BASE = resolveApiBase()
 
-const isCloudHost = typeof window !== 'undefined'
+const isLocalDev = typeof window !== 'undefined'
+  && (window.location.hostname === 'localhost'
+    || window.location.hostname === '127.0.0.1')
+
+const isCloudHost = !isLocalDev && typeof window !== 'undefined'
   && (window.location.hostname.includes('onrender.com')
     || window.location.hostname.includes('railway.app')
     || window.location.hostname.includes('fly.dev')
@@ -31,7 +35,7 @@ const api = axios.create({
   timeout: DEFAULT_TIMEOUT,
 })
 
-let serverAwake = !isCloudHost
+let serverAwake = isLocalDev || !isCloudHost
 
 /** Ping health endpoint to wake sleeping Render instance before auth. */
 export async function wakeServer() {

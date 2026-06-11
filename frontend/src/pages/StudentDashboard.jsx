@@ -127,7 +127,7 @@ export default function StudentDashboard() {
 
       <div className="profile-premium-hero glass-card mb-4 student-profile-hero">
         <Avatar
-          src={user?.profile_photo || athlete?.avatar_url}
+          src={user?.profile_photo || athlete?.avatar_url || athlete?.photo}
           name={athlete?.full_name || user?.username}
           size="lg"
         />

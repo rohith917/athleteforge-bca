@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#111111"/>
+  <rect x="0" y="0" width="1200" height="800" fill="#ff3d3d" opacity="0.12"/>
+  <text x="600" y="400" text-anchor="middle" fill="#b8ff3c" font-family="Arial,sans-serif" font-size="42" font-weight="bold" letter-spacing="6">COACH</text>
+  <text x="600" y="460" text-anchor="middle" fill="#ffffff" font-family="Arial,sans-serif" font-size="22" opacity="0.7">PERFORMANCE COMMAND</text>
+</svg>

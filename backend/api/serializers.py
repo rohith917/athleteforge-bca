@@ -82,7 +82,7 @@ class AthleteSerializer(serializers.ModelSerializer):
         if obj.photo:
             return obj.photo.url
         name = obj.full_name.replace(' ', '+')
-        return f"https://ui-avatars.com/api/?name={name}&background=0A1428&color=00D4FF&size=128&bold=true"
+        return f"https://ui-avatars.com/api/?name={name}&background=0a0a0a&color=b8ff3c&size=128&bold=true"
 
 
 class AthleteListSerializer(serializers.ModelSerializer):
@@ -101,7 +101,7 @@ class AthleteListSerializer(serializers.ModelSerializer):
         if obj.photo:
             return obj.photo.url
         name = obj.full_name.replace(' ', '+')
-        return f"https://ui-avatars.com/api/?name={name}&background=0A1428&color=00D4FF&size=128&bold=true"
+        return f"https://ui-avatars.com/api/?name={name}&background=0a0a0a&color=b8ff3c&size=128&bold=true"
 
 
 class PerformanceSerializer(serializers.ModelSerializer):

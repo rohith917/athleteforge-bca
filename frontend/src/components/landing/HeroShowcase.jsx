@@ -3,10 +3,10 @@ import { motion } from 'framer-motion'
 import { Line } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip } from 'chart.js'
 import { ACCENT, baseChartOptions, SUCCESS } from '../../utils/chartTheme'
+import SafeImage from '../SafeImage'
+import { LOCAL_IMAGES, REMOTE_IMAGES } from '../../utils/mediaUrls'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip)
-
-const ATHLETE_IMG = 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=80'
 
 export default function HeroShowcase() {
   const [chartsReady, setChartsReady] = useState(false)
@@ -52,7 +52,7 @@ export default function HeroShowcase() {
       transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
     >
       <div className="hero-showcase-image-wrap">
-        <img src={ATHLETE_IMG} alt="Elite athlete training" className="hero-showcase-image" />
+        <SafeImage src={REMOTE_IMAGES.portrait} fallback={LOCAL_IMAGES.portrait} alt="Elite athlete training" className="hero-showcase-image" />
       </div>
 
       <div className="hero-float-grid">

@@ -16,6 +16,8 @@ import AICopilotWidget from '../components/landing/AICopilotWidget'
 import {
   UpdTrustedMarquee, UpdStatsDelivered, UpdFlipServices, UpdMeetAI,
 } from '../components/landing/UpdLandingSections'
+import SafeImage from '../components/SafeImage'
+import { REMOTE_IMAGES, LOCAL_IMAGES } from '../utils/mediaUrls'
 
 const caseStudies = [
   {
@@ -24,7 +26,8 @@ const caseStudies = [
     metric: '40%',
     metricLabel: 'less downtime',
     desc: 'Reduced injury downtime 40% with centralized recovery tracking.',
-    img: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=800&q=80',
+    img: REMOTE_IMAGES.track,
+    fallback: LOCAL_IMAGES.track,
   },
   {
     tag: 'Football',
@@ -32,7 +35,8 @@ const caseStudies = [
     metric: '32',
     metricLabel: 'athletes live',
     desc: 'Live readiness reports for 32 athletes before every match week.',
-    img: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80',
+    img: REMOTE_IMAGES.football,
+    fallback: LOCAL_IMAGES.football,
   },
   {
     tag: 'Swimming',
@@ -40,16 +44,17 @@ const caseStudies = [
     metric: '2wk',
     metricLabel: 'early alert',
     desc: 'AI flagged overtraining 2 weeks before regional championships.',
-    img: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=800&q=80',
+    img: REMOTE_IMAGES.swim,
+    fallback: LOCAL_IMAGES.swim,
   },
 ]
 
 const gallery = [
-  { sport: 'Track', year: '2025', img: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=600&q=80' },
-  { sport: 'Football', year: '2024', img: 'https://images.unsplash.com/photo-1517649763961-0c62306601b7?auto=format&fit=crop&w=600&q=80' },
-  { sport: 'Swimming', year: '2025', img: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50e?auto=format&fit=crop&w=600&q=80' },
-  { sport: 'Basketball', year: '2024', img: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=600&q=80' },
-  { sport: 'Cricket', year: '2025', img: 'https://images.unsplash.com/photo-1531415074968-d40fc2b32908?auto=format&fit=crop&w=600&q=80' },
+  { sport: 'Track', year: '2025', img: REMOTE_IMAGES.galleryTrack, fallback: LOCAL_IMAGES.track },
+  { sport: 'Football', year: '2024', img: REMOTE_IMAGES.galleryFootball, fallback: LOCAL_IMAGES.football },
+  { sport: 'Swimming', year: '2025', img: REMOTE_IMAGES.gallerySwim, fallback: LOCAL_IMAGES.swim },
+  { sport: 'Basketball', year: '2024', img: REMOTE_IMAGES.basketball, fallback: LOCAL_IMAGES.basketball },
+  { sport: 'Cricket', year: '2025', img: REMOTE_IMAGES.cricket, fallback: LOCAL_IMAGES.cricket },
 ]
 
 const aiFeatures = [
@@ -124,8 +129,9 @@ export default function Landing() {
         {/* Split — For Coaches */}
         <section className="mdnt-split">
           <div className="mdnt-split-visual">
-            <img
-              src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=1200&q=80"
+            <SafeImage
+              src={REMOTE_IMAGES.coach}
+              fallback={LOCAL_IMAGES.coach}
               alt="Coach reviewing athlete performance"
             />
             <div className="mdnt-split-visual-overlay" />
@@ -154,8 +160,9 @@ export default function Landing() {
         {/* Split — For Athletes (reversed) */}
         <section className="mdnt-split" style={{ direction: 'rtl' }}>
           <div className="mdnt-split-visual" style={{ direction: 'ltr' }}>
-            <img
-              src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80"
+            <SafeImage
+              src={REMOTE_IMAGES.athlete}
+              fallback={LOCAL_IMAGES.athlete}
               alt="Athlete training"
             />
             <div className="mdnt-split-visual-overlay" />
@@ -249,7 +256,7 @@ export default function Landing() {
                     {c.metric}
                     <small>{c.metricLabel}</small>
                   </div>
-                  <img src={c.img} alt={c.title} />
+                  <SafeImage src={c.img} fallback={c.fallback} alt={c.title} />
                   <div className="mdnt-work-card-overlay">
                     <span className="mdnt-work-card-tag">{c.tag}</span>
                     <h3>{c.title}</h3>
@@ -279,7 +286,7 @@ export default function Landing() {
           <div className="mdnt-gallery-grid">
             {gallery.map(g => (
               <div key={g.sport} className="mdnt-gallery-item">
-                <img src={g.img} alt={g.sport} />
+                <SafeImage src={g.img} fallback={g.fallback} alt={g.sport} />
                 <span className="mdnt-gallery-item-meta">{g.sport} · {g.year}</span>
               </div>
             ))}
