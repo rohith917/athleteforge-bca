@@ -28,6 +28,7 @@ urlpatterns = [
 
     # AI Insights
     path('ai/insights/', views.ai_insights, name='ai-insights'),
+    path('ai/demo/', views.ai_demo, name='ai-demo'),
 
     # Dashboard
     path('dashboard/stats/', views.dashboard_stats, name='dashboard-stats'),

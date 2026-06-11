@@ -5,6 +5,8 @@ Uses performance trends, injury history, and attendance — no external LLM.
 from datetime import date, timedelta
 from django.db.models import Avg
 
+from .models import Athlete
+
 
 def _pct_change(old_val, new_val):
     if not old_val or old_val == 0:
@@ -167,4 +169,46 @@ def get_ai_insights_for_athlete(athlete):
         'performance_insights': generate_performance_insights(athlete),
         'injury_risk': generate_injury_risk_alert(athlete),
         'progress_summary': generate_progress_summary(athlete),
+    }
+
+
+def get_demo_ai_insights():
+    """Public demo payload for landing-page AI Copilot (no auth)."""
+    athlete = Athlete.objects.first()
+    if athlete:
+        payload = get_ai_insights_for_athlete(athlete)
+        payload['demo_mode'] = True
+        payload['readiness_score'] = 78
+        return payload
+
+    return {
+        'demo_mode': True,
+        'athlete_name': 'Demo Athlete',
+        'readiness_score': 78,
+        'performance_insights': {
+            'available': True,
+            'headline': 'Speed up 12%',
+            'recommendation': 'Speed improved 12% — maintain agility drills and monitor hamstring load before competition.',
+            'metrics': [
+                {'metric': 'speed', 'label': 'Speed', 'change_percent': 12, 'trend': 'up'},
+                {'metric': 'strength', 'label': 'Strength', 'change_percent': 8, 'trend': 'up'},
+                {'metric': 'flexibility', 'label': 'Flexibility', 'change_percent': -3, 'trend': 'down'},
+            ],
+            'confidence': 'high',
+        },
+        'injury_risk': {
+            'risk_level': 'low',
+            'alert': False,
+            'message': 'No recent injuries. Keep up preventive warm-ups and recovery protocols.',
+            'active_injuries': 0,
+            'recent_injuries': 0,
+        },
+        'progress_summary': {
+            'overall_average': 82,
+            'performance_grade': 'A',
+            'attendance_rate': 94,
+            'sessions_recorded': 48,
+            'summary': 'Strong overall progress with 94% attendance. Readiness score 78% — competition-ready with smart load management.',
+            'injury_risk': 'low',
+        },
     }

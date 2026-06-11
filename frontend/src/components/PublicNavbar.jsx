@@ -1,13 +1,14 @@
 /**
- * Public site navbar — glass effect with scroll state
+ * Public site navbar — MDNT minimal or glass effect
  */
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { FaArrowRight } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
 import Logo from './Logo'
 
-export default function PublicNavbar() {
+export default function PublicNavbar({ mdnt = false }) {
   const { user, authChecked } = useAuth()
   const location = useLocation()
   const [scrolled, setScrolled] = useState(false)
@@ -18,6 +19,41 @@ export default function PublicNavbar() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  if (mdnt) {
+    return (
+      <motion.header
+        className={`public-navbar mdnt-nav ${scrolled ? 'scrolled' : ''}`}
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="public-navbar-inner">
+          <Link to="/" className="text-decoration-none">
+            <Logo size="sm" showTagline={false} variant="light" />
+          </Link>
+
+          <nav className="public-nav-links" aria-label="Main navigation">
+            <Link
+              to="/"
+              className={`public-nav-home ${location.pathname === '/' ? 'active' : ''}`}
+            >
+              Home
+            </Link>
+            {isAuthenticated ? (
+              <Link to="/dashboard" className="btn-mdnt-cta">
+                Dashboard <FaArrowRight />
+              </Link>
+            ) : (
+              <Link to="/register" className="btn-mdnt-cta">
+                Get In Touch <FaArrowRight />
+              </Link>
+            )}
+          </nav>
+        </div>
+      </motion.header>
+    )
+  }
 
   return (
     <motion.header

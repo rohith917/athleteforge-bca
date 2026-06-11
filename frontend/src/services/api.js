@@ -189,6 +189,7 @@ export const authAPI = {
 // AI Insights API
 export const aiAPI = {
   getInsights: (params) => api.get('/ai/insights/', { params }),
+  getDemo: () => api.get('/ai/demo/'),
 }
 
 // Athletes API

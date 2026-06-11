@@ -19,7 +19,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .ai_insights import get_ai_insights_for_athlete
+from .ai_insights import get_ai_insights_for_athlete, get_demo_ai_insights
 from .models import (
     Athlete, Performance, Injury, Competition,
     CompetitionResult, Attendance, WeightTracking, PasswordResetToken, UserProfile
@@ -516,6 +516,13 @@ def ai_insights(request):
             }, status=404)
 
     return Response(get_ai_insights_for_athlete(athlete))
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def ai_demo(request):
+    """Public AI demo for landing-page copilot — no login required."""
+    return Response(get_demo_ai_insights())
 
 
 # ==================== Dashboard ====================

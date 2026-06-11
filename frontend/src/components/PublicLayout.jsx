@@ -3,10 +3,10 @@
  */
 import PublicNavbar from './PublicNavbar'
 
-export default function PublicLayout({ children }) {
+export default function PublicLayout({ children, mdnt = false }) {
   return (
-    <div className="public-page-wrap">
-      <PublicNavbar />
+    <div className={`public-page-wrap${mdnt ? ' public-page-mdnt' : ''}`}>
+      <PublicNavbar mdnt={mdnt} />
       {children}
     </div>
   )
