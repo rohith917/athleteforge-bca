@@ -8,13 +8,16 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import ChartThemeSync from './ChartThemeSync'
 import ErrorBoundary from './ErrorBoundary'
+import AICopilotWidget from './landing/AICopilotWidget'
+import { useAuth } from '../context/AuthContext'
 
 export default function Layout() {
+  const { user, isStudent } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
 
   return (
-    <div className="app-layout dashboard-premium">
+    <div className="app-layout dashboard-premium dashboard-mdnt">
       <ChartThemeSync />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
@@ -27,6 +30,10 @@ export default function Layout() {
         </div>
         <Footer />
       </div>
+      <AICopilotWidget
+        mode="app"
+        athleteId={isStudent ? user?.athlete_id : null}
+      />
     </div>
   )
 }

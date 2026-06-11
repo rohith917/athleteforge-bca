@@ -27,6 +27,7 @@ import ChartMount from '../components/charts/ChartMount'
 import useChartsReady from '../hooks/useChartsReady'
 import { GOLD, baseChartOptions } from '../utils/chartTheme'
 import { calcRecoveryScore } from '../utils/metricsEngine'
+import TechCommandHub from '../components/tech/TechCommandHub'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip, Legend)
 
@@ -136,6 +137,12 @@ export default function StudentDashboard() {
           )}
         </div>
       </div>
+
+      <TechCommandHub
+        role="student"
+        athleteId={athlete?.id}
+        readinessScore={recovery.score}
+      />
 
       <div className="row g-3 mb-4">
         <div className="col-sm-6 col-lg-3">

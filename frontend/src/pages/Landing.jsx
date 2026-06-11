@@ -276,7 +276,7 @@ export default function Landing() {
         </section>
 
         <PublicFooter mdnt />
-        <AICopilotWidget />
+        <AICopilotWidget mode="demo" />
       </div>
     </PublicLayout>
   )

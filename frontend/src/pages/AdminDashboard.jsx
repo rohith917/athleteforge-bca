@@ -24,6 +24,8 @@ import CoachTips from '../components/CoachTips'
 import NotificationCenter from '../components/analytics/NotificationCenter'
 import { GOLD, baseChartOptions } from '../utils/chartTheme'
 import useChartsReady from '../hooks/useChartsReady'
+import TechCommandHub from '../components/tech/TechCommandHub'
+import AIInsights from '../components/AIInsights'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -108,6 +110,8 @@ export default function AdminDashboard() {
           </Link>
         }
       />
+
+      <TechCommandHub role="admin" readinessScore={88} />
 
       {stats.unlinked_students > 0 && (
         <div className="alert-custom mb-4" style={{
@@ -195,6 +199,8 @@ export default function AdminDashboard() {
           <NotificationCenter />
         </div>
       </div>
+
+      <AIInsights />
 
       <div className="row g-4 mb-4">
         <div className="col-12"><UpcomingTournaments /></div>

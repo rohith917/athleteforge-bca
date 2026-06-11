@@ -1,13 +1,13 @@
-/** Premium sports chart theme — purple & gold */
-export const ACCENT = '#8b5cf6'
-export const GOLD = '#d4af37'
-export const GOLD_HOVER = '#a78bfa'
-export const MEDAL_GOLD = '#D4AF37'
-export const TEXT = '#6B7280'
-export const GRID = '#F3F4F6'
-export const SUCCESS = '#22C55E'
-export const WARNING = '#F59E0B'
-export const DANGER = '#EF4444'
+/** MDNT-inspired chart theme — coral, lime, editorial dark */
+export const ACCENT = '#ff3d3d'
+export const GOLD = '#ff3d3d'
+export const GOLD_HOVER = '#ff5555'
+export const MEDAL_GOLD = '#c8f542'
+export const TEXT = '#94a3b8'
+export const GRID = 'rgba(255,255,255,0.06)'
+export const SUCCESS = '#c8f542'
+export const WARNING = '#ff9f43'
+export const DANGER = '#ff3d3d'
 export const BLUE = '#60A5FA'
 
 export const chartDefaults = {
@@ -22,13 +22,12 @@ export const baseChartOptions = {
   plugins: {
     legend: { display: false },
     tooltip: {
-      backgroundColor: '#FFFFFF',
-      borderColor: '#E5E7EB',
+      backgroundColor: '#161616',
+      borderColor: 'rgba(255,255,255,0.1)',
       borderWidth: 1,
-      titleColor: '#111827',
-      bodyColor: '#6B7280',
+      titleColor: '#ffffff',
+      bodyColor: '#94a3b8',
       padding: 12,
-      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
     },
   },
 }

@@ -16,6 +16,7 @@ import './styles/luxury.css'
 import './styles/premium.css'
 import './styles/dribbble.css'
 import './styles/mdnt.css'
+import './styles/mdnt-dashboard.css'
 
 const useHashRouter = typeof window !== 'undefined'
   && window.location.hostname.includes('athleteforge-frontend.onrender.com')

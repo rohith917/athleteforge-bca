@@ -31,6 +31,7 @@ import { useTheme } from '../context/ThemeContext'
 import useChartsReady from '../hooks/useChartsReady'
 import UpcomingTournaments from '../components/UpcomingTournaments'
 import ChartMount from '../components/charts/ChartMount'
+import TechCommandHub from '../components/tech/TechCommandHub'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Filler, Tooltip, Legend)
 
@@ -125,6 +126,8 @@ export default function Dashboard() {
         title="Team Analytics"
         subtitle="Roster overview · Performance · Injuries · Readiness"
       />
+
+      <TechCommandHub role="coach" readinessScore={recovery.score} />
 
       <div className="row g-3 mb-4">
         {kpis.map((k, i) => (

@@ -1,17 +1,18 @@
 /**
- * Floating AI Readiness Copilot — landing page demo with voice input
+ * Floating AI Readiness Copilot — landing demo + authenticated dashboard
  */
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaBrain, FaMicrophone, FaPaperPlane, FaTimes } from 'react-icons/fa'
 import { aiAPI } from '../../services/api'
+import { useAuth } from '../../context/AuthContext'
 
 const DEMO_REPLIES = {
   readiness: 'Based on demo data: readiness score is 78%. Speed improved 12% — maintain agility drills and monitor hamstring load before Saturday\'s meet.',
   injury: 'Injury risk is LOW. No active injuries in 90 days. Recommend dynamic warm-up and 48hr recovery between high-intensity sessions.',
   performance: 'Performance trend: Strength +8%, Endurance +5%, Flexibility -3%. AI suggests adding 2 mobility sessions per week.',
   attendance: 'Attendance rate 94% — excellent consistency. Athletes with 90%+ attendance show 23% faster recovery in our dataset.',
-  default: 'I\'m AthleteForge AI Copilot. Ask about readiness, injury risk, performance trends, or attendance. Sign in for personalized insights on your roster.',
+  default: 'I\'m AthleteForge AI Copilot. Ask about readiness, injury risk, performance trends, or attendance.',
 }
 
 function matchReply(text) {
@@ -23,11 +24,29 @@ function matchReply(text) {
   return DEMO_REPLIES.default
 }
 
-export default function AICopilotWidget() {
+function buildInsightsReply(data) {
+  if (!data) return null
+  const parts = []
+  if (data.progress_summary?.summary) parts.push(data.progress_summary.summary)
+  if (data.performance_insights?.available) {
+    parts.push(`${data.performance_insights.headline}. ${data.performance_insights.recommendation}`)
+  }
+  if (data.injury_risk?.message) parts.push(data.injury_risk.message)
+  return parts.join(' ') || null
+}
+
+export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
+  const { user, isStudent } = useAuth()
+  const authenticated = mode === 'app' && user
+
+  const welcome = authenticated
+    ? (isStudent
+      ? `Hi ${user.first_name || 'athlete'} — I'm your personal AI coach. Ask about your readiness, injuries, or training focus.`
+      : `Coach ${user.first_name || ''} — AI Copilot online. Ask about team readiness, injury risk, or athlete performance.`.trim())
+    : 'Hey — I\'m your AI Readiness Copilot. Ask "What\'s my readiness?" or tap the mic for voice input.'
+
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState([
-    { role: 'bot', text: 'Hey coach — I\'m your AI Readiness Copilot. Try asking "What\'s my readiness?" or tap the mic for voice input.' },
-  ])
+  const [messages, setMessages] = useState([{ role: 'bot', text: welcome }])
   const [input, setInput] = useState('')
   const [listening, setListening] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -41,10 +60,27 @@ export default function AICopilotWidget() {
   const speakTip = (text) => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel()
-      const utter = new SpeechSynthesisUtterance(text.slice(0, 200))
+      const utter = new SpeechSynthesisUtterance(text.slice(0, 280))
       utter.rate = 0.95
       window.speechSynthesis.speak(utter)
     }
+  }
+
+  const fetchAIReply = async (text) => {
+    if (authenticated) {
+      const params = athleteId ? { athlete_id: athleteId } : {}
+      const res = await aiAPI.getInsights(params)
+      const built = buildInsightsReply(res.data)
+      if (built) return built
+    }
+    try {
+      const res = await aiAPI.getDemo()
+      const built = buildInsightsReply(res.data)
+      if (built) return built
+    } catch {
+      /* fallback */
+    }
+    return matchReply(text)
   }
 
   const sendMessage = async (text) => {
@@ -56,15 +92,10 @@ export default function AICopilotWidget() {
     setLoading(true)
 
     let reply = matchReply(trimmed)
-
     try {
-      const res = await aiAPI.getDemo()
-      const data = res.data
-      if (data?.progress_summary?.summary) {
-        reply = `${data.progress_summary.summary} ${data.injury_risk?.message || ''}`.trim()
-      }
+      reply = await fetchAIReply(trimmed)
     } catch {
-      /* use local demo reply */
+      reply = matchReply(trimmed)
     }
 
     setLoading(false)
@@ -92,8 +123,7 @@ export default function AICopilotWidget() {
     recognitionRef.current = rec
 
     rec.onresult = (e) => {
-      const transcript = e.results[0][0].transcript
-      sendMessage(transcript)
+      sendMessage(e.results[0][0].transcript)
       setListening(false)
     }
     rec.onerror = () => setListening(false)
@@ -127,7 +157,7 @@ export default function AICopilotWidget() {
             <div className="mdnt-copilot-header">
               <h3>
                 <FaBrain /> AI Copilot
-                <span className="ai-badge">LIVE</span>
+                <span className="ai-badge">{authenticated ? 'PERSONAL' : 'LIVE'}</span>
               </h3>
               <button type="button" className="mdnt-copilot-close" onClick={() => setOpen(false)} aria-label="Close">
                 <FaTimes />

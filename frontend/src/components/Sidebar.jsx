@@ -57,7 +57,7 @@ export default function Sidebar({ isOpen, onClose }) {
   return (
     <aside className={`sidebar ${isOpen ? 'open' : ''} ${roleMeta.className}`}>
       <div className="sidebar-brand">
-        <Logo size="md" showTagline />
+        <Logo size="md" showTagline variant="light" />
       </div>
 
       <div className="sidebar-role-chip">
