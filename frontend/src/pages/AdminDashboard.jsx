@@ -26,6 +26,7 @@ import { baseChartOptions } from '../utils/chartTheme'
 import useChartsReady from '../hooks/useChartsReady'
 import TechCommandHub from '../components/tech/TechCommandHub'
 import AIInsights from '../components/AIInsights'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -224,7 +225,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <AIInsights />
+      <ErrorBoundary><AIInsights /></ErrorBoundary>
 
       <div className="row g-4 mb-4">
         <div className="col-12"><UpcomingTournaments /></div>

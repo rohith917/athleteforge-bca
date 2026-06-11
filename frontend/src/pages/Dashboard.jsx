@@ -6,7 +6,7 @@ import RoleWelcomeBar from '../components/dashboard/RoleWelcomeBar'
 import CoachQuickActions from '../components/dashboard/CoachQuickActions'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Bar, Line, Doughnut } from 'react-chartjs-2'
-import { dashboardAPI } from '../services/api'
+import { dashboardAPI, ensureApiSession } from '../services/api'
 import { fetchWithTimeout } from '../utils/fetchWithTimeout'
 import {
   FaUsers, FaBandAid, FaTrophy, FaClipboardCheck, FaHeartbeat,
@@ -32,6 +32,7 @@ import useChartsReady from '../hooks/useChartsReady'
 import UpcomingTournaments from '../components/UpcomingTournaments'
 import ChartMount from '../components/charts/ChartMount'
 import TechCommandHub from '../components/tech/TechCommandHub'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Filler, Tooltip, Legend)
 
@@ -45,13 +46,18 @@ export default function Dashboard() {
   const [loadError, setLoadError] = useState('')
   const [wellness, setWellness] = useState(null)
 
-  const loadStats = () => {
+  const loadStats = async () => {
     setLoading(true)
     setLoadError('')
-    fetchWithTimeout(dashboardAPI.getStats(), 30000, 'Dashboard')
-      .then((res) => setStats(res.data))
-      .catch(() => setLoadError('Could not load team analytics. The server may still be waking up.'))
-      .finally(() => setLoading(false))
+    try {
+      await ensureApiSession()
+      const res = await fetchWithTimeout(dashboardAPI.getStats(), 60000, 'Dashboard')
+      setStats(res.data)
+    } catch {
+      setLoadError('Could not load team analytics. The server may still be waking up.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { loadStats() }, [])
@@ -89,21 +95,42 @@ export default function Dashboard() {
     { icon: FaMedal, label: 'Performance Records', value: stats.performance_trend?.length ? stats.performance_trend.length * 12 : 48, change: 7, trend: 'up', sparkData: perfSpark, variant: 'gold' },
   ]
 
+  const avgPerf = stats.avg_performance || {}
+  const sportDist = stats.sport_distribution || []
+  const monthlyAtt = stats.monthly_attendance || []
+
   const perfChart = {
     labels: ['Speed', 'Strength', 'Endurance', 'Flexibility', 'Agility'],
-    datasets: [{ data: Object.values(stats.avg_performance), backgroundColor: ['#111827', ACCENT, '#22C55E', '#9CA3AF', '#E5E7EB'], borderRadius: 8 }],
+    datasets: [{
+      data: [
+        avgPerf.speed ?? 0,
+        avgPerf.strength ?? 0,
+        avgPerf.endurance ?? 0,
+        avgPerf.flexibility ?? 0,
+        avgPerf.agility ?? 0,
+      ],
+      backgroundColor: ['#ff3d3d', '#b8ff3c', '#ffffff', '#666', '#333'],
+      borderRadius: 0,
+    }],
   }
 
   const sportChart = {
-    labels: stats.sport_distribution.map((s) => s.sport),
-    datasets: [{ data: stats.sport_distribution.map((s) => s.count), backgroundColor: [ACCENT, '#111827', '#22C55E', '#9CA3AF', '#EF4444', '#E5E7EB'], borderWidth: 0 }],
+    labels: sportDist.length ? sportDist.map((s) => s.sport) : ['No data'],
+    datasets: [{
+      data: sportDist.length ? sportDist.map((s) => s.count) : [1],
+      backgroundColor: ['#ff3d3d', '#b8ff3c', '#ffffff', '#666', '#333', '#444'],
+      borderWidth: 0,
+    }],
   }
 
   const attendanceChart = {
-    labels: stats.monthly_attendance.map((m) => m.month),
+    labels: monthlyAtt.length ? monthlyAtt.map((m) => m.month) : ['—'],
     datasets: [{
-      data: stats.monthly_attendance.map((m) => m.rate),
-      borderColor: ACCENT, backgroundColor: 'rgba(91, 92, 246, 0.06)', fill: true, tension: 0.4,
+      data: monthlyAtt.length ? monthlyAtt.map((m) => m.rate) : [0],
+      borderColor: '#ff3d3d',
+      backgroundColor: 'rgba(255, 61, 61, 0.08)',
+      fill: true,
+      tension: 0.4,
     }],
   }
 
@@ -127,7 +154,9 @@ export default function Dashboard() {
         subtitle="Roster overview · Performance · Injuries · Readiness"
       />
 
-      <AIInsights />
+      <ErrorBoundary>
+        <AIInsights />
+      </ErrorBoundary>
 
       <TechCommandHub role="coach" readinessScore={recovery.score} />
 

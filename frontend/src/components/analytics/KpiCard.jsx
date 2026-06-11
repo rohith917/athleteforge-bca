@@ -2,11 +2,11 @@ import { motion } from 'framer-motion'
 import Sparkline from './Sparkline'
 
 const variants = {
-  gold: { accent: '#5B5CF6', glow: 'rgba(91, 92, 246, 0.08)' },
-  success: { accent: '#22C55E', glow: 'rgba(34, 197, 94, 0.08)' },
-  danger: { accent: '#EF4444', glow: 'rgba(239, 68, 68, 0.08)' },
-  warning: { accent: '#F59E0B', glow: 'rgba(245, 158, 11, 0.08)' },
-  info: { accent: '#111827', glow: 'rgba(17, 24, 39, 0.06)' },
+  gold: { accent: '#ff3d3d', glow: 'rgba(255, 61, 61, 0.12)' },
+  success: { accent: '#b8ff3c', glow: 'rgba(184, 255, 60, 0.12)' },
+  danger: { accent: '#ff3d3d', glow: 'rgba(255, 61, 61, 0.12)' },
+  warning: { accent: '#ff9f43', glow: 'rgba(255, 159, 67, 0.12)' },
+  info: { accent: '#b8ff3c', glow: 'rgba(184, 255, 60, 0.08)' },
 }
 
 export default function KpiCard({

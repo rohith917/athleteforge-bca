@@ -1,7 +1,7 @@
 /**
- * Main layout — sidebar, navbar, animated content area
+ * Main layout — MDNT home colors only (black / red / lime)
  */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Navbar from './Navbar'
@@ -9,7 +9,6 @@ import Footer from './Footer'
 import ChartThemeSync from './ChartThemeSync'
 import ErrorBoundary from './ErrorBoundary'
 import AICopilotWidget from './landing/AICopilotWidget'
-import DashboardMarquee from './dashboard/DashboardMarquee'
 import { useAuth } from '../context/AuthContext'
 
 export default function Layout() {
@@ -17,16 +16,20 @@ export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    document.documentElement.classList.add('theme-dark')
+    document.documentElement.classList.remove('theme-light')
+  }, [])
+
   return (
-    <div className="app-layout dashboard-mdnt">
+    <div className="app-layout dashboard-mdnt home-theme-app">
       <ChartThemeSync />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
       <div className="main-content">
         <Navbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
-        <DashboardMarquee />
         <div className="page-content">
-          <div className="dashboard-mesh-bg" aria-hidden="true" />
           <ErrorBoundary key={location.pathname}>
             <Outlet />
           </ErrorBoundary>

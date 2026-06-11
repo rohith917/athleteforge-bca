@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Line } from 'react-chartjs-2'
-import { dashboardAPI } from '../services/api'
+import { dashboardAPI, ensureApiSession } from '../services/api'
 import { fetchWithTimeout } from '../utils/fetchWithTimeout'
 import { useAuth } from '../context/AuthContext'
 import { FaBandAid, FaClipboardCheck, FaChartLine, FaUser, FaTrophy, FaMedal } from 'react-icons/fa'
@@ -39,13 +39,18 @@ export default function StudentDashboard() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
-  const loadStats = () => {
+  const loadStats = async () => {
     setLoading(true)
     setLoadError('')
-    fetchWithTimeout(dashboardAPI.getStats(), 30000, 'Dashboard')
-      .then((res) => setStats(res.data))
-      .catch(() => setLoadError('Could not load your dashboard. The server may still be waking up.'))
-      .finally(() => setLoading(false))
+    try {
+      await ensureApiSession()
+      const res = await fetchWithTimeout(dashboardAPI.getStats(), 60000, 'Dashboard')
+      setStats(res.data)
+    } catch {
+      setLoadError('Could not load your dashboard. The server may still be waking up.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -103,12 +108,13 @@ export default function StudentDashboard() {
     recovery: recovery.score,
   }
 
+  const monthlyAtt = stats.monthly_attendance || []
   const attendanceChart = {
-    labels: stats.monthly_attendance.map((m) => m.month),
+    labels: monthlyAtt.length ? monthlyAtt.map((m) => m.month) : ['—'],
     datasets: [{
-      data: stats.monthly_attendance.map((m) => m.rate),
-      borderColor: '#22C55E',
-      backgroundColor: 'rgba(34, 197, 94, 0.1)',
+      data: monthlyAtt.length ? monthlyAtt.map((m) => m.rate) : [0],
+      borderColor: '#b8ff3c',
+      backgroundColor: 'rgba(184, 255, 60, 0.1)',
       fill: true,
       tension: 0.4,
     }],
