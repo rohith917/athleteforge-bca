@@ -1,12 +1,12 @@
 /**
  * Admin Control Panel — premium system analytics
  */
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
-import { adminAPI } from '../services/api'
+import { adminAPI, ensureApiSession, initCsrf } from '../services/api'
 import { fetchWithTimeout } from '../utils/fetchWithTimeout'
 import {
   FaUsers, FaUserShield, FaUserGraduate, FaUserTie,
@@ -39,36 +39,78 @@ const quickLinks = [
   { to: '/dashboard/reports', icon: FaCog, label: 'Reports', desc: 'PDF & Excel exports' },
 ]
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 export default function AdminDashboard() {
   const chartsReady = useChartsReady()
-  const { logout } = useAuth()
+  const { user, logout, checkAuth } = useAuth()
   const navigate = useNavigate()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
 
-  const loadStats = () => {
+  const loadStats = useCallback(async () => {
     setLoading(true)
     setLoadError('')
-    fetchWithTimeout(adminAPI.getStats(), 30000, 'Admin dashboard')
-      .then((res) => setStats(res.data))
-      .catch((err) => {
+
+    const maxAttempts = 4
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      try {
+        await ensureApiSession()
+        if (user?.id) {
+          await checkAuth()
+        }
+        const res = await fetchWithTimeout(
+          adminAPI.getStats(),
+          60000,
+          'Admin dashboard',
+        )
+        setStats(res.data)
+        setLoading(false)
+        return
+      } catch (err) {
         const status = err?.response?.status
-        if (status === 401 || status === 403) {
-          setLoadError('Your session expired. Please sign in again as admin.')
+        const isAuthError = status === 401 || status === 403
+
+        if (isAuthError && attempt < maxAttempts - 1) {
+          await initCsrf()
+          await sleep(900 * (attempt + 1))
+          continue
+        }
+
+        if (status === 403) {
+          setLoadError(
+            'Admin access denied. Sign in with admin / admin123 (demo account resets on each deploy).',
+          )
+        } else if (status === 401) {
+          setLoadError(
+            'Could not verify your session. Click Sign In Again and use admin / admin123.',
+          )
+        } else if (err?.message?.includes('timed out')) {
+          setLoadError('Server is waking up (free tier). Wait 30s and tap Retry.')
         } else {
           setLoadError('Could not load admin panel. The server may still be waking up.')
         }
-      })
-      .finally(() => setLoading(false))
-  }
+        setLoading(false)
+        return
+      }
+    }
+  }, [user?.id, checkAuth])
 
   const handleReLogin = async () => {
     await logout()
-    navigate('/login', { replace: true })
+    navigate('/login', {
+      replace: true,
+      state: {
+        from: { pathname: '/dashboard' },
+        prefill: { identifier: 'admin', password: 'admin123' },
+      },
+    })
   }
 
-  useEffect(() => { loadStats() }, [])
+  useEffect(() => { loadStats() }, [loadStats])
 
   if (loading) return (
     <div className="animate-in dashboard-luxury">
@@ -79,10 +121,15 @@ export default function AdminDashboard() {
   if (!stats) {
     return (
       <div className="animate-in dashboard-luxury admin-panel">
-        <div className="alert-custom alert-danger-custom">
+        <div className="alert-custom alert-danger-custom admin-session-alert">
           {loadError || 'Failed to load admin dashboard.'}
-          <button type="button" className="btn-gold ms-3" onClick={loadStats}>Retry</button>
-          <button type="button" className="btn-outline-gold ms-2" onClick={handleReLogin}>Sign In Again</button>
+          <div className="mt-3 d-flex flex-wrap gap-2">
+            <button type="button" className="btn-gold" onClick={loadStats}>Retry</button>
+            <button type="button" className="btn-outline-gold" onClick={handleReLogin}>Sign In Again</button>
+          </div>
+          <p className="mt-3 mb-0 small text-muted">
+            Demo: <code>admin</code> / <code>admin123</code> — passwords reset automatically on deploy.
+          </p>
         </div>
       </div>
     )
@@ -93,7 +140,7 @@ export default function AdminDashboard() {
     labels: ['Admins', 'Coaches', 'Students'],
     datasets: [{
       data: [roles.admin || 0, roles.coach || 0, roles.student || 0],
-      backgroundColor: [GOLD, '#6366F1', '#22C55E'],
+      backgroundColor: ['#ff3d3d', '#b8ff3c', '#22C55E'],
       borderWidth: 0,
     }],
   }

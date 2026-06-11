@@ -107,6 +107,19 @@ export async function initCsrf() {
   }
 }
 
+/** Wake server, refresh CSRF, and confirm session cookie is valid. */
+export async function ensureApiSession() {
+  await wakeServer()
+  await initCsrf()
+  try {
+    await authAPI.getUser()
+    markServerAwake()
+    return true
+  } catch {
+    return false
+  }
+}
+
 api.interceptors.request.use((config) => {
   const method = (config.method || 'get').toLowerCase()
   if (['post', 'put', 'patch', 'delete'].includes(method)) {
@@ -134,6 +147,30 @@ api.interceptors.response.use(
       if (token) {
         original.headers['X-CSRFToken'] = token
         return api.request(original)
+      }
+    }
+
+    const method = (original?.method || 'get').toLowerCase()
+
+    if (
+      status === 401 &&
+      !authenticating &&
+      !original?._authRetry &&
+      method === 'get' &&
+      !url.includes('/auth/login/') &&
+      !url.includes('/auth/register/') &&
+      !url.includes('/auth/logout/') &&
+      !url.includes('/auth/csrf/') &&
+      !url.includes('/auth/user/')
+    ) {
+      original._authRetry = true
+      await wakeServer()
+      await initCsrf()
+      try {
+        await api.get('/auth/user/', { timeout: DEFAULT_TIMEOUT })
+        return api.request(original)
+      } catch {
+        /* session truly expired — fall through */
       }
     }
 

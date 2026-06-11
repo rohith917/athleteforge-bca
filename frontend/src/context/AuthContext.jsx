@@ -53,14 +53,15 @@ export function AuthProvider({ children }) {
     return response.data
   }, [])
 
-  const verifySession = useCallback(async (fallbackUser, retries = 4) => {
+  const verifySession = useCallback(async (fallbackUser, retries = 6) => {
     for (let attempt = 0; attempt < retries; attempt += 1) {
       try {
+        await initCsrf()
         const verified = await fetchCurrentUser()
         if (verified?.id) return verified
       } catch (err) {
         if (!isNotLoggedInError(err)) throw err
-        if (attempt < retries - 1) await sleep(350)
+        if (attempt < retries - 1) await sleep(500 * (attempt + 1))
       }
     }
     if (fallbackUser?.id) {

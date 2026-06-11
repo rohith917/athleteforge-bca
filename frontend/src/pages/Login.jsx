@@ -1,7 +1,7 @@
 /**
  * Login — cinematic split-screen auth
  */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
@@ -16,6 +16,12 @@ export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const returnPath = location.state?.from?.pathname || '/dashboard'
+  const prefill = location.state?.prefill
+
+  useEffect(() => {
+    if (prefill?.identifier) setIdentifier(prefill.identifier)
+    if (prefill?.password) setPassword(prefill.password)
+  }, [prefill?.identifier, prefill?.password])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
