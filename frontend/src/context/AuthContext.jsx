@@ -149,9 +149,14 @@ export function AuthProvider({ children }) {
     try {
       await wakeServer()
       await initCsrf()
-      const payload = useEmail
-        ? { email: emailOrUsername, password }
-        : { username: emailOrUsername, password }
+      const id = emailOrUsername.trim()
+      const payload = { password }
+      if (useEmail && id.includes('@')) {
+        payload.email = id
+        payload.username = id.split('@')[0]
+      } else {
+        payload.username = id
+      }
       const response = await authAPI.login(payload)
       const loggedInUser = response.data?.user
       if (!loggedInUser) {

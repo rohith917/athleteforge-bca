@@ -43,7 +43,7 @@ from .reports import (
 
 
 def _resolve_user_from_login(data):
-    """Authenticate by email or username."""
+    """Authenticate by email or username (with local-part fallback)."""
     email = data.get('email', '').strip()
     username = data.get('username', '').strip()
     password = data['password']
@@ -56,9 +56,17 @@ def _resolve_user_from_login(data):
                 return user
         except User.DoesNotExist:
             pass
+        # e.g. admin@athleteforge.com when stored email differs — try local part
+        local = email.split('@')[0].strip()
+        if local and local != username:
+            user = authenticate(username=local, password=password)
+            if user:
+                return user
 
     if username:
-        return authenticate(username=username, password=password)
+        user = authenticate(username=username, password=password)
+        if user:
+            return user
 
     return None
 

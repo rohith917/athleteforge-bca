@@ -90,6 +90,16 @@ export default function Login() {
               <Logo size="lg" showTagline />
               <h2 className="login-title mt-3">Welcome back</h2>
               <p className="login-subtitle">Sign in to your account</p>
+              <div className="alert-custom mb-3" style={{
+                background: 'rgba(255, 61, 61, 0.08)',
+                border: '1px solid rgba(255, 61, 61, 0.25)',
+                fontSize: '0.82rem',
+                color: 'var(--text-secondary)',
+              }}>
+                <strong style={{ color: 'var(--text-primary)' }}>Demo accounts</strong><br />
+                Admin: <code>admin</code> / <code>admin123</code><br />
+                Coach: <code>coach</code> / <code>coach123</code>
+              </div>
               {error && <div className="alert-custom alert-danger-custom">{error}</div>}
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
