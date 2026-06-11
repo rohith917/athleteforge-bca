@@ -49,6 +49,10 @@ def _resolve_user_from_login(data):
     username = data.get('username', '').strip()
     password = data['password']
 
+    # Some clients send email in the username field
+    if not email and username and '@' in username:
+        email = username
+
     if email:
         try:
             user_obj = User.objects.get(email__iexact=email)
