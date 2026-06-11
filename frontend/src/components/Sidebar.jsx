@@ -11,39 +11,39 @@ import {
 import Logo from './Logo'
 
 const adminNav = [
-  { path: '/dashboard', icon: FaTachometerAlt, label: 'Admin Panel' },
-  { path: '/dashboard/admin/users', icon: FaUserShield, label: 'User Management' },
-  { path: '/dashboard/athletes', icon: FaUsers, label: 'Athletes' },
-  { path: '/dashboard/performance', icon: FaChartLine, label: 'Performance' },
-  { path: '/dashboard/injuries', icon: FaBandAid, label: 'Injuries' },
-  { path: '/dashboard/competitions', icon: FaTrophy, label: 'Competitions' },
-  { path: '/dashboard/attendance', icon: FaClipboardCheck, label: 'Attendance' },
-  { path: '/dashboard/weight', icon: FaWeight, label: 'Weight' },
-  { path: '/dashboard/reports', icon: FaFileAlt, label: 'Reports' },
+  { path: '/dashboard', icon: FaTachometerAlt, label: 'ADMIN PANEL' },
+  { path: '/dashboard/admin/users', icon: FaUserShield, label: 'USER MANAGEMENT' },
+  { path: '/dashboard/athletes', icon: FaUsers, label: 'ATHLETES' },
+  { path: '/dashboard/performance', icon: FaChartLine, label: 'PERFORMANCE' },
+  { path: '/dashboard/injuries', icon: FaBandAid, label: 'INJURIES' },
+  { path: '/dashboard/competitions', icon: FaTrophy, label: 'COMPETITIONS' },
+  { path: '/dashboard/attendance', icon: FaClipboardCheck, label: 'ATTENDANCE' },
+  { path: '/dashboard/weight', icon: FaWeight, label: 'WEIGHT' },
+  { path: '/dashboard/reports', icon: FaFileAlt, label: 'REPORTS' },
 ]
 
 const coachNav = [
-  { path: '/dashboard', icon: FaTachometerAlt, label: 'Coach Dashboard' },
-  { path: '/dashboard/athletes', icon: FaUsers, label: 'My Athletes' },
-  { path: '/dashboard/performance', icon: FaChartLine, label: 'Performance' },
-  { path: '/dashboard/injuries', icon: FaBandAid, label: 'Injury Tracking' },
-  { path: '/dashboard/competitions', icon: FaTrophy, label: 'Competitions' },
-  { path: '/dashboard/attendance', icon: FaClipboardCheck, label: 'Attendance' },
-  { path: '/dashboard/weight', icon: FaWeight, label: 'Weight Tracking' },
-  { path: '/dashboard/reports', icon: FaFileAlt, label: 'Reports' },
+  { path: '/dashboard', icon: FaTachometerAlt, label: 'COACH DASHBOARD' },
+  { path: '/dashboard/athletes', icon: FaUsers, label: 'MY ATHLETES' },
+  { path: '/dashboard/performance', icon: FaChartLine, label: 'PERFORMANCE' },
+  { path: '/dashboard/injuries', icon: FaBandAid, label: 'INJURY TRACKING' },
+  { path: '/dashboard/competitions', icon: FaTrophy, label: 'COMPETITIONS' },
+  { path: '/dashboard/attendance', icon: FaClipboardCheck, label: 'ATTENDANCE' },
+  { path: '/dashboard/weight', icon: FaWeight, label: 'WEIGHT TRACKING' },
+  { path: '/dashboard/reports', icon: FaFileAlt, label: 'REPORTS' },
 ]
 
 const studentNav = [
-  { path: '/dashboard', icon: FaTachometerAlt, label: 'My Dashboard' },
-  { path: '/dashboard/performance', icon: FaChartLine, label: 'My Performance' },
-  { path: '/dashboard/injuries', icon: FaBandAid, label: 'My Injuries' },
-  { path: '/dashboard/attendance', icon: FaClipboardCheck, label: 'My Attendance' },
+  { path: '/dashboard', icon: FaTachometerAlt, label: 'MY DASHBOARD' },
+  { path: '/dashboard/performance', icon: FaChartLine, label: 'MY PERFORMANCE' },
+  { path: '/dashboard/injuries', icon: FaBandAid, label: 'MY INJURIES' },
+  { path: '/dashboard/attendance', icon: FaClipboardCheck, label: 'MY ATTENDANCE' },
 ]
 
 const ROLE_SIDEBAR = {
-  admin: { label: 'Administrator', icon: FaUserShield, className: 'sidebar-role-admin' },
-  coach: { label: 'Coach Panel', icon: FaUserTie, className: 'sidebar-role-coach' },
-  student: { label: 'Athlete Portal', icon: FaRunning, className: 'sidebar-role-student' },
+  admin: { label: 'ADMINISTRATOR', icon: FaUserShield, className: 'sidebar-role-admin' },
+  coach: { label: 'COACH PANEL', icon: FaUserTie, className: 'sidebar-role-coach' },
+  student: { label: 'ATHLETE PORTAL', icon: FaRunning, className: 'sidebar-role-student' },
 }
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -71,10 +71,10 @@ export default function Sidebar({ isOpen, onClose }) {
           className={({ isActive }) => `nav-item nav-item-home ${isActive ? 'active' : ''}`}
           onClick={onClose}
         >
-          <FaHome /> <span>Home</span>
+          <FaHome /> <span>HOME</span>
         </NavLink>
 
-        <div className="sidebar-nav-divider">{isStudent ? 'My Data' : isCoach ? 'Team Management' : 'System'}</div>
+        <div className="sidebar-nav-divider">{isStudent ? 'MY DATA' : isCoach ? 'TEAM MANAGEMENT' : 'SYSTEM'}</div>
 
         {navItems.map(({ path, icon: Icon, label }) => (
           <NavLink
@@ -93,7 +93,7 @@ export default function Sidebar({ isOpen, onClose }) {
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             onClick={onClose}
           >
-            <FaUser /> <span>My Profile</span>
+            <FaUser /> <span>MY PROFILE</span>
           </NavLink>
         )}
       </nav>

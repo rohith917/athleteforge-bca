@@ -70,7 +70,12 @@ body:has(.landing-mdnt) {
   font-family: var(--mdnt-font-display);
   font-size: 1.5rem;
   letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--mdnt-white) !important;
+}
+
+.mdnt-nav .af-brand-accent {
+  color: var(--upd-lime, var(--mdnt-lime));
 }
 
 .public-page-mdnt .public-navbar {

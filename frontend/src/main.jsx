@@ -18,6 +18,7 @@ import './styles/dribbble.css'
 import './styles/mdnt.css'
 import './styles/mdnt-dashboard.css'
 import './styles/upd.css'
+import './styles/site-unified.css'
 
 const useHashRouter = typeof window !== 'undefined'
   && window.location.hostname.includes('athleteforge-frontend.onrender.com')

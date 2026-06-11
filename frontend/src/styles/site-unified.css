@@ -1,0 +1,194 @@
+/* ================================================================
+   SITE-WIDE MDNT THEME — matches landing (home page untouched in JSX)
+   Typography: ALL CAPS UI chrome · landing-aligned gaps & colors
+   ================================================================ */
+
+:root {
+  --site-lime: #b8ff3c;
+  --site-lime-dim: rgba(184, 255, 60, 0.15);
+  --site-lime-glow: rgba(184, 255, 60, 0.35);
+  --site-gap: clamp(16px, 3vw, 32px);
+  --site-pad-x: clamp(20px, 4vw, 48px);
+  --site-section-gap: clamp(24px, 4vw, 40px);
+}
+
+/* ---- Logo wordmark ---- */
+.af-logo-wordmark {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1;
+}
+
+.af-logo-wordmark .af-brand-name {
+  font-family: var(--mdnt-font-display, 'Bebas Neue', 'Oswald', sans-serif);
+  font-size: 1.35rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mdnt-white, #fff) !important;
+  white-space: nowrap;
+}
+
+.af-logo-sm .af-brand-name { font-size: 1rem; letter-spacing: 0.12em; }
+.af-logo-lg .af-brand-name { font-size: 1.75rem; letter-spacing: 0.16em; }
+
+.af-brand-accent {
+  color: var(--site-lime);
+}
+
+.af-logo-wordmark .af-tagline {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mdnt-muted, rgba(255, 255, 255, 0.55));
+}
+
+/* ---- Dashboard + auth: same palette as landing ---- */
+.app-layout.dashboard-mdnt,
+.auth-split-page {
+  --mdnt-lime: var(--site-lime);
+  --af-accent: var(--mdnt-accent, #ff3d3d);
+  --bg-page: var(--mdnt-black, #0a0a0a);
+  --gold-500: var(--mdnt-accent, #ff3d3d);
+}
+
+/* ALL CAPS — UI chrome only (readable body text stays mixed) */
+.app-layout.dashboard-mdnt .page-heading,
+.app-layout.dashboard-mdnt .page-title,
+.app-layout.dashboard-mdnt .page-subtitle,
+.app-layout.dashboard-mdnt .role-welcome-eyebrow,
+.app-layout.dashboard-mdnt .role-welcome-title,
+.app-layout.dashboard-mdnt .nav-item span,
+.app-layout.dashboard-mdnt .sidebar-role-chip span,
+.app-layout.dashboard-mdnt .sidebar-nav-divider,
+.app-layout.dashboard-mdnt .btn-gold,
+.app-layout.dashboard-mdnt .btn-outline-gold,
+.app-layout.dashboard-mdnt .btn-logout,
+.app-layout.dashboard-mdnt .kpi-label,
+.app-layout.dashboard-mdnt .analytics-card-title,
+.app-layout.dashboard-mdnt h6,
+.app-layout.dashboard-mdnt .tech-command-hub-header h3,
+.app-layout.dashboard-mdnt .tech-badge,
+.app-layout.dashboard-mdnt .role-badge,
+.app-layout.dashboard-mdnt .mdnt-marquee-item,
+.app-layout.dashboard-mdnt .admin-quick-link strong,
+.auth-split-page .login-title,
+.auth-split-page .form-label-custom,
+.auth-split-page .btn-hero-primary,
+.auth-split-page .btn-hero-ghost,
+.auth-split-page .auth-split-visual h1 {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Consistent gaps (landing reference: clamp 20–48px) */
+.app-layout.dashboard-mdnt .page-content {
+  padding: var(--site-pad-x);
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.app-layout.dashboard-mdnt .page-header,
+.app-layout.dashboard-mdnt .role-welcome-bar,
+.app-layout.dashboard-mdnt .tech-command-hub {
+  margin-bottom: var(--site-section-gap);
+}
+
+.app-layout.dashboard-mdnt .row.g-3 {
+  --bs-gutter-x: var(--site-gap);
+  --bs-gutter-y: var(--site-gap);
+}
+
+.app-layout.dashboard-mdnt .row.g-4 {
+  --bs-gutter-x: var(--site-gap);
+  --bs-gutter-y: var(--site-gap);
+}
+
+/* Kill purple luxury overrides inside MDNT app */
+.app-layout.dashboard-mdnt .kpi-card,
+.app-layout.dashboard-mdnt .glass-card,
+.app-layout.dashboard-mdnt .chart-panel-premium {
+  background: var(--mdnt-surface) !important;
+  border: 1px solid var(--mdnt-border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-layout.dashboard-mdnt .btn-gold,
+.app-layout.dashboard-mdnt .btn-hero-primary {
+  background: var(--mdnt-white) !important;
+  color: var(--mdnt-black) !important;
+  border-radius: 0 !important;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.app-layout.dashboard-mdnt .btn-gold:hover {
+  background: var(--mdnt-accent) !important;
+  color: var(--mdnt-white) !important;
+}
+
+.app-layout.dashboard-mdnt .kpi-card .kpi-value {
+  color: var(--site-lime);
+}
+
+.app-layout.dashboard-mdnt .role-welcome-bar {
+  border-left: 3px solid var(--mdnt-accent);
+  padding: var(--site-gap);
+}
+
+/* Auth pages — MDNT split (same as home palette) */
+.auth-split-page {
+  background: var(--mdnt-black);
+  color: var(--mdnt-white);
+  font-family: var(--mdnt-font-body, 'Inter', sans-serif);
+}
+
+.auth-split-visual h1 {
+  font-family: var(--mdnt-font-display);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+}
+
+.auth-split-visual h1 span {
+  color: var(--site-lime);
+}
+
+.auth-form-card {
+  border: 1px solid var(--mdnt-border);
+  border-radius: 0;
+  background: var(--mdnt-surface);
+}
+
+.auth-split-stat strong {
+  color: var(--site-lime);
+  font-family: var(--mdnt-font-display);
+  font-size: 1.75rem;
+  letter-spacing: 0.06em;
+}
+
+.admin-alert-warn {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+.chart-footnote {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mdnt-muted);
+}
+
+.user-card-name {
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

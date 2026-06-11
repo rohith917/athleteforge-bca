@@ -7,7 +7,7 @@ import { useTheme } from '../context/ThemeContext'
 import { useToast } from '../context/ToastContext'
 import { FaSignOutAlt, FaMoon, FaSun, FaBars } from 'react-icons/fa'
 import Avatar from './Avatar'
-const roleLabels = { admin: 'Admin', coach: 'Coach', student: 'Student' }
+const roleLabels = { admin: 'ADMIN', coach: 'COACH', student: 'STUDENT' }
 
 export default function Navbar({ onMenuToggle }) {
   const { user, logout, isStudent, isCoach, isAdmin, actionLoading, getErrorMessage } = useAuth()
@@ -39,7 +39,7 @@ export default function Navbar({ onMenuToggle }) {
           <FaBars />
         </button>
         <h4 className="page-title mb-0">
-          {isAdmin ? 'Admin Command Center' : isStudent ? 'Athlete Portal' : isCoach ? 'Coach Command Center' : 'Dashboard'}
+          {isAdmin ? 'ADMIN COMMAND CENTER' : isStudent ? 'ATHLETE PORTAL' : isCoach ? 'COACH COMMAND CENTER' : 'DASHBOARD'}
         </h4>
       </div>
 
@@ -62,7 +62,7 @@ export default function Navbar({ onMenuToggle }) {
           disabled={loggingOut || actionLoading}
           aria-label="Logout"
         >
-          <FaSignOutAlt /> <span className="d-none d-md-inline">{loggingOut ? 'Logging out...' : 'Logout'}</span>
+          <FaSignOutAlt /> <span className="d-none d-md-inline">{loggingOut ? 'LOGGING OUT...' : 'LOGOUT'}</span>
         </button>
       </div>
     </header>

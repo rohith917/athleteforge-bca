@@ -8,19 +8,19 @@ import { useAuth } from '../../context/AuthContext'
 const ROLE_META = {
   coach: {
     icon: FaUserTie,
-    label: 'Coach Command Center',
+    label: 'COACH COMMAND CENTER',
     desc: 'Manage your roster, track performance, injuries, and team readiness.',
     className: 'role-welcome-coach',
   },
   student: {
     icon: FaRunning,
-    label: 'Athlete Performance Hub',
+    label: 'ATHLETE PERFORMANCE HUB',
     desc: 'Your personal training data, recovery, attendance, and progress.',
     className: 'role-welcome-student',
   },
   admin: {
     icon: FaUserShield,
-    label: 'System Administration',
+    label: 'SYSTEM ADMINISTRATION',
     desc: 'Platform oversight, users, and full system analytics.',
     className: 'role-welcome-admin',
   },
@@ -43,7 +43,7 @@ export default function RoleWelcomeBar({ role: roleOverride }) {
       <div className="role-welcome-icon"><Icon /></div>
       <div className="role-welcome-text">
         <span className="role-welcome-eyebrow">{meta.label}</span>
-        <h3 className="role-welcome-title">Welcome, {name}</h3>
+        <h3 className="role-welcome-title">WELCOME, {name.toUpperCase()}</h3>
         <p className="role-welcome-desc">{meta.desc}</p>
       </div>
       <span className={`role-badge role-${role}`}>{role}</span>

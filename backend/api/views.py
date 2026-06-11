@@ -597,7 +597,15 @@ def dashboard_stats(request):
     """Dashboard statistics — full for coaches, personal for students."""
     user = request.user
 
-    if is_staff_role(user):
+    if is_admin_role(user):
+        athletes = Athlete.objects.all()
+        injuries = Injury.objects.exclude(recovery_status='Recovered')
+        performances = Performance.objects.all()
+        competitions = Competition.objects.all()
+        results = CompetitionResult.objects.all()
+        attendance = Attendance.objects.all()
+        role = 'admin'
+    elif is_staff_role(user):
         athletes = Athlete.objects.all()
         injuries = Injury.objects.exclude(recovery_status='Recovered')
         performances = Performance.objects.all()
@@ -698,6 +706,26 @@ def dashboard_stats(request):
         athlete = get_athlete_for_user(user)
         payload['athlete'] = AthleteSerializer(athlete, context={'request': request}).data
         payload['ai_preview'] = get_ai_insights_for_athlete(athlete)
+
+    if role == 'admin':
+        users = User.objects.all()
+        profiles = UserProfile.objects.all()
+        payload.update({
+            'total_users': users.count(),
+            'active_users': users.filter(is_active=True).count(),
+            'inactive_users': users.filter(is_active=False).count(),
+            'users_by_role': {
+                'admin': profiles.filter(role='admin').count() + users.filter(is_superuser=True).count(),
+                'coach': profiles.filter(role='coach').count(),
+                'student': profiles.filter(role='student').count(),
+            },
+            'total_performance_records': performances.count(),
+            'total_attendance_records': attendance.count(),
+            'recent_users': AdminUserSerializer(
+                users.order_by('-date_joined')[:8], many=True
+            ).data,
+            'unlinked_students': profiles.filter(role='student', athlete__isnull=True).count(),
+        })
 
     return Response(payload)
 

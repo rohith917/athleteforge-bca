@@ -120,6 +120,7 @@ body {
 
 /* ---- Logo ---- */
 .af-logo { display: flex; align-items: center; gap: 12px; }
+.af-logo-wordmark { gap: 6px; }
 .af-shield { flex-shrink: 0; filter: drop-shadow(0 2px 8px var(--af-gold-glow-strong)); }
 .af-brand-name {
   font-family: 'Oswald', sans-serif;

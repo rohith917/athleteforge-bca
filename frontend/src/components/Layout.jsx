@@ -18,7 +18,7 @@ export default function Layout() {
   const location = useLocation()
 
   return (
-    <div className="app-layout dashboard-premium dashboard-mdnt dashboard-mdnt-crazy">
+    <div className="app-layout dashboard-mdnt">
       <ChartThemeSync />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
