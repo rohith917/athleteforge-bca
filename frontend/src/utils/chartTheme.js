@@ -1,7 +1,7 @@
-/** Light luxury chart theme */
-export const ACCENT = '#5B5CF6'
-export const GOLD = ACCENT
-export const GOLD_HOVER = '#818CF8'
+/** Premium sports chart theme — purple & gold */
+export const ACCENT = '#8b5cf6'
+export const GOLD = '#d4af37'
+export const GOLD_HOVER = '#a78bfa'
 export const MEDAL_GOLD = '#D4AF37'
 export const TEXT = '#6B7280'
 export const GRID = '#F3F4F6'

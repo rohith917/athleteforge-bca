@@ -9,7 +9,7 @@ export default function Logo({ size = 'md', showTagline = false }) {
     <div className="af-logo">
       <div className="af-shield" style={{ width: shieldSize, height: shieldSize }}>
         <svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M24 2L44 12V28C44 40 24 54 24 54C24 54 4 40 4 28V12L24 2Z" fill="#111827" stroke="#E5E7EB" strokeWidth="1"/>
+          <path d="M24 2L44 12V28C44 40 24 54 24 54C24 54 4 40 4 28V12L24 2Z" fill="#6d28d9" stroke="#a78bfa" strokeWidth="1"/>
           <text x="24" y="34" textAnchor="middle" fill="#fff" fontSize="15" fontWeight="700" fontFamily="Inter, sans-serif">AF</text>
         </svg>
       </div>

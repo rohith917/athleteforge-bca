@@ -22,12 +22,16 @@ export default class ErrorBoundary extends React.Component {
 
   render() {
     if (!this.state.hasError) return this.props.children
+    const showDetails = import.meta.env.DEV && this.state.error?.message
 
     return (
       <div className="error-boundary-screen">
         <div className="error-boundary-card">
           <h1>Something went wrong</h1>
           <p>The page hit an unexpected error. Refresh to try again.</p>
+          {showDetails && (
+            <pre className="error-boundary-details">{this.state.error.message}</pre>
+          )}
           <div className="error-boundary-actions">
             <button type="button" className="btn-gold" onClick={this.handleRetry}>
               Refresh page

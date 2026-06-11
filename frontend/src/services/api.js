@@ -5,25 +5,11 @@ import axios from 'axios'
 
 /** Resolve API base — same-origin when SPA is served by Django backend. */
 function resolveApiBase() {
-  const host = typeof window !== 'undefined' ? window.location.hostname : ''
-  if (
-    host === 'localhost' ||
-    host === '127.0.0.1' ||
-    host.includes('athleteforge-bca.onrender.com') ||
-    host.includes('railway.app') ||
-    host.includes('fly.dev') ||
-    host.includes('koyeb.app')
-  ) {
-    return '/api'
-  }
   const envUrl = import.meta.env.VITE_API_URL
   if (envUrl && !envUrl.includes('YOUR-BACKEND') && !envUrl.includes('athleteforge-api.onrender.com')) {
     return envUrl
   }
-  if (host.includes('onrender.com') || host.includes('athleteforge')) {
-    return 'https://athleteforge-bca.onrender.com/api'
-  }
-  return envUrl || '/api'
+  return '/api'
 }
 
 const API_BASE = resolveApiBase()

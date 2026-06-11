@@ -13,6 +13,8 @@ import { ToastProvider } from './context/ToastContext'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/App.css'
 import './styles/luxury.css'
+import './styles/premium.css'
+import './styles/dribbble.css'
 
 const useHashRouter = typeof window !== 'undefined'
   && window.location.hostname.includes('athleteforge-frontend.onrender.com')

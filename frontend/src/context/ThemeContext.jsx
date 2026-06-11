@@ -6,7 +6,7 @@ import { createContext, useContext, useState, useEffect } from 'react'
 const ThemeContext = createContext(null)
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => localStorage.getItem('athleteforge-theme') || 'light')
+  const [theme, setTheme] = useState(() => localStorage.getItem('athleteforge-theme') || 'dark')
   const [forcedLight, setForcedLight] = useState(false)
 
   const effectiveTheme = forcedLight ? 'light' : theme

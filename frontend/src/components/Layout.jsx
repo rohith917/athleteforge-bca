@@ -14,7 +14,7 @@ export default function Layout() {
   const location = useLocation()
 
   return (
-    <div className="app-layout">
+    <div className="app-layout dashboard-premium">
       <ChartThemeSync />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}

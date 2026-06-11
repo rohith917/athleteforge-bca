@@ -1,22 +1,15 @@
 /**
- * Non-admin users and public pages always use light mode.
- * Only admins may switch to dark mode.
+ * Keep cinematic dark theme active for all roles (premium sports UI).
  */
 import { useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 
 export default function ThemeRoleGuard() {
-  const { isAdmin, initializing } = useAuth()
   const { setForcedLight } = useTheme()
 
   useEffect(() => {
-    if (initializing) {
-      setForcedLight(true)
-      return
-    }
-    setForcedLight(!isAdmin)
-  }, [isAdmin, initializing, setForcedLight])
+    setForcedLight(false)
+  }, [setForcedLight])
 
   return null
 }

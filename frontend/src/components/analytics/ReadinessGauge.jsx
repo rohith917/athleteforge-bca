@@ -11,7 +11,7 @@ export default function ReadinessGauge({ wellness, score: fixedScore }) {
   const trackColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
   const { score, status, level } = fixedScore != null
     ? { score: fixedScore, status: fixedScore >= 80 ? 'Ready to Train' : fixedScore >= 60 ? 'Moderate Readiness' : 'Recovery Recommended', level: fixedScore >= 80 ? 'high' : fixedScore >= 60 ? 'medium' : 'low' }
-    : calcReadiness(wellness)
+    : calcReadiness(wellness || {})
 
   const color = level === 'high' ? SUCCESS : level === 'medium' ? WARNING : DANGER
 

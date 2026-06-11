@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 import { Line } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip } from 'chart.js'
 import { ACCENT, baseChartOptions, SUCCESS } from '../../utils/chartTheme'
@@ -45,24 +46,32 @@ export default function HeroShowcase() {
   }
 
   return (
-    <div className="hero-showcase">
+    <motion.div
+      className="hero-showcase"
+      animate={{ y: [0, -8, 0] }}
+      transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+    >
       <div className="hero-showcase-image-wrap">
         <img src={ATHLETE_IMG} alt="Elite athlete training" className="hero-showcase-image" />
       </div>
 
       <div className="hero-float-grid">
-        <div className="hero-float-card">
-          <span className="label">Readiness</span>
-          <span className="value success">87</span>
-        </div>
-        <div className="hero-float-card">
-          <span className="label">Recovery</span>
-          <span className="value accent">74%</span>
-        </div>
-        <div className="hero-float-card">
-          <span className="label">Injury Risk</span>
-          <span className="value danger">22%</span>
-        </div>
+        {[
+          { label: 'Readiness', value: '87', cls: 'success' },
+          { label: 'Recovery', value: '74%', cls: 'accent' },
+          { label: 'Injury Risk', value: '22%', cls: 'danger' },
+        ].map((card, i) => (
+          <motion.div
+            key={card.label}
+            className="hero-float-card"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 + i * 0.15, duration: 0.5 }}
+          >
+            <span className="label">{card.label}</span>
+            <span className={`value ${card.cls}`}>{card.value}</span>
+          </motion.div>
+        ))}
       </div>
 
       <div className="hero-mini-charts">
@@ -79,6 +88,6 @@ export default function HeroShowcase() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
