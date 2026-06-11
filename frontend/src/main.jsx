@@ -14,6 +14,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/App.css'
 import './styles/mdnt.css'
 import './styles/upd.css'
+import './styles/premium.css'
+import './styles/luxury.css'
 import './styles/mdnt-dashboard.css'
 import './styles/site-unified.css'
 

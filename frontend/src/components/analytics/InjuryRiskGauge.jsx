@@ -3,6 +3,7 @@ import { Chart as ChartJS, ArcElement } from 'chart.js'
 import { calcInjuryRisk } from '../../utils/metricsEngine'
 import { SUCCESS, WARNING, DANGER } from '../../utils/chartTheme'
 import { useTheme } from '../../context/ThemeContext'
+import ChartMount from '../charts/ChartMount'
 
 ChartJS.register(ArcElement)
 
@@ -16,10 +17,12 @@ export default function InjuryRiskGauge({ stats }) {
     <div className="analytics-gauge-card glass-card">
       <h6 className="analytics-card-title">Injury Risk Score</h6>
       <div className="gauge-wrap">
-        <Doughnut
-          data={{ datasets: [{ data: [risk, 100 - risk], backgroundColor: [color, trackColor], borderWidth: 0, circumference: 270, rotation: 225 }] }}
-          options={{ cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }}
-        />
+        <ChartMount height={160} key={`injury-risk-${isDark}-${risk}`}>
+          <Doughnut
+            data={{ datasets: [{ data: [risk, 100 - risk], backgroundColor: [color, trackColor], borderWidth: 0, circumference: 270, rotation: 225 }] }}
+            options={{ cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }}
+          />
+        </ChartMount>
         <div className="gauge-center">
           <span className="gauge-score">{risk}</span>
           <span className="gauge-unit">%</span>

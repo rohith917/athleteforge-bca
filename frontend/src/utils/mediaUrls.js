@@ -28,7 +28,7 @@ export const REMOTE_IMAGES = {
   galleryTrack: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=600&q=80',
   galleryFootball: 'https://images.unsplash.com/photo-1517649763961-0c62306601b7?auto=format&fit=crop&w=600&q=80',
   gallerySwim: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50e?auto=format&fit=crop&w=600&q=80',
-  portrait: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50e?auto=format&fit=crop&w=400&h=400&fit=crop&crop=face',
+  portrait: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50e?auto=format&fit=crop&w=400&h=400&crop=face',
 }
 
 export function getImagePair(key) {

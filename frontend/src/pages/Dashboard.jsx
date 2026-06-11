@@ -6,7 +6,7 @@ import RoleWelcomeBar from '../components/dashboard/RoleWelcomeBar'
 import CoachQuickActions from '../components/dashboard/CoachQuickActions'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Bar, Line, Doughnut } from 'react-chartjs-2'
-import { dashboardAPI, ensureApiSession } from '../services/api'
+import { dashboardAPI, injuriesAPI, ensureApiSession } from '../services/api'
 import { fetchWithTimeout } from '../utils/fetchWithTimeout'
 import {
   FaUsers, FaBandAid, FaTrophy, FaClipboardCheck, FaHeartbeat,
@@ -25,7 +25,7 @@ import ActivityTimeline from '../components/analytics/ActivityTimeline'
 import NotificationCenter from '../components/analytics/NotificationCenter'
 import WellnessCheckIn from '../components/analytics/WellnessCheckIn'
 import PerformanceRadar from '../components/analytics/PerformanceRadar'
-import { ACCENT, baseChartOptions } from '../utils/chartTheme'
+import { baseChartOptions } from '../utils/chartTheme'
 import { calcRecoveryScore } from '../utils/metricsEngine'
 import { useTheme } from '../context/ThemeContext'
 import useChartsReady from '../hooks/useChartsReady'
@@ -42,6 +42,7 @@ export default function Dashboard() {
   const tickColor = isDark ? '#9CA3AF' : '#9CA3AF'
   const gridColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
   const [stats, setStats] = useState(null)
+  const [injuries, setInjuries] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
   const [wellness, setWellness] = useState(null)
@@ -50,11 +51,29 @@ export default function Dashboard() {
     setLoading(true)
     setLoadError('')
     try {
-      await ensureApiSession()
-      const res = await fetchWithTimeout(dashboardAPI.getStats(), 60000, 'Dashboard')
-      setStats(res.data)
-    } catch {
-      setLoadError('Could not load team analytics. The server may still be waking up.')
+      const sessionOk = await ensureApiSession()
+      if (!sessionOk) {
+        setLoadError('Session not verified — sign in again (coach / coach123).')
+        setStats(null)
+        return
+      }
+      const [statsRes, injRes] = await Promise.all([
+        fetchWithTimeout(dashboardAPI.getStats(), 60000, 'Dashboard'),
+        injuriesAPI.getAll().catch(() => ({ data: [] })),
+      ])
+      setStats(statsRes.data)
+      const injData = injRes.data?.results ?? injRes.data ?? []
+      setInjuries(Array.isArray(injData) ? injData : [])
+    } catch (err) {
+      const status = err?.response?.status
+      if (status === 401) {
+        setLoadError('Session expired — please sign in again.')
+      } else if (err?.message?.includes('timed out')) {
+        setLoadError('Server is waking up — wait 30 seconds and tap Retry.')
+      } else {
+        setLoadError('Could not load team analytics. Ensure backend is running on port 8000.')
+      }
+      setStats(null)
     } finally {
       setLoading(false)
     }
@@ -181,7 +200,7 @@ export default function Dashboard() {
 
       <div className="row g-4 mb-4">
         <div className="col-lg-4"><NotificationCenter /></div>
-        <div className="col-lg-4"><InjuryHeatmap /></div>
+        <div className="col-lg-4"><InjuryHeatmap injuries={injuries} /></div>
         <div className="col-lg-4"><ActivityTimeline /></div>
       </div>
 

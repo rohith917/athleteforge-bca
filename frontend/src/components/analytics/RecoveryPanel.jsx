@@ -2,10 +2,15 @@ import { Line } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler } from 'chart.js'
 import { calcRecoveryScore } from '../../utils/metricsEngine'
 import { baseChartOptions, SUCCESS } from '../../utils/chartTheme'
+import { useTheme } from '../../context/ThemeContext'
+import ChartMount from '../charts/ChartMount'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Filler)
 
 export default function RecoveryPanel({ stats }) {
+  const { isDark } = useTheme()
+  const tickColor = isDark ? '#9CA3AF' : '#6B7280'
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
   const { score, daysUntilReturn } = calcRecoveryScore(stats)
   const trend = stats?.monthly_attendance?.map((m) => m.rate) || [65, 68, 72, 70, 75, score]
 
@@ -38,9 +43,9 @@ export default function RecoveryPanel({ stats }) {
       <div className="progress-luxury">
         <div className="progress-luxury-fill" style={{ width: `${score}%` }} />
       </div>
-      <div style={{ height: 120 }} className="mt-3">
-        <Line data={chartData} options={{ ...baseChartOptions, scales: { x: { ticks: { color: '#9CA3AF', maxTicksLimit: 6 }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: '#9CA3AF' }, grid: { color: '#F3F4F6' } } } }} />
-      </div>
+      <ChartMount height={120} className="mt-3" key={`recovery-${isDark}-${score}`}>
+        <Line data={chartData} options={{ ...baseChartOptions, scales: { x: { ticks: { color: tickColor, maxTicksLimit: 6 }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: tickColor }, grid: { color: gridColor } } } }} />
+      </ChartMount>
       <div className="rtp-workflow">
         {['Injured', 'Rehab', 'Light', 'Modified', 'Full', 'Comp Ready'].map((s, i) => (
           <span key={s} className={`rtp-step ${i <= 3 ? 'active' : ''}`}>{s}</span>

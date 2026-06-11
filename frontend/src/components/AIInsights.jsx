@@ -10,14 +10,15 @@ import {
 import LoadingSpinner from './LoadingSpinner'
 
 function FactorBar({ label, value, color }) {
+  const pct = Number.isFinite(Number(value)) ? Math.min(100, Math.max(0, Number(value))) : 0
   return (
     <div className="ai-factor-bar">
       <div className="ai-factor-label">
         <span>{label}</span>
-        <span>{value}%</span>
+        <span>{pct}%</span>
       </div>
       <div className="ai-factor-track">
-        <div className="ai-factor-fill" style={{ width: `${value}%`, background: color }} />
+        <div className="ai-factor-fill" style={{ width: `${pct}%`, background: color }} />
       </div>
     </div>
   )

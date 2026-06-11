@@ -14,6 +14,10 @@ export default function LiveReadinessOrb({ initialScore = 78 }) {
   const [score, setScore] = useState(initialScore)
 
   useEffect(() => {
+    setScore(initialScore)
+  }, [initialScore])
+
+  useEffect(() => {
     const tick = setInterval(() => {
       setScore(prev => {
         const delta = (Math.random() - 0.48) * 4

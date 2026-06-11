@@ -11,7 +11,7 @@ export function resolveMediaUrl(url) {
       try {
         const parsed = new URL(trimmed)
         const isLocalApi = parsed.hostname === '127.0.0.1' || parsed.hostname === 'localhost'
-        const onVite = window.location.port === '5173' || window.location.port === '3000'
+        const onVite = import.meta.env.DEV || window.location.port === '5173' || window.location.port === '3000'
         if (isLocalApi && onVite && parsed.pathname.startsWith('/media/')) {
           return `${window.location.origin}${parsed.pathname}`
         }

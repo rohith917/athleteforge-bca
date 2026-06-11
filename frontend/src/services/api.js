@@ -26,7 +26,8 @@ const isCloudHost = !isLocalDev && typeof window !== 'undefined'
 
 /** Cloud cold starts can take up to 60s on first request. */
 const CLOUD_TIMEOUT = 90000
-const DEFAULT_TIMEOUT = isCloudHost ? CLOUD_TIMEOUT : 12000
+const LOCAL_TIMEOUT = 60000
+const DEFAULT_TIMEOUT = isCloudHost ? CLOUD_TIMEOUT : LOCAL_TIMEOUT
 
 const api = axios.create({
   baseURL: API_BASE,

@@ -26,10 +26,16 @@ export function ThemeProvider({ children }) {
     setTheme((t) => (t === 'light' ? 'dark' : 'light'))
   }
 
+  const setThemeMode = (next) => {
+    if (forcedLight) return
+    setTheme(next === 'light' ? 'light' : 'dark')
+  }
+
   return (
     <ThemeContext.Provider value={{
       theme: effectiveTheme,
       toggleTheme,
+      setTheme: setThemeMode,
       isDark: effectiveTheme === 'dark',
       setForcedLight,
       canToggleTheme: !forcedLight,

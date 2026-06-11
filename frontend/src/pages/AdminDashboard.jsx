@@ -24,6 +24,8 @@ import CoachTips from '../components/CoachTips'
 import NotificationCenter from '../components/analytics/NotificationCenter'
 import { baseChartOptions } from '../utils/chartTheme'
 import useChartsReady from '../hooks/useChartsReady'
+import ChartMount from '../components/charts/ChartMount'
+import { useTheme } from '../context/ThemeContext'
 import TechCommandHub from '../components/tech/TechCommandHub'
 import AIInsights from '../components/AIInsights'
 import ErrorBoundary from '../components/ErrorBoundary'
@@ -42,6 +44,7 @@ const quickLinks = [
 
 export default function AdminDashboard() {
   const chartsReady = useChartsReady()
+  const { isDark } = useTheme()
   const { logout } = useAuth()
   const navigate = useNavigate()
   const [stats, setStats] = useState(null)
@@ -52,7 +55,12 @@ export default function AdminDashboard() {
     setLoading(true)
     setLoadError('')
     try {
-      await ensureApiSession()
+      const sessionOk = await ensureApiSession()
+      if (!sessionOk) {
+        setLoadError('SESSION NOT VERIFIED — SIGN IN WITH ADMIN / ADMIN123.')
+        setStats(null)
+        return
+      }
       const res = await fetchWithTimeout(dashboardAPI.getStats(), 60000, 'Admin dashboard')
       if (res.data?.role !== 'admin') {
         setLoadError('ADMIN ACCESS REQUIRED — SIGN IN WITH ADMIN / ADMIN123.')
@@ -183,15 +191,15 @@ export default function AdminDashboard() {
         <div className="col-lg-4">
           <div className="chart-panel-premium glass-card">
             <h6>USERS BY ROLE</h6>
-            <div style={{ height: 200 }}>
+            <ChartMount height={200} key={`admin-roles-${isDark}`}>
               {chartsReady && (
                 <Doughnut data={roleChart} options={{
                   ...baseChartOptions,
                   cutout: '65%',
-                  plugins: { ...baseChartOptions.plugins, legend: { position: 'bottom', labels: { color: '#94A3B8' } } },
+                  plugins: { ...baseChartOptions.plugins, legend: { position: 'bottom', labels: { color: isDark ? '#9CA3AF' : '#6B7280' } } },
                 }} />
               )}
-            </div>
+            </ChartMount>
             <div className="mt-3 text-center chart-footnote">
               {stats.active_users} ACTIVE · {stats.inactive_users} INACTIVE
             </div>

@@ -8,6 +8,7 @@ import { Line } from 'react-chartjs-2'
 import { dashboardAPI, ensureApiSession } from '../services/api'
 import { fetchWithTimeout } from '../utils/fetchWithTimeout'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 import { FaBandAid, FaClipboardCheck, FaChartLine, FaUser, FaTrophy, FaMedal } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
 import KpiCard from '../components/analytics/KpiCard'
@@ -25,14 +26,18 @@ import StudentInjuryStatus from '../components/dashboard/StudentInjuryStatus'
 import StudentTrainingTips from '../components/dashboard/StudentTrainingTips'
 import ChartMount from '../components/charts/ChartMount'
 import useChartsReady from '../hooks/useChartsReady'
-import { GOLD, baseChartOptions } from '../utils/chartTheme'
+import { baseChartOptions } from '../utils/chartTheme'
 import { calcRecoveryScore } from '../utils/metricsEngine'
 import TechCommandHub from '../components/tech/TechCommandHub'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip, Legend)
 
 export default function StudentDashboard() {
   const chartsReady = useChartsReady()
+  const { isDark } = useTheme()
+  const tickColor = isDark ? '#9CA3AF' : '#6B7280'
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
   const { user, isStudent } = useAuth()
   const [stats, setStats] = useState(null)
   const [wellness, setWellness] = useState(null)
@@ -43,11 +48,24 @@ export default function StudentDashboard() {
     setLoading(true)
     setLoadError('')
     try {
-      await ensureApiSession()
+      const sessionOk = await ensureApiSession()
+      if (!sessionOk) {
+        setLoadError('Session not verified — sign in again (rahul.sharma@email.com / student123).')
+        setStats(null)
+        return
+      }
       const res = await fetchWithTimeout(dashboardAPI.getStats(), 60000, 'Dashboard')
       setStats(res.data)
-    } catch {
-      setLoadError('Could not load your dashboard. The server may still be waking up.')
+    } catch (err) {
+      const status = err?.response?.status
+      if (status === 401) {
+        setLoadError('Session expired — please sign in again.')
+      } else if (err?.message?.includes('timed out')) {
+        setLoadError('Server is waking up — wait 30 seconds and tap Retry.')
+      } else {
+        setLoadError('Could not load your dashboard. Ensure backend is running on port 8000.')
+      }
+      setStats(null)
     } finally {
       setLoading(false)
     }
@@ -144,7 +162,9 @@ export default function StudentDashboard() {
         </div>
       </div>
 
-      <AIInsights athleteId={athlete?.id} />
+      <ErrorBoundary>
+        <AIInsights athleteId={athlete?.id} />
+      </ErrorBoundary>
 
       <TechCommandHub
         role="student"
@@ -182,19 +202,19 @@ export default function StudentDashboard() {
         <div className="col-lg-5">
           <div className="chart-panel-premium glass-card h-100">
             <h6><FaMedal className="me-2" />My Performance Profile</h6>
-            <PerformanceRadar scores={radarScores} />
+            <PerformanceRadar scores={radarScores} bare />
           </div>
         </div>
         <div className="col-lg-7">
           <div className="chart-panel-premium glass-card" style={{ minHeight: 320 }}>
             <h6>My Attendance Trend</h6>
-            <ChartMount height={260}>
+            <ChartMount height={260} key={`student-att-${isDark}`}>
               {chartsReady && (
                 <Line data={attendanceChart} options={{
                   ...baseChartOptions,
                   scales: {
-                    x: { ticks: { color: '#94A3B8' }, grid: { display: false } },
-                    y: { min: 0, max: 100, ticks: { color: '#94A3B8' }, grid: { color: 'rgba(148,163,184,0.08)' } },
+                    x: { ticks: { color: tickColor }, grid: { display: false } },
+                    y: { min: 0, max: 100, ticks: { color: tickColor }, grid: { color: gridColor } },
                   },
                 }} />
               )}
