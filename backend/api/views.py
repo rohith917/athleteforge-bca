@@ -19,7 +19,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .ai_insights import get_ai_insights_for_athlete, get_demo_ai_insights, answer_copilot_question
+from .ai_insights import get_ai_insights_for_athlete, get_demo_ai_insights
+from .free_ai import generate_free_ai_answer, get_ai_provider_status
 from .models import (
     Athlete, Performance, Injury, Competition,
     CompetitionResult, Attendance, WeightTracking, PasswordResetToken, UserProfile
@@ -535,6 +536,13 @@ def ai_demo(request):
     return Response(get_demo_ai_insights())
 
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def ai_status(request):
+    """Report active AI provider for UI badges (Groq / Gemini / Forge rules)."""
+    return Response(get_ai_provider_status())
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def ai_copilot(request):
@@ -561,15 +569,23 @@ def ai_copilot(request):
     else:
         insights = get_demo_ai_insights()
 
+    status = get_ai_provider_status()
+
     if not question:
         return Response({
             'answer': insights.get('coaching_brief', '')[:900],
             'insights': insights,
+            'ai_provider': status['provider'],
+            'ai_mode': status['mode'],
         })
 
+    result = generate_free_ai_answer(question, insights)
     return Response({
-        'answer': answer_copilot_question(insights, question),
+        'answer': result['answer'],
         'insights': insights,
+        'ai_provider': result['ai_provider'],
+        'ai_mode': result['ai_mode'],
+        'llm_used': result.get('llm_used', False),
     })
 
 

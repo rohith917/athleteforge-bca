@@ -36,3 +36,8 @@ services:
         value: https://athleteforge-bca.onrender.com
       - key: CSRF_TRUSTED_ORIGINS
         value: https://athleteforge-bca.onrender.com
+      # Optional — add in Render Dashboard for free LLM copilot (Groq preferred)
+      # - key: GROQ_API_KEY
+      #   sync: false
+      # - key: GEMINI_API_KEY
+      #   sync: false

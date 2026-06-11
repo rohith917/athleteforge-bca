@@ -867,6 +867,11 @@ body:has(.landing-mdnt) {
   letter-spacing: 0.08em;
 }
 
+.mdnt-copilot-header .ai-badge-provider {
+  background: rgba(100, 180, 255, 0.12);
+  color: #8ec8ff;
+}
+
 .mdnt-copilot-close {
   background: none;
   border: none;

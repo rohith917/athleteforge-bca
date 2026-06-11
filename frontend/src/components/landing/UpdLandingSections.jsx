@@ -134,6 +134,8 @@ export function UpdMeetAI() {
           <p style={{ color: 'var(--mdnt-muted)', marginBottom: 28, lineHeight: 1.7 }}>
             Available 24/7. Trained on athlete performance science. Get instant strategy for
             readiness, injury prevention, training load, and competition prep.
+            {' '}Optional <strong>free AI</strong> (Groq or Gemini) powers natural-language answers
+            on top of Forge&apos;s analytics — try the floating copilot on this page.
           </p>
           <Link to="/register" className="btn-upd-lime">
             Launch Forge AI <FaArrowRight />

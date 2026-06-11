@@ -1,5 +1,5 @@
 /**
- * Floating AI Copilot — uses /api/ai/copilot/ for rich contextual answers
+ * Floating AI Copilot — Forge rules + optional free LLM (Groq / Gemini)
  */
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -14,6 +14,19 @@ const SUGGESTED = [
   'Weekly training plan',
   'Performance metrics breakdown',
 ]
+
+const PROVIDER_LABELS = {
+  groq: 'Groq Free AI',
+  gemini: 'Gemini Free AI',
+  rules: 'Forge AI',
+}
+
+const LOADING_TEXT = {
+  groq: 'Groq is analyzing your athlete data...',
+  gemini: 'Gemini is analyzing your athlete data...',
+  rules: 'Analyzing full athlete dataset...',
+  rules_fallback: 'Forge AI answering (LLM unavailable)...',
+}
 
 export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
   const { user, isStudent } = useAuth()
@@ -30,12 +43,29 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
   const [input, setInput] = useState('')
   const [listening, setListening] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [aiProvider, setAiProvider] = useState('rules')
+  const [aiLabel, setAiLabel] = useState('Forge AI')
+  const [lastMode, setLastMode] = useState(null)
   const recognitionRef = useRef(null)
   const endRef = useRef(null)
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  useEffect(() => {
+    if (!open) return
+    aiAPI.getStatus()
+      .then((res) => {
+        const provider = res.data?.provider || 'rules'
+        setAiProvider(provider)
+        setAiLabel(res.data?.label || PROVIDER_LABELS[provider] || 'Forge AI')
+      })
+      .catch(() => {
+        setAiProvider('rules')
+        setAiLabel('Forge AI')
+      })
+  }, [open])
 
   const speakTip = (text) => {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
@@ -59,6 +89,11 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
       if (athleteId) payload.athlete_id = athleteId
       const res = await aiAPI.copilot(payload)
       const answer = res.data?.answer || 'No response generated.'
+      const provider = res.data?.ai_provider || aiProvider
+      const responseMode = res.data?.ai_mode || 'rules'
+      setAiProvider(provider)
+      setAiLabel(PROVIDER_LABELS[provider] || res.data?.ai_provider || 'Forge AI')
+      setLastMode(responseMode)
       setMessages(m => [...m, { role: 'bot', text: answer }])
       speakTip(answer)
     } catch {
@@ -92,6 +127,9 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
     setListening(true)
   }
 
+  const scopeBadge = authenticated ? 'DEEP' : 'DEMO'
+  const loadingText = LOADING_TEXT[lastMode] || LOADING_TEXT[aiProvider] || LOADING_TEXT.rules
+
   return (
     <>
       <button type="button" className="mdnt-copilot-trigger" onClick={() => setOpen(v => !v)} aria-label="AI Copilot">
@@ -108,7 +146,11 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
           >
             <div className="mdnt-copilot-header">
-              <h3><FaBrain /> AI Copilot <span className="ai-badge">{authenticated ? 'DEEP' : 'DEMO'}</span></h3>
+              <h3>
+                <FaBrain /> AI Copilot{' '}
+                <span className="ai-badge">{scopeBadge}</span>
+                <span className="ai-badge ai-badge-provider">{aiLabel}</span>
+              </h3>
               <button type="button" className="mdnt-copilot-close" onClick={() => setOpen(false)}><FaTimes /></button>
             </div>
 
@@ -124,7 +166,7 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
               {messages.map((msg, i) => (
                 <div key={i} className={`mdnt-copilot-msg ${msg.role}`}>{msg.text}</div>
               ))}
-              {loading && <div className="mdnt-copilot-msg bot">Analyzing full athlete dataset...</div>}
+              {loading && <div className="mdnt-copilot-msg bot">{loadingText}</div>}
               <div ref={endRef} />
             </div>
 
