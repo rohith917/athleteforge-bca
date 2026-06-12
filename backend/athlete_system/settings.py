@@ -216,6 +216,15 @@ CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(CORS_ALLOWED_ORIGINS + _extra_csrf))
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_NAME = 'athleteforge_sessionid'
 
+# Lightweight cache for dashboard stats (backend only — no UI change)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'athleteforge-cache',
+        'OPTIONS': {'MAX_ENTRIES': 200},
+    }
+}
+
 # Railway / Render sit behind a reverse proxy
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

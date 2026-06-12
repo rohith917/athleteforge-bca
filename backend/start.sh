@@ -12,11 +12,8 @@ fi
 echo "[AthleteForge] Running migrations..."
 python manage.py migrate --no-input
 
-echo "[AthleteForge] Loading demo data..."
-python manage.py seed_data
-
-echo "[AthleteForge] Ensuring demo accounts..."
-python manage.py setup_admin
+echo "[AthleteForge] Ensuring demo data and accounts..."
+python manage.py ensure_demo
 
 echo "[AthleteForge] Starting gunicorn on port ${PORT:-10000}..."
 exec gunicorn athlete_system.wsgi:application \
@@ -24,5 +21,6 @@ exec gunicorn athlete_system.wsgi:application \
   --workers 2 \
   --threads 2 \
   --timeout 120 \
+  --preload \
   --access-logfile - \
   --error-logfile -

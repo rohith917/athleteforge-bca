@@ -27,8 +27,7 @@ USE_SQLITE=True python manage.py collectstatic --no-input
 if [ -n "$DATABASE_URL" ]; then
   echo "Running database setup..."
   python manage.py migrate --no-input
-  python manage.py seed_data
-  python manage.py setup_admin
+  python manage.py ensure_demo
 else
   echo "WARNING: DATABASE_URL not set during build — migrations run at startup"
 fi

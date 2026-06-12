@@ -10,6 +10,7 @@ from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db.models import Avg, Count, Q
 from django.http import HttpResponse
 from rest_framework import viewsets, status
@@ -595,11 +596,38 @@ def ai_copilot(request):
 
 # ==================== Dashboard ====================
 
+def _monthly_attendance_from_records(records):
+    """Build 6-month attendance summary from prefetched (date, status) rows."""
+    monthly = []
+    for i in range(5, -1, -1):
+        month_start = date.today().replace(day=1) - timedelta(days=i * 30)
+        month_end = month_start + timedelta(days=30)
+        present = absent = 0
+        for att_date, status in records:
+            if month_start <= att_date < month_end:
+                if status == 'Present':
+                    present += 1
+                elif status == 'Absent':
+                    absent += 1
+        total = present + absent
+        monthly.append({
+            'month': month_start.strftime('%b %Y'),
+            'present': present,
+            'absent': absent,
+            'rate': round((present / total * 100) if total > 0 else 0, 1),
+        })
+    return monthly
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def dashboard_stats(request):
     """Dashboard statistics — full for coaches, personal for students."""
     user = request.user
+    cache_key = f'dashboard_stats:{user.id}'
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return Response(cached)
 
     if is_admin_role(user):
         athletes = Athlete.objects.all()
@@ -655,27 +683,25 @@ def dashboard_stats(request):
         agility=Avg('agility_score'),
     )
 
+    athlete_counts = athletes.aggregate(
+        total=Count('id'),
+        active=Count('id', filter=Q(status='Active')),
+        injured=Count('id', filter=Q(status='Injured')),
+    )
+    medal_counts = results.aggregate(
+        gold=Count('id', filter=Q(medal='Gold')),
+        silver=Count('id', filter=Q(medal='Silver')),
+        bronze=Count('id', filter=Q(medal='Bronze')),
+    )
+
     sport_dist = list(athletes.values('sport').annotate(count=Count('id')).order_by('-count'))
     injury_severity = list(injuries.values('severity').annotate(count=Count('id')))
+    att_records = list(attendance.values_list('attendance_date', 'status'))
+    monthly_attendance = _monthly_attendance_from_records(att_records)
 
-    monthly_attendance = []
-    for i in range(5, -1, -1):
-        month_start = date.today().replace(day=1) - timedelta(days=i * 30)
-        month_end = month_start + timedelta(days=30)
-        month_records = attendance.filter(
-            attendance_date__gte=month_start,
-            attendance_date__lt=month_end
-        )
-        total = month_records.count()
-        present = month_records.filter(status='Present').count()
-        monthly_attendance.append({
-            'month': month_start.strftime('%b %Y'),
-            'present': present,
-            'absent': month_records.filter(status='Absent').count(),
-            'rate': round((present / total * 100) if total > 0 else 0, 1),
-        })
-
-    recent_perf = performances.order_by('-record_date')[:6]
+    recent_perf = list(
+        performances.select_related('athlete').order_by('-record_date')[:6]
+    )
     performance_trend = [
         {
             'date': p.record_date.strftime('%d-%m-%Y'),
@@ -686,19 +712,19 @@ def dashboard_stats(request):
                 float(p.agility_score or 0)
             ])) / 5, 1)
         }
-        for p in reversed(list(recent_perf))
+        for p in reversed(recent_perf)
     ]
 
     payload = {
         'role': role,
-        'total_athletes': athletes.count(),
-        'active_athletes': athletes.filter(status='Active').count(),
-        'injured_athletes': athletes.filter(status='Injured').count(),
+        'total_athletes': athlete_counts['total'],
+        'active_athletes': athlete_counts['active'],
+        'injured_athletes': athlete_counts['injured'],
         'active_injuries': injuries.count(),
         'total_competitions': competitions.count(),
-        'gold_medals': results.filter(medal='Gold').count(),
-        'silver_medals': results.filter(medal='Silver').count(),
-        'bronze_medals': results.filter(medal='Bronze').count(),
+        'gold_medals': medal_counts['gold'],
+        'silver_medals': medal_counts['silver'],
+        'bronze_medals': medal_counts['bronze'],
         'avg_performance': {k: round(float(v or 0), 1) for k, v in avg_perf.items()},
         'sport_distribution': sport_dist,
         'injury_by_severity': injury_severity,
@@ -714,23 +740,36 @@ def dashboard_stats(request):
     if role == 'admin':
         users = User.objects.all()
         profiles = UserProfile.objects.all()
+        role_counts = profiles.aggregate(
+            coach=Count('id', filter=Q(role='coach')),
+            student=Count('id', filter=Q(role='student')),
+            admin_role=Count('id', filter=Q(role='admin')),
+            unlinked=Count('id', filter=Q(role='student', athlete__isnull=True)),
+        )
+        user_counts = users.aggregate(
+            total=Count('id'),
+            active=Count('id', filter=Q(is_active=True)),
+            inactive=Count('id', filter=Q(is_active=False)),
+            superusers=Count('id', filter=Q(is_superuser=True)),
+        )
         payload.update({
-            'total_users': users.count(),
-            'active_users': users.filter(is_active=True).count(),
-            'inactive_users': users.filter(is_active=False).count(),
+            'total_users': user_counts['total'],
+            'active_users': user_counts['active'],
+            'inactive_users': user_counts['inactive'],
             'users_by_role': {
-                'admin': profiles.filter(role='admin').count() + users.filter(is_superuser=True).count(),
-                'coach': profiles.filter(role='coach').count(),
-                'student': profiles.filter(role='student').count(),
+                'admin': role_counts['admin_role'] + user_counts['superusers'],
+                'coach': role_counts['coach'],
+                'student': role_counts['student'],
             },
             'total_performance_records': performances.count(),
             'total_attendance_records': attendance.count(),
             'recent_users': AdminUserSerializer(
-                users.order_by('-date_joined')[:8], many=True
+                users.select_related('profile').order_by('-date_joined')[:8], many=True
             ).data,
-            'unlinked_students': profiles.filter(role='student', athlete__isnull=True).count(),
+            'unlinked_students': role_counts['unlinked'],
         })
 
+    cache.set(cache_key, payload, 45)
     return Response(payload)
 
 
