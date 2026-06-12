@@ -112,17 +112,36 @@ export async function initCsrf() {
   }
 }
 
-/** Wake server, refresh CSRF, and confirm session cookie is valid. */
-export async function ensureApiSession() {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/** Wake server, refresh CSRF, and confirm session cookie is valid (with retries). */
+export async function ensureApiSession(retries = 6) {
   await wakeServer()
-  await initCsrf()
-  try {
-    await authAPI.getUser()
-    markServerAwake()
-    return true
-  } catch {
-    return false
+  for (let attempt = 0; attempt < retries; attempt += 1) {
+    await initCsrf()
+    try {
+      await authAPI.getUser({ timeout: DEFAULT_TIMEOUT })
+      markServerAwake()
+      return true
+    } catch (err) {
+      const status = err?.response?.status
+      if (status === 401 || status === 403) {
+        if (attempt < retries - 1) {
+          await sleep(600 * (attempt + 1))
+          continue
+        }
+        return false
+      }
+      if (attempt < retries - 1) {
+        await sleep(1000 * (attempt + 1))
+        continue
+      }
+      return false
+    }
   }
+  return false
 }
 
 api.interceptors.request.use((config) => {

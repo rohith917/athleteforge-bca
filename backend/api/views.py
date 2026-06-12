@@ -105,12 +105,14 @@ class LoginView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                 )
             login(request, user)
+            request.session.cycle_key()
             request.session.save()
-            return Response({
+            response = Response({
                 'message': 'Login successful',
                 'user': UserSerializer(user, context={'request': request}).data,
                 'csrfToken': get_token(request),
             })
+            return response
         return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -769,7 +771,7 @@ def dashboard_stats(request):
             'unlinked_students': role_counts['unlinked'],
         })
 
-    cache.set(cache_key, payload, 45)
+    cache.set(cache_key, payload, 30)
     return Response(payload)
 
 

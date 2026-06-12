@@ -38,7 +38,7 @@ export default function StudentDashboard() {
   const { isDark } = useTheme()
   const tickColor = isDark ? '#9CA3AF' : '#6B7280'
   const gridColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
-  const { user, isStudent } = useAuth()
+  const { user, isStudent, checkAuth } = useAuth()
   const [stats, setStats] = useState(null)
   const [wellness, setWellness] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -48,13 +48,19 @@ export default function StudentDashboard() {
     setLoading(true)
     setLoadError('')
     try {
-      const sessionOk = await ensureApiSession()
-      if (!sessionOk) {
-        setLoadError('Session not verified — sign in again (rahul.sharma@email.com / student123).')
-        setStats(null)
-        return
+      let activeUser = user
+      if (!activeUser?.id) {
+        activeUser = await checkAuth()
       }
-      const res = await fetchWithTimeout(dashboardAPI.getStats(), 60000, 'Dashboard')
+      if (!activeUser?.id) {
+        const sessionOk = await ensureApiSession()
+        if (!sessionOk) {
+          setLoadError('Session not verified — sign in again (rahul.sharma@email.com / student123).')
+          setStats(null)
+          return
+        }
+      }
+      const res = await fetchWithTimeout(dashboardAPI.getStats(), 90000, 'Dashboard')
       setStats(res.data)
     } catch (err) {
       const status = err?.response?.status

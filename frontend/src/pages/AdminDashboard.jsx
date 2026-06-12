@@ -45,7 +45,7 @@ const quickLinks = [
 export default function AdminDashboard() {
   const chartsReady = useChartsReady()
   const { isDark } = useTheme()
-  const { logout } = useAuth()
+  const { user, logout, checkAuth } = useAuth()
   const navigate = useNavigate()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -55,13 +55,19 @@ export default function AdminDashboard() {
     setLoading(true)
     setLoadError('')
     try {
-      const sessionOk = await ensureApiSession()
-      if (!sessionOk) {
-        setLoadError('SESSION NOT VERIFIED — SIGN IN WITH ADMIN / ADMIN123.')
-        setStats(null)
-        return
+      let activeUser = user
+      if (!activeUser?.id) {
+        activeUser = await checkAuth()
       }
-      const res = await fetchWithTimeout(dashboardAPI.getStats(), 60000, 'Admin dashboard')
+      if (!activeUser?.id) {
+        const sessionOk = await ensureApiSession()
+        if (!sessionOk) {
+          setLoadError('SESSION NOT VERIFIED — SIGN IN WITH ADMIN / ADMIN123.')
+          setStats(null)
+          return
+        }
+      }
+      const res = await fetchWithTimeout(dashboardAPI.getStats(), 90000, 'Admin dashboard')
       if (res.data?.role !== 'admin') {
         setLoadError('ADMIN ACCESS REQUIRED — SIGN IN WITH ADMIN / ADMIN123.')
         setStats(null)

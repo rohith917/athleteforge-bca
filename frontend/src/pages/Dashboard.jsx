@@ -2,6 +2,7 @@
  * Coach Dashboard — team management, analytics, roster intelligence (coaches only)
  */
 import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
 import RoleWelcomeBar from '../components/dashboard/RoleWelcomeBar'
 import CoachQuickActions from '../components/dashboard/CoachQuickActions'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Filler, Tooltip, Legend } from 'chart.js'
@@ -38,6 +39,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointEleme
 
 export default function Dashboard() {
   const chartsReady = useChartsReady()
+  const { user, checkAuth } = useAuth()
   const { isDark } = useTheme()
   const tickColor = isDark ? '#9CA3AF' : '#9CA3AF'
   const gridColor = isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6'
@@ -51,14 +53,20 @@ export default function Dashboard() {
     setLoading(true)
     setLoadError('')
     try {
-      const sessionOk = await ensureApiSession()
-      if (!sessionOk) {
-        setLoadError('Session not verified — sign in again (coach / coach123).')
-        setStats(null)
-        return
+      let activeUser = user
+      if (!activeUser?.id) {
+        activeUser = await checkAuth()
+      }
+      if (!activeUser?.id) {
+        const sessionOk = await ensureApiSession()
+        if (!sessionOk) {
+          setLoadError('Session not verified — sign in again (coach / coach123).')
+          setStats(null)
+          return
+        }
       }
       const [statsRes, injRes] = await Promise.all([
-        fetchWithTimeout(dashboardAPI.getStats(), 60000, 'Dashboard'),
+        fetchWithTimeout(dashboardAPI.getStats(), 90000, 'Dashboard'),
         injuriesAPI.getAll().catch(() => ({ data: [] })),
       ])
       setStats(statsRes.data)
