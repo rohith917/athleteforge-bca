@@ -7,6 +7,7 @@ import {
   initCsrf,
   wakeServer,
   markServerAwake,
+  resetServerAwake,
   clearAuthTokens,
   setUnauthorizedHandler,
   getErrorMessage,
@@ -169,6 +170,7 @@ export function AuthProvider({ children }) {
     setActionLoading(true)
     setBootstrapMessage('Signing in...')
     clearAllClientAuth()
+    resetServerAwake()
 
     try {
       await wakeServer()

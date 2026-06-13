@@ -4,7 +4,9 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler } from 'chart.js'
 import { Line } from 'react-chartjs-2'
-import { weightAPI, athletesAPI } from '../services/api'
+import { weightAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
+import DataErrorPanel from '../components/DataErrorPanel'
 import { useToast } from '../context/ToastContext'
 import { FaPlus, FaCalculator, FaTrash, FaWeight } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
@@ -30,17 +32,26 @@ export default function WeightTracking() {
   const [filterAthlete, setFilterAthlete] = useState('')
   const [targetWeight, setTargetWeight] = useState('')
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const { showToast } = useToast()
 
   const fetchData = async () => {
     setLoading(true)
+    setLoadError('')
     try {
+      const ok = await ensureApiSession()
+      if (!ok) {
+        setLoadError('Session not verified — sign in again.')
+        return
+      }
       const params = filterAthlete ? { athlete_id: filterAthlete } : {}
       const [wRes, aRes] = await Promise.all([weightAPI.getAll(params), athletesAPI.getAll()])
-      setRecords(wRes.data.results || wRes.data)
-      setAthletes(aRes.data.results || aRes.data)
-    } catch { showToast('Failed to load data', 'error') }
-    finally { setLoading(false) }
+      setRecords(parseListResponse(wRes.data))
+      setAthletes(parseListResponse(aRes.data))
+    } catch (err) {
+      setLoadError(getLoadErrorMessage(err, 'weight records'))
+      showToast('Failed to load data', 'error')
+    } finally { setLoading(false) }
   }
 
   useEffect(() => { fetchData() }, [filterAthlete])
@@ -89,6 +100,7 @@ export default function WeightTracking() {
         subtitle="Body composition · BMI · Weight trends · Combat sports cut"
         action={<button type="button" className="btn-gold" onClick={() => setShowForm(!showForm)}><FaPlus /> Add Record</button>}
       />
+      {loadError && <DataErrorPanel message={loadError} onRetry={fetchData} />}
 
       <div className="filter-bar-premium mb-4">
         <select className="form-select-custom" style={{ maxWidth: 280 }} value={filterAthlete}

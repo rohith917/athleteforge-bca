@@ -79,7 +79,7 @@ export default function Dashboard() {
       } else if (err?.message?.includes('timed out')) {
         setLoadError('Server is waking up — wait 30 seconds and tap Retry.')
       } else {
-        setLoadError('Could not load team analytics. Ensure backend is running on port 8000.')
+        setLoadError('Could not load team analytics. Wait 30 seconds and tap Retry (cloud server may be waking up).')
       }
       setStats(null)
     } finally {

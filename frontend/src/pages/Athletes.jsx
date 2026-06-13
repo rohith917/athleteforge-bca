@@ -3,7 +3,9 @@
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { athletesAPI } from '../services/api'
+import { athletesAPI, ensureApiSession } from '../services/api'
+import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
+import DataErrorPanel from '../components/DataErrorPanel'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { FaPlus, FaSearch, FaUsers } from 'react-icons/fa'
@@ -16,19 +18,30 @@ export default function Athletes() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const { isStaff } = useAuth()
   const { showToast } = useToast()
 
   const fetchAthletes = async () => {
     setLoading(true)
+    setLoadError('')
     try {
+      const ok = await ensureApiSession()
+      if (!ok) {
+        setLoadError('Session not verified — sign in again (admin / admin123).')
+        setAthletes([])
+        return
+      }
       const params = {}
       if (search) params.search = search
       if (statusFilter) params.status = statusFilter
       const res = await athletesAPI.getAll(params)
-      setAthletes(res.data.results || res.data)
-    } catch { showToast('Failed to load athletes', 'error') }
-    finally { setLoading(false) }
+      setAthletes(parseListResponse(res.data))
+    } catch (err) {
+      setLoadError(getLoadErrorMessage(err, 'athletes'))
+      setAthletes([])
+      showToast('Failed to load athletes', 'error')
+    } finally { setLoading(false) }
   }
 
   useEffect(() => { fetchAthletes() }, [search, statusFilter])
@@ -76,11 +89,13 @@ export default function Athletes() {
         </div>
       </div>
 
+      {loadError && <DataErrorPanel message={loadError} onRetry={fetchAthletes} />}
+
       {loading ? (
         <div className="athlete-grid">
           {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="skeleton-kpi" />)}
         </div>
-      ) : athletes.length === 0 ? (
+      ) : !loadError && athletes.length === 0 ? (
         <div className="glass-card empty-state"><FaUsers /><p>No athletes found</p></div>
       ) : (
         <div className="athlete-grid">

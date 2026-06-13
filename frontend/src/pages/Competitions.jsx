@@ -4,7 +4,9 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut, Bar } from 'react-chartjs-2'
-import { competitionsAPI, athletesAPI } from '../services/api'
+import { competitionsAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
+import DataErrorPanel from '../components/DataErrorPanel'
 import { useToast } from '../context/ToastContext'
 import { FaPlus, FaTrash, FaTrophy, FaMedal } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
@@ -27,19 +29,28 @@ export default function Competitions() {
   const [showCompForm, setShowCompForm] = useState(false)
   const [showResultForm, setShowResultForm] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const { showToast } = useToast()
 
   const fetchData = async () => {
     setLoading(true)
+    setLoadError('')
     try {
+      const ok = await ensureApiSession()
+      if (!ok) {
+        setLoadError('Session not verified — sign in again.')
+        return
+      }
       const [compRes, athRes, medalRes] = await Promise.all([
         competitionsAPI.getAll(), athletesAPI.getAll(), competitionsAPI.getMedals(),
       ])
-      setCompetitions(compRes.data.results || compRes.data)
-      setAthletes(athRes.data.results || athRes.data)
+      setCompetitions(parseListResponse(compRes.data))
+      setAthletes(parseListResponse(athRes.data))
       setMedals(medalRes.data)
-    } catch { showToast('Failed to load competitions', 'error') }
-    finally { setLoading(false) }
+    } catch (err) {
+      setLoadError(getLoadErrorMessage(err, 'competitions'))
+      showToast('Failed to load competitions', 'error')
+    } finally { setLoading(false) }
   }
 
   useEffect(() => { fetchData() }, [])
@@ -94,6 +105,7 @@ export default function Competitions() {
         subtitle="Events · Results · Medals · Rankings · Win rate"
         action={<button type="button" className="btn-gold" onClick={() => setShowCompForm(!showCompForm)}><FaPlus /> Add Competition</button>}
       />
+      {loadError && <DataErrorPanel message={loadError} onRetry={fetchData} />}
 
       {medals && (
         <div className="row g-3 mb-4">

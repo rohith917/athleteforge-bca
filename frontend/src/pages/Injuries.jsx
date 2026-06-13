@@ -2,7 +2,9 @@
  * Injury Management V2 — cards, RTP workflow, heatmap
  */
 import { useState, useEffect } from 'react'
-import { injuriesAPI, athletesAPI } from '../services/api'
+import { injuriesAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
+import DataErrorPanel from '../components/DataErrorPanel'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { FaPlus, FaBandAid } from 'react-icons/fa'
@@ -27,18 +29,27 @@ export default function Injuries() {
   const [showForm, setShowForm] = useState(false)
   const [filter, setFilter] = useState('')
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const { isStaff, isStudent } = useAuth()
   const { showToast } = useToast()
 
   const fetchData = async () => {
     setLoading(true)
+    setLoadError('')
     try {
+      const ok = await ensureApiSession()
+      if (!ok) {
+        setLoadError('Session not verified — sign in again.')
+        return
+      }
       const params = filter ? { recovery_status: filter } : {}
       const [injRes, athRes] = await Promise.all([injuriesAPI.getAll(params), athletesAPI.getAll()])
-      setInjuries(injRes.data.results || injRes.data)
-      setAthletes(athRes.data.results || athRes.data)
-    } catch { showToast('Failed to load injuries', 'error') }
-    finally { setLoading(false) }
+      setInjuries(parseListResponse(injRes.data))
+      setAthletes(parseListResponse(athRes.data))
+    } catch (err) {
+      setLoadError(getLoadErrorMessage(err, 'injuries'))
+      showToast('Failed to load injuries', 'error')
+    } finally { setLoading(false) }
   }
 
   useEffect(() => { fetchData() }, [filter])
@@ -78,6 +89,7 @@ export default function Injuries() {
         subtitle={isStudent ? 'Your injury history and recovery progress' : 'Track injuries · Recovery timelines · Return-to-play workflow'}
         action={isStaff ? <button type="button" className="btn-gold" onClick={() => setShowForm(!showForm)}><FaPlus /> Report Injury</button> : null}
       />
+      {loadError && <DataErrorPanel message={loadError} onRetry={fetchData} />}
 
       <div className="row g-3 mb-4">
         <div className="col-sm-6 col-xl-3">

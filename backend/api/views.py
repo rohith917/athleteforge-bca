@@ -107,6 +107,7 @@ class LoginView(APIView):
             login(request, user)
             request.session.cycle_key()
             request.session.save()
+            cache.delete(f'dashboard_stats:{user.id}')
             response = Response({
                 'message': 'Login successful',
                 'user': UserSerializer(user, context={'request': request}).data,

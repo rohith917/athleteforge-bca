@@ -4,7 +4,9 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Line } from 'react-chartjs-2'
-import { performanceAPI, athletesAPI } from '../services/api'
+import { performanceAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
+import DataErrorPanel from '../components/DataErrorPanel'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { FaPlus, FaTrash, FaChartLine, FaBolt } from 'react-icons/fa'
@@ -33,6 +35,7 @@ export default function Performance() {
   const [chartData, setChartData] = useState(null)
   const [filterAthlete, setFilterAthlete] = useState('')
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const { isStaff, isStudent, user } = useAuth()
   const { showToast } = useToast()
 
@@ -44,14 +47,20 @@ export default function Performance() {
 
   const fetchData = async () => {
     setLoading(true)
+    setLoadError('')
     try {
+      const ok = await ensureApiSession()
+      if (!ok) {
+        setLoadError('Session not verified — sign in again.')
+        return
+      }
       const params = filterAthlete ? { athlete_id: filterAthlete } : {}
       const [perfRes, athRes] = await Promise.all([
         performanceAPI.getAll(params), athletesAPI.getAll(),
       ])
-      const recs = perfRes.data.results || perfRes.data
+      const recs = parseListResponse(perfRes.data)
       setRecords(recs)
-      setAthletes(athRes.data.results || athRes.data)
+      setAthletes(parseListResponse(athRes.data))
       const dashRes = await performanceAPI.getDashboard(params)
       const d = dashRes.data
       setChartData({
@@ -64,8 +73,10 @@ export default function Performance() {
           { label: 'Agility', data: d.agility, borderColor: '#A855F7', tension: 0.4, fill: false },
         ],
       })
-    } catch { showToast('Failed to load performance data', 'error') }
-    finally { setLoading(false) }
+    } catch (err) {
+      setLoadError(getLoadErrorMessage(err, 'performance data'))
+      showToast('Failed to load performance data', 'error')
+    } finally { setLoading(false) }
   }
 
   useEffect(() => { fetchData() }, [filterAthlete])
@@ -116,6 +127,7 @@ export default function Performance() {
         subtitle={isStudent ? 'Your training scores, trends, and readiness' : 'Speed · Strength · Power · Endurance · Agility · Training load'}
         action={isStaff ? <button type="button" className="btn-gold" onClick={() => setShowForm(!showForm)}><FaPlus /> Record Performance</button> : null}
       />
+      {loadError && <DataErrorPanel message={loadError} onRetry={fetchData} />}
 
       {!isStudent && (
         <div className="filter-bar-premium mb-4">

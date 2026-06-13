@@ -69,7 +69,7 @@ export default function StudentDashboard() {
       } else if (err?.message?.includes('timed out')) {
         setLoadError('Server is waking up — wait 30 seconds and tap Retry.')
       } else {
-        setLoadError('Could not load your dashboard. Ensure backend is running on port 8000.')
+        setLoadError('Could not load your dashboard. Wait 30 seconds and tap Retry.')
       }
       setStats(null)
     } finally {

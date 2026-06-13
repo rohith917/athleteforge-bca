@@ -3,7 +3,9 @@
  */
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { adminAPI, athletesAPI } from '../services/api'
+import { adminAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
+import DataErrorPanel from '../components/DataErrorPanel'
 import { useToast } from '../context/ToastContext'
 import {
   FaUserPlus, FaSearch, FaUserShield, FaBan, FaCheck, FaTrash
@@ -25,18 +27,29 @@ export default function UserManagement() {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState(emptyForm)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [saving, setSaving] = useState(false)
   const { showToast } = useToast()
 
   const fetchUsers = async () => {
     setLoading(true)
+    setLoadError('')
     try {
+      const ok = await ensureApiSession()
+      if (!ok) {
+        setLoadError('Session not verified — sign in as admin / admin123.')
+        setUsers([])
+        return
+      }
       const params = {}
       if (search) params.search = search
       if (roleFilter) params.role = roleFilter
       const res = await adminAPI.getUsers(params)
-      setUsers(res.data)
-    } catch {
+      setUsers(Array.isArray(res.data) ? res.data : parseListResponse(res.data))
+      const athRes = await athletesAPI.getAll()
+      setAthletes(parseListResponse(athRes.data))
+    } catch (err) {
+      setLoadError(getLoadErrorMessage(err, 'users'))
       showToast('Failed to load users', 'error')
     } finally {
       setLoading(false)
@@ -45,7 +58,6 @@ export default function UserManagement() {
 
   useEffect(() => {
     fetchUsers()
-    athletesAPI.getAll().then(res => setAthletes(res.data.results || res.data)).catch(() => {})
   }, [search, roleFilter])
 
   const handleCreate = async (e) => {
@@ -101,6 +113,8 @@ export default function UserManagement() {
           </button>
         }
       />
+
+      {loadError && <DataErrorPanel message={loadError} onRetry={fetchUsers} />}
 
       {showForm && (
         <div className="card-panel mb-4">

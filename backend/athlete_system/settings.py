@@ -185,6 +185,9 @@ SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = False  # React needs to read csrftoken cookie
 
 _same_origin = os.getenv('SAME_ORIGIN_DEPLOY', 'True').lower() == 'true'
+# Split static frontend (athleteforge-frontend) requires cross-site session cookies
+if not DEBUG and 'https://athleteforge-frontend.onrender.com' in CORS_ALLOWED_ORIGINS:
+    _same_origin = False
 
 if DEBUG:
     SESSION_COOKIE_SAMESITE = 'Lax'

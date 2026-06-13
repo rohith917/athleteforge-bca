@@ -4,7 +4,9 @@
 import { useState, useEffect } from 'react'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
-import { attendanceAPI, athletesAPI } from '../services/api'
+import { attendanceAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
+import DataErrorPanel from '../components/DataErrorPanel'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { FaClipboardCheck, FaCheckCircle, FaTimesCircle, FaClock } from 'react-icons/fa'
@@ -26,16 +28,34 @@ export default function Attendance() {
   const [dateTo, setDateTo] = useState('')
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const { isStaff, isStudent } = useAuth()
   const { showToast } = useToast()
 
-  useEffect(() => {
-    athletesAPI.getAll().then((res) => {
-      const ath = res.data.results || res.data
+  const loadAthletes = async () => {
+    setLoading(true)
+    setLoadError('')
+    try {
+      const ok = await ensureApiSession()
+      if (!ok) {
+        setLoadError('Session not verified — sign in again.')
+        return
+      }
+      const res = await athletesAPI.getAll()
+      const ath = parseListResponse(res.data)
       setAthletes(ath)
-      const map = {}; ath.forEach((a) => { map[a.id] = 'Present' })
+      const map = {}
+      ath.forEach((a) => { map[a.id] = 'Present' })
       setAttendanceMap(map)
-    }).finally(() => setLoading(false))
+    } catch (err) {
+      setLoadError(getLoadErrorMessage(err, 'attendance'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadAthletes()
     loadReport()
   }, [])
 
@@ -84,6 +104,7 @@ export default function Attendance() {
         title={isStudent ? 'My Attendance' : 'Attendance Monitoring'}
         subtitle={isStudent ? 'Your session history and attendance rate' : 'Session tracking · Attendance rates · Team compliance'}
       />
+      {loadError && <DataErrorPanel message={loadError} onRetry={loadAthletes} />}
 
       {isStaff && (
         <div className="glass-card mb-4">

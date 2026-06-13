@@ -1,16 +1,9 @@
 /**
- * API service layer — session auth with CSRF for same-origin cloud deploy.
+ * API service layer — session auth with CSRF.
+ * Works on unified deploy (athleteforge-bca) and split frontend (athleteforge-frontend).
  */
 import axios from 'axios'
-
-/** Resolve API base — same-origin when SPA is served by Django backend. */
-function resolveApiBase() {
-  const envUrl = import.meta.env.VITE_API_URL
-  if (envUrl && !envUrl.includes('YOUR-BACKEND') && !envUrl.includes('athleteforge-api.onrender.com')) {
-    return envUrl
-  }
-  return '/api'
-}
+import { resolveApiBase, getPublicBackendUrl } from '../config/apiConfig'
 
 const API_BASE = resolveApiBase()
 
@@ -24,8 +17,10 @@ const isCloudHost = !isLocalDev && typeof window !== 'undefined'
     || window.location.hostname.includes('fly.dev')
     || window.location.hostname.includes('koyeb.app'))
 
-/** Cloud cold starts can take up to 60s on first request. */
-const CLOUD_TIMEOUT = 90000
+const isSplitFrontend = typeof window !== 'undefined'
+  && window.location.hostname === 'athleteforge-frontend.onrender.com'
+
+export const CLOUD_TIMEOUT = 90000
 const LOCAL_TIMEOUT = 60000
 const DEFAULT_TIMEOUT = isCloudHost ? CLOUD_TIMEOUT : LOCAL_TIMEOUT
 
@@ -36,11 +31,23 @@ const api = axios.create({
   timeout: DEFAULT_TIMEOUT,
 })
 
-let serverAwake = isLocalDev || !isCloudHost
+let serverAwake = isLocalDev
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+export function getApiBase() {
+  return API_BASE
+}
+
+export function getBackendOrigin() {
+  return getPublicBackendUrl()
+}
 
 /** Ping health endpoint to wake sleeping Render instance before auth. */
 export async function wakeServer() {
-  if (serverAwake) return true
+  if (serverAwake && !isSplitFrontend) return true
   try {
     await api.get('/health/', { timeout: CLOUD_TIMEOUT })
     serverAwake = true
@@ -52,6 +59,10 @@ export async function wakeServer() {
 
 export function markServerAwake() {
   serverAwake = true
+}
+
+export function resetServerAwake() {
+  serverAwake = false
 }
 
 let csrfToken = ''
@@ -112,10 +123,6 @@ export async function initCsrf() {
   }
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
 /** Wake server, refresh CSRF, and confirm session cookie is valid (with retries). */
 export async function ensureApiSession(retries = 6) {
   await wakeServer()
@@ -128,20 +135,37 @@ export async function ensureApiSession(retries = 6) {
     } catch (err) {
       const status = err?.response?.status
       if (status === 401 || status === 403) {
-        if (attempt < retries - 1) {
-          await sleep(600 * (attempt + 1))
-          continue
-        }
-        return false
-      }
-      if (attempt < retries - 1) {
-        await sleep(1000 * (attempt + 1))
+        if (attempt < retries - 1) await sleep(700 * (attempt + 1))
         continue
       }
-      return false
+      if (attempt < retries - 1) await sleep(1000 * (attempt + 1))
+      continue
     }
   }
   return false
+}
+
+/** Download PDF/Excel with session cookies (works cross-origin). */
+export async function downloadReport(type, format = 'pdf') {
+  await ensureApiSession()
+  await initCsrf()
+  const path = format === 'pdf' ? `/reports/pdf/?type=${type}` : `/reports/excel/?type=${type}`
+  const res = await api.get(path, {
+    responseType: 'blob',
+    timeout: CLOUD_TIMEOUT,
+  })
+  const ext = format === 'pdf' ? 'pdf' : 'xlsx'
+  const blob = new Blob([res.data], {
+    type: format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `${type}_${format === 'pdf' ? 'report' : 'export'}.${ext}`
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
 }
 
 api.interceptors.request.use((config) => {
@@ -188,13 +212,14 @@ api.interceptors.response.use(
       !url.includes('/auth/user/')
     ) {
       original._authRetry = true
+      resetServerAwake()
       await wakeServer()
       await initCsrf()
       try {
         await api.get('/auth/user/', { timeout: DEFAULT_TIMEOUT })
         return api.request(original)
       } catch {
-        /* session truly expired — fall through */
+        /* fall through */
       }
     }
 
@@ -220,7 +245,7 @@ export function getErrorMessage(error, fallback = 'Something went wrong. Please 
       return 'Server is taking too long to respond. Wait 30 seconds and try again (free tier cold start).'
     }
     if (error?.message?.toLowerCase().includes('network')) {
-      return 'Cannot reach the server. Check your internet connection or wait for the API to wake up.'
+      return `Cannot reach API at ${API_BASE}. Check internet or wait for cloud server to wake up.`
     }
     return fallback
   }
@@ -236,7 +261,6 @@ export function getErrorMessage(error, fallback = 'Something went wrong. Please 
   return fallback
 }
 
-// Auth API
 export const authAPI = {
   getCsrf: () => api.get('/auth/csrf/'),
   login: (credentials) => api.post('/auth/login/', credentials),
@@ -247,7 +271,6 @@ export const authAPI = {
   getUser: () => api.get('/auth/user/'),
 }
 
-// AI Insights API
 export const aiAPI = {
   getInsights: (params) => api.get('/ai/insights/', { params }),
   getDemo: () => api.get('/ai/demo/'),
@@ -255,7 +278,6 @@ export const aiAPI = {
   copilot: (data) => api.post('/ai/copilot/', data),
 }
 
-// Athletes API
 export const athletesAPI = {
   getAll: (params) => api.get('/athletes/', { params }),
   getById: (id) => api.get(`/athletes/${id}/`),
@@ -265,7 +287,6 @@ export const athletesAPI = {
   delete: (id) => api.delete(`/athletes/${id}/`),
 }
 
-// Performance API
 export const performanceAPI = {
   getAll: (params) => api.get('/performance/', { params }),
   create: (data) => api.post('/performance/', data),
@@ -274,7 +295,6 @@ export const performanceAPI = {
   getDashboard: (params) => api.get('/performance/dashboard/', { params }),
 }
 
-// Injuries API
 export const injuriesAPI = {
   getAll: (params) => api.get('/injuries/', { params }),
   create: (data) => api.post('/injuries/', data),
@@ -283,7 +303,6 @@ export const injuriesAPI = {
   updateRecovery: (id, status) => api.patch(`/injuries/${id}/update_recovery/`, { recovery_status: status }),
 }
 
-// Competitions API
 export const competitionsAPI = {
   getAll: () => api.get('/competitions/'),
   create: (data) => api.post('/competitions/', data),
@@ -299,7 +318,6 @@ export const competitionResultsAPI = {
   delete: (id) => api.delete(`/competition-results/${id}/`),
 }
 
-// Attendance API
 export const attendanceAPI = {
   getAll: (params) => api.get('/attendance/', { params }),
   create: (data) => api.post('/attendance/', data),
@@ -307,7 +325,6 @@ export const attendanceAPI = {
   getReport: (params) => api.get('/attendance/report/', { params }),
 }
 
-// Weight Tracking API
 export const weightAPI = {
   getAll: (params) => api.get('/weight-tracking/', { params }),
   create: (data) => api.post('/weight-tracking/', data),
@@ -316,12 +333,10 @@ export const weightAPI = {
   calculateBMI: (data) => api.post('/weight-tracking/calculate_bmi/', data),
 }
 
-// Dashboard API
 export const dashboardAPI = {
   getStats: () => api.get('/dashboard/stats/'),
 }
 
-// Admin API
 export const adminAPI = {
   getStats: () => api.get('/admin/stats/'),
   getUsers: (params) => api.get('/admin/users/', { params }),
@@ -331,7 +346,6 @@ export const adminAPI = {
   deactivateUser: (id) => api.delete(`/admin/users/${id}/`),
 }
 
-// Reports API
 export const reportsAPI = {
   downloadPDF: (type) => `${API_BASE}/reports/pdf/?type=${type}`,
   downloadExcel: (type) => `${API_BASE}/reports/excel/?type=${type}`,
