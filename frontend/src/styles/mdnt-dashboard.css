@@ -2,220 +2,23 @@
    ATHLETEFORGE — MDNT theme inside dashboard (sidebar, nav, cards)
    ================================================================ */
 
-.dashboard-mdnt {
-  --mdnt-black: #0a0a0a;
-  --mdnt-charcoal: #111111;
-  --mdnt-surface: #161616;
-  --mdnt-elevated: #1c1c1c;
-  --mdnt-border: rgba(255, 255, 255, 0.08);
-  --mdnt-white: #ffffff;
-  --mdnt-muted: rgba(255, 255, 255, 0.55);
-  --mdnt-accent: #ff3d3d;
-  --mdnt-lime: #b8ff3c;
-  --upd-lime: #b8ff3c;
-  --mdnt-cream: #f5f0e8;
-  --upd-lime-glow: rgba(184, 255, 60, 0.35);
-  --af-accent: var(--mdnt-accent);
-  --bg-page: var(--mdnt-black);
-  --bg-card: var(--mdnt-surface);
-  --bg-navbar: rgba(10, 10, 10, 0.95);
-  --text-primary: var(--mdnt-white);
-  --text-secondary: var(--mdnt-muted);
-  --border-color: var(--mdnt-border);
-  --gold-500: var(--mdnt-accent);
-  background: var(--mdnt-black);
-  color: var(--mdnt-white);
-  font-family: 'Inter', -apple-system, sans-serif;
-}
-
-.dashboard-mdnt .page-content {
-  background: var(--mdnt-black);
-}
-
-/* Sidebar */
-.dashboard-mdnt .sidebar {
-  background: var(--mdnt-charcoal);
-  border-right: 1px solid var(--mdnt-border);
-}
-
-.dashboard-mdnt .sidebar-brand {
-  border-bottom: 1px solid var(--mdnt-border);
-}
-
-.dashboard-mdnt .sidebar .af-brand-name,
-.dashboard-mdnt .sidebar .logo-text-main {
-  font-family: 'Bebas Neue', 'Oswald', sans-serif;
-  letter-spacing: 0.1em;
-  color: var(--mdnt-white) !important;
-}
-
-.dashboard-mdnt .sidebar-role-chip {
-  background: rgba(255, 61, 61, 0.1);
-  border: 1px solid rgba(255, 61, 61, 0.25);
-  color: var(--mdnt-accent);
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.dashboard-mdnt .nav-item {
-  color: var(--mdnt-muted);
-  border-radius: 0;
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
-  transition: color 0.25s, background 0.25s, border-color 0.25s;
-}
-
-.dashboard-mdnt .nav-item:hover {
-  color: var(--mdnt-white);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.dashboard-mdnt .nav-item.active {
-  color: var(--mdnt-white);
-  background: rgba(255, 61, 61, 0.12);
-  border-left: 2px solid var(--mdnt-accent);
-}
-
-.dashboard-mdnt .sidebar-nav-divider {
-  color: var(--mdnt-muted);
-  font-size: 0.65rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  opacity: 0.7;
-}
-
-/* Top navbar */
-.dashboard-mdnt .top-navbar {
-  background: rgba(10, 10, 10, 0.92);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--mdnt-border);
-}
-
-.dashboard-mdnt .page-title {
-  font-family: 'Bebas Neue', 'Oswald', sans-serif;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-size: 1.35rem;
-  color: var(--mdnt-white);
-}
-
-.dashboard-mdnt .user-chip {
-  background: var(--mdnt-surface);
-  border: 1px solid var(--mdnt-border);
-  border-radius: 0;
-}
-
-.dashboard-mdnt .btn-logout {
-  background: transparent;
-  border: 1px solid var(--mdnt-border);
-  color: var(--mdnt-muted);
-  border-radius: 0;
-}
-
-.dashboard-mdnt .btn-logout:hover {
-  border-color: var(--mdnt-accent);
-  color: var(--mdnt-accent);
-}
-
-/* Cards & panels */
-.dashboard-mdnt .glass-card,
-.dashboard-mdnt .chart-panel-premium,
-.dashboard-mdnt .kpi-card,
-.dashboard-mdnt .luxury-card,
-.dashboard-mdnt .ai-panel,
-.dashboard-mdnt .ai-insight-card {
-  background: var(--mdnt-surface);
-  border: 1px solid var(--mdnt-border);
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.dashboard-mdnt .glass-card:hover,
-.dashboard-mdnt .kpi-card:hover {
-  border-color: rgba(255, 61, 61, 0.35);
-  transform: translateY(-2px);
-}
-
-.dashboard-mdnt .kpi-card .kpi-value,
-.dashboard-mdnt .page-heading {
-  font-family: 'Bebas Neue', 'Oswald', sans-serif;
-  letter-spacing: 0.04em;
-}
-
-.dashboard-mdnt .btn-gold,
-.dashboard-mdnt .btn-hero-primary {
-  background: var(--mdnt-white) !important;
-  color: var(--mdnt-black) !important;
-  border: none;
-  border-radius: 0;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.dashboard-mdnt .btn-gold:hover,
-.dashboard-mdnt .btn-hero-primary:hover {
-  background: var(--mdnt-accent) !important;
-  color: var(--mdnt-white) !important;
-}
-
-.dashboard-mdnt .btn-outline-gold,
-.dashboard-mdnt .btn-hero-ghost {
-  border: 1px solid var(--mdnt-border);
-  color: var(--mdnt-white) !important;
-  border-radius: 0;
-  background: transparent;
-}
-
-.dashboard-mdnt .btn-outline-gold:hover {
-  border-color: var(--mdnt-white);
-}
-
-/* Role welcome bar — MDNT editorial */
-.dashboard-mdnt .role-welcome-bar {
-  background: var(--mdnt-charcoal);
-  border: 1px solid var(--mdnt-border);
-  border-left: 3px solid var(--mdnt-accent);
-  border-radius: 0;
-  margin-bottom: 24px;
-}
-
-.dashboard-mdnt .role-welcome-eyebrow {
-  color: var(--mdnt-accent);
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.dashboard-mdnt .role-welcome-title {
-  font-family: 'Bebas Neue', 'Oswald', sans-serif;
-  font-size: 2rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.dashboard-mdnt .role-welcome-desc {
-  color: var(--mdnt-muted);
-}
-
-.dashboard-mdnt .role-badge {
-  border-radius: 0;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  font-size: 0.65rem;
-}
-
-.dashboard-mdnt .role-badge.role-admin { background: rgba(255, 61, 61, 0.15); color: var(--mdnt-accent); }
-.dashboard-mdnt .role-badge.role-coach { background: rgba(200, 245, 66, 0.12); color: var(--mdnt-lime); }
-.dashboard-mdnt .role-badge.role-student { background: rgba(255, 255, 255, 0.08); color: var(--mdnt-white); }
-
-/* Page header */
-.dashboard-mdnt .page-header-block h2,
-.dashboard-mdnt .page-header h2 {
-  font-family: 'Bebas Neue', 'Oswald', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+/* Legacy MDNT tokens remapped to the refined luxury palette so every
+   unscoped selector below (Tech Command Hub, AI panels, Voice Coach,
+   Recovery Timeline) inherits the same system instead of a separate
+   hardcoded black/red theme. */
+.app-layout {
+  --mdnt-black: var(--lux-bg);
+  --mdnt-charcoal: var(--lux-card);
+  --mdnt-surface: var(--lux-card);
+  --mdnt-elevated: var(--lux-bg);
+  --mdnt-border: var(--lux-border);
+  --mdnt-white: var(--lux-text);
+  --mdnt-muted: var(--lux-text-secondary);
+  --mdnt-dim: var(--lux-text-muted);
+  --mdnt-accent: var(--lux-accent);
+  --mdnt-lime: var(--lux-accent);
+  --upd-lime: var(--lux-accent);
+  --upd-lime-glow: var(--lux-accent-soft);
 }
 
 /* Tech command hub */
@@ -223,6 +26,8 @@
   margin-bottom: 32px;
   border: 1px solid var(--mdnt-border);
   background: var(--mdnt-charcoal);
+  border-radius: var(--lux-radius-sm);
+  overflow: hidden;
 }
 
 .tech-command-hub-header {
@@ -236,10 +41,10 @@
 }
 
 .tech-command-hub-header h3 {
-  font-family: 'Bebas Neue', 'Oswald', sans-serif;
-  font-size: 1.6rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   margin: 0;
 }
 
@@ -254,9 +59,10 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
+  border-radius: 100px;
   font-size: 0.62rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   border: 1px solid var(--mdnt-border);
   color: var(--mdnt-muted);
@@ -318,24 +124,27 @@
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
-  background: var(--mdnt-accent);
-  border: none;
+  background: transparent;
+  border: 1px solid var(--mdnt-border);
+  border-radius: 100px;
   color: var(--mdnt-white);
   font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
   width: fit-content;
-  transition: background 0.25s;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .voice-play-btn:hover {
-  background: #ff5555;
+  border-color: var(--mdnt-accent);
+  color: var(--mdnt-accent);
 }
 
 .voice-play-btn.speaking {
   background: var(--mdnt-lime);
+  border-color: var(--mdnt-lime);
   color: var(--mdnt-black);
 }
 
@@ -361,13 +170,14 @@
 .recovery-timeline-dot {
   width: 10px;
   height: 10px;
+  border-radius: 50%;
   margin-top: 5px;
   flex-shrink: 0;
   background: var(--mdnt-accent);
 }
 
 .recovery-timeline-item.done .recovery-timeline-dot {
-  background: var(--mdnt-lime);
+  background: var(--af-success, #22c55e);
 }
 
 .recovery-timeline-item.future .recovery-timeline-dot {
@@ -481,6 +291,7 @@
 .ai-expand-btn {
   background: none;
   border: 1px solid var(--mdnt-border);
+  border-radius: 8px;
   color: var(--mdnt-muted);
   padding: 6px 10px;
   cursor: pointer;
@@ -491,7 +302,8 @@
 }
 
 .ai-brief-block {
-  background: rgba(255, 61, 61, 0.06);
+  background: var(--mdnt-elevated);
+  border-radius: var(--lux-radius-sm, 12px);
   border-left: 3px solid var(--mdnt-accent);
   padding: 16px 20px;
   margin-bottom: 24px;
@@ -513,8 +325,10 @@
 }
 
 .ai-readiness-big {
-  font-family: 'Bebas Neue', 'Oswald', sans-serif;
-  font-size: 3.5rem;
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-size: 3.2rem;
   line-height: 1;
   color: var(--mdnt-white);
 }
@@ -609,8 +423,10 @@
 }
 
 .ai-stat-big {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.5rem;
+  font-family: 'Inter Tight', 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-size: 2.25rem;
   color: var(--mdnt-white);
 }
 
@@ -647,9 +463,10 @@
 
 .ai-priority-badge {
   font-size: 0.58rem;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 2px 8px;
+  border-radius: 100px;
   border: 1px solid;
   flex-shrink: 0;
 }
@@ -657,6 +474,12 @@
 .mdnt-copilot-panel-rich {
   width: min(420px, calc(100vw - 40px));
   max-height: 600px;
+}
+
+.app-layout .mdnt-copilot-panel {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--lux-shadow-hover, 0 24px 80px rgba(0, 0, 0, 0.5));
 }
 
 .copilot-suggestions {
@@ -670,6 +493,7 @@
 .copilot-chip {
   background: var(--mdnt-surface);
   border: 1px solid var(--mdnt-border);
+  border-radius: 100px;
   color: var(--mdnt-muted);
   font-size: 0.68rem;
   padding: 5px 10px;

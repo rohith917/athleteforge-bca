@@ -12,9 +12,9 @@ html.theme-light,
   --lux-text: #111827;
   --lux-text-secondary: #6B7280;
   --lux-text-muted: #9CA3AF;
-  --lux-accent: #5B5CF6;
-  --lux-accent-2: #7C3AED;
-  --lux-accent-soft: rgba(91, 92, 246, 0.08);
+  --lux-accent: #5C8A00;
+  --lux-accent-2: #3F6600;
+  --lux-accent-soft: rgba(92, 138, 0, 0.08);
   --lux-success: #22C55E;
   --lux-warning: #F59E0B;
   --lux-danger: #EF4444;
@@ -37,8 +37,8 @@ html.theme-light,
   --af-text-secondary: var(--lux-text-secondary);
   --af-text-muted: var(--lux-text-muted);
   --af-accent: var(--lux-accent);
-  --af-accent-light: #818CF8;
-  --af-accent-dark: #4F46E5;
+  --af-accent-light: #7CB305;
+  --af-accent-dark: #365900;
   --af-accent-glow: var(--lux-accent-soft);
   --af-gold: var(--lux-accent);
   --af-gold-dark: var(--lux-accent-2);
@@ -63,9 +63,9 @@ html.theme-dark,
   --lux-text: #F3F4F6;
   --lux-text-secondary: #9CA3AF;
   --lux-text-muted: #6B7280;
-  --lux-accent: #818CF8;
-  --lux-accent-2: #A78BFA;
-  --lux-accent-soft: rgba(129, 140, 248, 0.12);
+  --lux-accent: #B8FF3C;
+  --lux-accent-2: #8FD400;
+  --lux-accent-soft: rgba(184, 255, 60, 0.14);
   --lux-success: #4ADE80;
   --lux-warning: #FBBF24;
   --lux-danger: #F87171;
@@ -85,8 +85,8 @@ html.theme-dark,
   --af-text-secondary: var(--lux-text-secondary);
   --af-text-muted: var(--lux-text-muted);
   --af-accent: var(--lux-accent);
-  --af-accent-light: #A5B4FC;
-  --af-accent-dark: #6366F1;
+  --af-accent-light: #D4FF8F;
+  --af-accent-dark: #8FD400;
   --af-accent-glow: var(--lux-accent-soft);
   --af-gold: var(--lux-accent);
   --af-gold-dark: var(--lux-accent-2);
@@ -692,7 +692,6 @@ body {
 /* Dashboard */
 .dashboard-luxury .row { --bs-gutter-x: 24px; --bs-gutter-y: 24px; }
 .dashboard-luxury .mb-4 { margin-bottom: 32px !important; }
-.dashboard-luxury .g-4 { gap: 24px !important; }
 
 .gauge-score { color: var(--lux-text) !important; font-family: 'Inter', sans-serif !important; }
 .gauge-unit, .recovery-label, .kpi-label { color: var(--lux-text-muted) !important; }
@@ -898,7 +897,7 @@ body {
 .timeline-body strong, .notif-item p { font-size: 0.85rem; color: var(--lux-text); display: block; font-weight: 500; }
 .timeline-body small, .notif-item small { font-size: 0.72rem; color: var(--lux-text-muted); }
 .notif-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.notif-count { background: var(--lux-accent); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 100px; }
+.notif-count { background: var(--lux-accent); color: var(--lux-bg); font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 100px; }
 .notif-danger { border-left-color: var(--lux-danger); }
 .notif-warning { border-left-color: var(--lux-warning); }
 .notif-success { border-left-color: var(--lux-success); }
