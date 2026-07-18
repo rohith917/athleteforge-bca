@@ -24,7 +24,8 @@ from .ai_insights import get_ai_insights_for_athlete, get_demo_ai_insights
 from .free_ai import generate_free_ai_answer, get_ai_provider_status
 from .models import (
     Athlete, Performance, Injury, Competition,
-    CompetitionResult, Attendance, WeightTracking, PasswordResetToken, UserProfile
+    CompetitionResult, Attendance, WeightTracking, PasswordResetToken, UserProfile,
+    Goal, Announcement, Notification,
 )
 from .permissions import (
     is_staff_role, is_admin_role, get_athlete_for_user, filter_queryset_by_role,
@@ -36,11 +37,17 @@ from .serializers import (
     AttendanceSerializer, WeightTrackingSerializer, LoginSerializer,
     UserSerializer, RegisterSerializer, ForgotPasswordSerializer,
     ResetPasswordSerializer, AdminUserSerializer, AdminUserUpdateSerializer,
-    AdminCreateUserSerializer,
+    AdminCreateUserSerializer, GoalSerializer, AnnouncementSerializer,
+    NotificationSerializer,
 )
 from .reports import (
     generate_athletes_pdf, generate_performance_pdf, generate_injuries_pdf,
     generate_athletes_excel, generate_performance_excel, generate_attendance_excel
+)
+from .goal_utils import refresh_goal_status
+from .notify import (
+    notify_athlete_user, notify_staff, notify_recipients_for_announcement,
+    live_alerts_for_user,
 )
 
 
@@ -342,7 +349,13 @@ class InjuryViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         if not is_staff_role(self.request.user):
             raise PermissionDenied('Students cannot create injury records.')
-        serializer.save()
+        injury = serializer.save()
+        if injury.severity in ('Moderate', 'Severe'):
+            title = f'{injury.severity} injury: {injury.athlete.full_name}'
+            message = f'{injury.injury_type} ({injury.body_part}) — {injury.recovery_status}'
+            severity = 'danger' if injury.severity == 'Severe' else 'warning'
+            notify_athlete_user(injury.athlete, 'injury', severity, title, message, link='/dashboard/injuries')
+            notify_staff('injury', severity, title, message, link=f'/dashboard/athletes/{injury.athlete_id}')
 
     @action(detail=True, methods=['patch'])
     def update_recovery(self, request, pk=None):
@@ -355,6 +368,12 @@ class InjuryViewSet(viewsets.ModelViewSet):
             injury.recovery_status = recovery_status
             if recovery_status == 'Recovered':
                 injury.actual_recovery_date = date.today()
+                notify_athlete_user(
+                    injury.athlete, 'injury', 'success',
+                    f'Recovered: {injury.injury_type}',
+                    f'{injury.athlete.full_name} is cleared from {injury.injury_type}.',
+                    link='/dashboard/injuries',
+                )
             injury.save()
             return Response(InjurySerializer(injury).data)
         return Response({'error': 'recovery_status required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -432,7 +451,8 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         if not is_staff_role(self.request.user):
             raise PermissionDenied('Students cannot mark attendance.')
-        serializer.save(marked_by=self.request.user)
+        attendance = serializer.save(marked_by=self.request.user)
+        _maybe_notify_attendance_streak(attendance.athlete)
 
     @action(detail=False, methods=['post'])
     def bulk_mark(self, request):
@@ -440,11 +460,15 @@ class AttendanceViewSet(viewsets.ModelViewSet):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         records = request.data.get('records', [])
         created = []
+        touched_athletes = {}
         for record in records:
             serializer = AttendanceSerializer(data=record)
             if serializer.is_valid():
-                serializer.save(marked_by=request.user)
+                attendance = serializer.save(marked_by=request.user)
                 created.append(serializer.data)
+                touched_athletes[attendance.athlete_id] = attendance.athlete
+        for athlete in touched_athletes.values():
+            _maybe_notify_attendance_streak(athlete)
         return Response({'created': len(created), 'records': created})
 
     @action(detail=False, methods=['get'])
@@ -462,6 +486,19 @@ class AttendanceViewSet(viewsets.ModelViewSet):
             'attendance_rate': round((present / total * 100) if total > 0 else 0, 1),
             'records': AttendanceSerializer(queryset[:50], many=True).data,
         })
+
+
+def _maybe_notify_attendance_streak(athlete):
+    """Notify staff the first time an athlete crosses 2 absences in 14 days."""
+    cutoff = date.today() - timedelta(days=14)
+    absences = athlete.attendance_records.filter(status='Absent', attendance_date__gte=cutoff).count()
+    if absences == 2:
+        notify_staff(
+            'attendance', 'warning',
+            f'{athlete.full_name} has missed 2+ sessions',
+            f'{absences} absences in the last 14 days.',
+            link=f'/dashboard/athletes/{athlete.id}',
+        )
 
 
 # ==================== Weight Monitoring ====================
@@ -496,6 +533,165 @@ class WeightTrackingViewSet(viewsets.ModelViewSet):
         else:
             category = 'Obese'
         return Response({'bmi': bmi, 'category': category})
+
+
+# ==================== Goals & Targets ====================
+
+class GoalViewSet(viewsets.ModelViewSet):
+    """Performance/weight/attendance targets — coach sets, athlete's progress auto-tracked."""
+    queryset = Goal.objects.select_related('athlete').all()
+    serializer_class = GoalSerializer
+    permission_classes = [IsAuthenticated, ReadOnlyForStudents]
+
+    def get_queryset(self):
+        queryset = filter_queryset_by_role(
+            Goal.objects.select_related('athlete').all(), self.request.user
+        )
+        athlete_id = self.request.query_params.get('athlete_id')
+        status_filter = self.request.query_params.get('status')
+        if athlete_id:
+            queryset = queryset.filter(athlete_id=athlete_id)
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        for goal in queryset:
+            refresh_goal_status(goal)
+        return queryset
+
+    def perform_create(self, serializer):
+        if not is_staff_role(self.request.user):
+            raise PermissionDenied('Only coaches can set goals.')
+        serializer.save(created_by=self.request.user)
+
+    def perform_update(self, serializer):
+        if not is_staff_role(self.request.user):
+            raise PermissionDenied('Only coaches can edit goals.')
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if not is_staff_role(self.request.user):
+            raise PermissionDenied('Only coaches can delete goals.')
+        instance.delete()
+
+
+# ==================== Announcements ====================
+
+class AnnouncementViewSet(viewsets.ModelViewSet):
+    """Coach/admin broadcast board — students see announcements targeted at them."""
+    serializer_class = AnnouncementSerializer
+    permission_classes = [IsAuthenticated, ReadOnlyForStudents]
+
+    def get_queryset(self):
+        queryset = Announcement.objects.all()
+        user = self.request.user
+        if is_staff_role(user):
+            return queryset
+        athlete = get_athlete_for_user(user)
+        visible = Q(audience='all') | Q(audience='students')
+        if athlete and athlete.team:
+            visible |= Q(audience='team', team_filter__iexact=athlete.team)
+        return queryset.filter(visible)
+
+    def perform_create(self, serializer):
+        if not is_staff_role(self.request.user):
+            raise PermissionDenied('Only coaches/admins can post announcements.')
+        announcement = serializer.save(created_by=self.request.user)
+        notify_recipients_for_announcement(announcement)
+
+    def perform_destroy(self, instance):
+        if not is_staff_role(self.request.user):
+            raise PermissionDenied('Only coaches/admins can delete announcements.')
+        instance.delete()
+
+
+# ==================== Notifications ====================
+
+class NotificationViewSet(viewsets.ViewSet):
+    """Merged feed: persisted per-user notifications + live-computed alerts."""
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        user = request.user
+        athlete = get_athlete_for_user(user)
+        persisted = NotificationSerializer(
+            Notification.objects.filter(recipient=user)[:30], many=True
+        ).data
+        combined = list(persisted) + live_alerts_for_user(user, athlete)
+        combined.sort(key=lambda n: n['created_at'], reverse=True)
+        unread_count = Notification.objects.filter(recipient=user, is_read=False).count()
+        return Response({'results': combined, 'unread_count': unread_count})
+
+    @action(detail=True, methods=['patch'])
+    def read(self, request, pk=None):
+        try:
+            notif = Notification.objects.get(pk=pk, recipient=request.user)
+        except Notification.DoesNotExist:
+            return Response({'error': 'Not found'}, status=404)
+        notif.is_read = True
+        notif.save(update_fields=['is_read'])
+        return Response(NotificationSerializer(notif).data)
+
+    @action(detail=False, methods=['post'])
+    def mark_all_read(self, request):
+        Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+        return Response({'message': 'All notifications marked read'})
+
+
+# ==================== Leaderboard ====================
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def leaderboard(request):
+    """Cross-athlete ranking by performance average, medal points, and attendance.
+    Visible to every authenticated role (including students) so athletes can see
+    where they stand against teammates — unlike other endpoints this is not
+    restricted to the student's own record.
+    """
+    sport = request.query_params.get('sport')
+    athletes = Athlete.objects.all()
+    if sport:
+        athletes = athletes.filter(sport__iexact=sport)
+
+    rows = []
+    for athlete in athletes:
+        perf_avg = athlete.performances.aggregate(
+            speed=Avg('speed_score'), strength=Avg('strength_score'),
+            endurance=Avg('endurance_score'), flexibility=Avg('flexibility_score'),
+            agility=Avg('agility_score'),
+        )
+        scores = [float(v) for v in perf_avg.values() if v is not None]
+        overall = round(sum(scores) / len(scores), 1) if scores else 0.0
+
+        medals = athlete.competition_results.aggregate(
+            gold=Count('id', filter=Q(medal='Gold')),
+            silver=Count('id', filter=Q(medal='Silver')),
+            bronze=Count('id', filter=Q(medal='Bronze')),
+        )
+        medal_points = medals['gold'] * 3 + medals['silver'] * 2 + medals['bronze']
+
+        att = athlete.attendance_records.all()
+        att_total = att.count()
+        att_present = att.filter(status='Present').count()
+        att_rate = round((att_present / att_total * 100), 1) if att_total else 0.0
+
+        rows.append({
+            'athlete_id': athlete.id,
+            'name': athlete.full_name,
+            'sport': athlete.sport,
+            'team': athlete.team,
+            'avatar_url': AthleteListSerializer(athlete).data['avatar_url'],
+            'overall_score': overall,
+            'gold': medals['gold'], 'silver': medals['silver'], 'bronze': medals['bronze'],
+            'medal_points': medal_points,
+            'attendance_rate': att_rate,
+            'composite_score': round(overall + medal_points * 2 + att_rate * 0.2, 1),
+        })
+
+    rows.sort(key=lambda r: r['composite_score'], reverse=True)
+    for i, row in enumerate(rows, start=1):
+        row['rank'] = i
+
+    sports = list(Athlete.objects.values_list('sport', flat=True).distinct().order_by('sport'))
+    return Response({'leaderboard': rows, 'sports': sports})
 
 
 # ==================== Health (keep-alive / deploy checks) ====================

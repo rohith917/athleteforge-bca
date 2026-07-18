@@ -19,6 +19,8 @@ import Competitions from './pages/Competitions'
 import Attendance from './pages/Attendance'
 import WeightTracking from './pages/WeightTracking'
 import Reports from './pages/Reports'
+import Leaderboard from './pages/Leaderboard'
+import Announcements from './pages/Announcements'
 import {
   PrivateRoute,
   GuestRoute,
@@ -54,6 +56,8 @@ export default function App() {
           <Route path="attendance" element={<Attendance />} />
           <Route path="weight" element={<StaffRoute><WeightTracking /></StaffRoute>} />
           <Route path="reports" element={<CoachRoute><Reports /></CoachRoute>} />
+          <Route path="leaderboard" element={<Leaderboard />} />
+          <Route path="announcements" element={<Announcements />} />
         </Route>
 
         <Route path="*" element={<FallbackRoute />} />

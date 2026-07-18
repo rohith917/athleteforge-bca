@@ -13,6 +13,9 @@ router.register(r'competitions', views.CompetitionViewSet)
 router.register(r'competition-results', views.CompetitionResultViewSet)
 router.register(r'attendance', views.AttendanceViewSet)
 router.register(r'weight-tracking', views.WeightTrackingViewSet)
+router.register(r'goals', views.GoalViewSet)
+router.register(r'announcements', views.AnnouncementViewSet, basename='announcements')
+router.register(r'notifications', views.NotificationViewSet, basename='notifications')
 
 urlpatterns = [
     # Authentication
@@ -34,6 +37,7 @@ urlpatterns = [
 
     # Dashboard
     path('dashboard/stats/', views.dashboard_stats, name='dashboard-stats'),
+    path('leaderboard/', views.leaderboard, name='leaderboard'),
 
     # Admin management
     path('admin/stats/', views.admin_dashboard_stats, name='admin-stats'),

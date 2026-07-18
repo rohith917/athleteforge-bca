@@ -337,6 +337,29 @@ export const dashboardAPI = {
   getStats: () => api.get('/dashboard/stats/'),
 }
 
+export const leaderboardAPI = {
+  get: (params) => api.get('/leaderboard/', { params }),
+}
+
+export const goalsAPI = {
+  getAll: (params) => api.get('/goals/', { params }),
+  create: (data) => api.post('/goals/', data),
+  update: (id, data) => api.put(`/goals/${id}/`, data),
+  delete: (id) => api.delete(`/goals/${id}/`),
+}
+
+export const announcementsAPI = {
+  getAll: () => api.get('/announcements/'),
+  create: (data) => api.post('/announcements/', data),
+  delete: (id) => api.delete(`/announcements/${id}/`),
+}
+
+export const notificationsAPI = {
+  getAll: () => api.get('/notifications/'),
+  markRead: (id) => api.patch(`/notifications/${id}/read/`),
+  markAllRead: () => api.post('/notifications/mark_all_read/'),
+}
+
 export const adminAPI = {
   getStats: () => api.get('/admin/stats/'),
   getUsers: (params) => api.get('/admin/users/', { params }),

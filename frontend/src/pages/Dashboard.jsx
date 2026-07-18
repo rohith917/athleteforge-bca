@@ -24,6 +24,7 @@ import TeamOverview from '../components/analytics/TeamOverview'
 import InjuryHeatmap from '../components/analytics/InjuryHeatmap'
 import ActivityTimeline from '../components/analytics/ActivityTimeline'
 import NotificationCenter from '../components/analytics/NotificationCenter'
+import AnnouncementsFeed from '../components/analytics/AnnouncementsFeed'
 import WellnessCheckIn from '../components/analytics/WellnessCheckIn'
 import PerformanceRadar from '../components/analytics/PerformanceRadar'
 import { baseChartOptions } from '../utils/chartTheme'
@@ -213,7 +214,8 @@ export default function Dashboard() {
       </div>
 
       <div className="row g-4 mb-4">
-        <div className="col-12"><UpcomingTournaments /></div>
+        <div className="col-lg-8"><UpcomingTournaments /></div>
+        <div className="col-lg-4"><AnnouncementsFeed /></div>
       </div>
 
       <div className="row g-4 mb-4">

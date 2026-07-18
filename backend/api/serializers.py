@@ -6,9 +6,11 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from .models import (
     Athlete, Performance, Injury, Competition,
-    CompetitionResult, Attendance, WeightTracking, UserProfile, PasswordResetToken
+    CompetitionResult, Attendance, WeightTracking, UserProfile, PasswordResetToken,
+    Goal, Announcement, Notification,
 )
 from .permissions import get_user_role, get_athlete_for_user, is_admin_role
+from .goal_utils import compute_goal_progress
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -360,6 +362,47 @@ class AdminCreateUserSerializer(serializers.Serializer):
             athlete=athlete,
         )
         return user
+
+
+class GoalSerializer(serializers.ModelSerializer):
+    """Serializer for athlete goals with live-computed progress."""
+    athlete_name = serializers.CharField(source='athlete.full_name', read_only=True)
+    metric_label = serializers.CharField(source='get_metric_display', read_only=True)
+    progress = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Goal
+        fields = '__all__'
+        read_only_fields = ['status', 'created_by', 'created_at', 'achieved_at']
+
+    def get_progress(self, obj):
+        return compute_goal_progress(obj)
+
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    """Serializer for coach/admin broadcast announcements."""
+    created_by_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Announcement
+        fields = [
+            'id', 'title', 'message', 'audience', 'team_filter', 'pinned',
+            'created_by_name', 'created_at',
+        ]
+        read_only_fields = ['created_at']
+
+    def get_created_by_name(self, obj):
+        if not obj.created_by:
+            return 'AthleteForge'
+        return obj.created_by.get_full_name() or obj.created_by.username
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    """Serializer for persisted per-user notifications."""
+
+    class Meta:
+        model = Notification
+        fields = ['id', 'notif_type', 'severity', 'title', 'message', 'link', 'is_read', 'created_at']
 
 
 class DashboardStatsSerializer(serializers.Serializer):
