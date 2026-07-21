@@ -203,7 +203,7 @@ body {
 }
 .sidebar-footer small { color: var(--af-text-muted); font-size: 0.68rem; letter-spacing: 0.5px; text-align: center; }
 
-.main-content { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.main-content { margin-left: var(--sidebar-width); width: calc(100% - var(--sidebar-width)); display: flex; flex-direction: column; min-height: 100vh; }
 
 .top-navbar {
   height: 68px;
@@ -705,7 +705,7 @@ body {
 @media (max-width: 992px) {
   .sidebar { transform: translateX(-100%); }
   .sidebar.open { transform: translateX(0); }
-  .main-content { margin-left: 0; }
+  .main-content { margin-left: 0; width: 100%; }
   .mobile-menu-btn { display: block; }
   .page-content { padding: 20px 16px; }
   .profile-hero { flex-direction: column; text-align: center; }
@@ -887,9 +887,9 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
-.role-coach { background: var(--af-accent-glow); color: var(--af-accent-light); border: 1px solid rgba(139,92,246,0.35); }
+.role-coach { background: var(--af-accent-glow); color: var(--af-accent-light); border: 1px solid var(--af-accent-glow); }
 .role-student { background: rgba(34,197,94,0.12); color: var(--af-success); border: 1px solid rgba(34,197,94,0.3); }
-.role-admin { background: var(--af-gold-glow); color: var(--af-gold-highlight); border: 1px solid rgba(201,169,98,0.35); }
+.role-admin { background: var(--af-gold-glow); color: var(--af-accent-light); border: 1px solid var(--af-gold-glow); }
 
 /* ---- AI Insights ---- */
 .ai-panel {

@@ -280,3 +280,102 @@ class WeightTracking(models.Model):
 
     def __str__(self):
         return f"{self.athlete} - {self.record_date} ({self.weight_kg}kg)"
+
+
+class Goal(models.Model):
+    """Coach-assigned performance/weight/attendance target for an athlete."""
+
+    METRIC_CHOICES = [
+        ('speed_score', 'Speed'),
+        ('strength_score', 'Strength'),
+        ('endurance_score', 'Endurance'),
+        ('flexibility_score', 'Flexibility'),
+        ('agility_score', 'Agility'),
+        ('weight_kg', 'Weight'),
+        ('attendance_rate', 'Attendance Rate'),
+    ]
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('achieved', 'Achieved'),
+        ('missed', 'Missed'),
+    ]
+
+    athlete = models.ForeignKey(Athlete, on_delete=models.CASCADE, related_name='goals')
+    metric = models.CharField(max_length=30, choices=METRIC_CHOICES)
+    title = models.CharField(max_length=200, blank=True, default='')
+    start_value = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    target_value = models.DecimalField(max_digits=8, decimal_places=2)
+    target_date = models.DateField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    notes = models.TextField(blank=True, default='')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='goals_created')
+    created_at = models.DateTimeField(auto_now_add=True)
+    achieved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'goals'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.athlete} - {self.get_metric_display()} goal"
+
+
+class Announcement(models.Model):
+    """Coach/admin broadcast message to students, coaches, or a specific team."""
+
+    AUDIENCE_CHOICES = [
+        ('all', 'Everyone'),
+        ('students', 'Students'),
+        ('coaches', 'Coaches'),
+        ('team', 'Specific Team'),
+    ]
+
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    audience = models.CharField(max_length=20, choices=AUDIENCE_CHOICES, default='all')
+    team_filter = models.CharField(max_length=100, blank=True, default='')
+    pinned = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='announcements')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'announcements'
+        ordering = ['-pinned', '-created_at']
+
+    def __str__(self):
+        return self.title
+
+
+class Notification(models.Model):
+    """Persisted per-user notification (announcements, injuries, goals achieved)."""
+
+    TYPE_CHOICES = [
+        ('injury', 'Injury'),
+        ('attendance', 'Attendance'),
+        ('competition', 'Competition'),
+        ('goal', 'Goal'),
+        ('announcement', 'Announcement'),
+        ('system', 'System'),
+    ]
+    SEVERITY_CHOICES = [
+        ('info', 'Info'),
+        ('success', 'Success'),
+        ('warning', 'Warning'),
+        ('danger', 'Danger'),
+    ]
+
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    notif_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='system')
+    severity = models.CharField(max_length=10, choices=SEVERITY_CHOICES, default='info')
+    title = models.CharField(max_length=200)
+    message = models.TextField(blank=True, default='')
+    link = models.CharField(max_length=200, blank=True, default='')
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'notifications'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.recipient} - {self.title}"

@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import {
   FaTachometerAlt, FaUsers, FaChartLine, FaBandAid,
   FaTrophy, FaClipboardCheck, FaWeight, FaFileAlt, FaUser, FaUserShield, FaHome,
-  FaUserTie, FaRunning
+  FaUserTie, FaRunning, FaMedal, FaBullhorn
 } from 'react-icons/fa'
 import Logo from './Logo'
 
@@ -19,6 +19,8 @@ const adminNav = [
   { path: '/dashboard/competitions', icon: FaTrophy, label: 'COMPETITIONS' },
   { path: '/dashboard/attendance', icon: FaClipboardCheck, label: 'ATTENDANCE' },
   { path: '/dashboard/weight', icon: FaWeight, label: 'WEIGHT' },
+  { path: '/dashboard/leaderboard', icon: FaMedal, label: 'LEADERBOARD' },
+  { path: '/dashboard/announcements', icon: FaBullhorn, label: 'ANNOUNCEMENTS' },
   { path: '/dashboard/reports', icon: FaFileAlt, label: 'REPORTS' },
 ]
 
@@ -30,6 +32,8 @@ const coachNav = [
   { path: '/dashboard/competitions', icon: FaTrophy, label: 'COMPETITIONS' },
   { path: '/dashboard/attendance', icon: FaClipboardCheck, label: 'ATTENDANCE' },
   { path: '/dashboard/weight', icon: FaWeight, label: 'WEIGHT TRACKING' },
+  { path: '/dashboard/leaderboard', icon: FaMedal, label: 'LEADERBOARD' },
+  { path: '/dashboard/announcements', icon: FaBullhorn, label: 'ANNOUNCEMENTS' },
   { path: '/dashboard/reports', icon: FaFileAlt, label: 'REPORTS' },
 ]
 
@@ -38,6 +42,8 @@ const studentNav = [
   { path: '/dashboard/performance', icon: FaChartLine, label: 'MY PERFORMANCE' },
   { path: '/dashboard/injuries', icon: FaBandAid, label: 'MY INJURIES' },
   { path: '/dashboard/attendance', icon: FaClipboardCheck, label: 'MY ATTENDANCE' },
+  { path: '/dashboard/leaderboard', icon: FaMedal, label: 'LEADERBOARD' },
+  { path: '/dashboard/announcements', icon: FaBullhorn, label: 'ANNOUNCEMENTS' },
 ]
 
 const ROLE_SIDEBAR = {

@@ -5,7 +5,7 @@ from django.contrib import admin
 from .models import (
     Athlete, Performance, Injury, Competition,
     CompetitionResult, Attendance, WeightTracking,
-    UserProfile, PasswordResetToken,
+    UserProfile, PasswordResetToken, Goal, Announcement, Notification,
 )
 
 
@@ -65,3 +65,24 @@ class AttendanceAdmin(admin.ModelAdmin):
 class WeightTrackingAdmin(admin.ModelAdmin):
     list_display = ['athlete', 'record_date', 'weight_kg', 'bmi', 'body_fat_percentage']
     list_filter = ['record_date']
+
+
+@admin.register(Goal)
+class GoalAdmin(admin.ModelAdmin):
+    list_display = ['athlete', 'metric', 'target_value', 'target_date', 'status']
+    list_filter = ['metric', 'status']
+    search_fields = ['athlete__first_name', 'athlete__last_name']
+
+
+@admin.register(Announcement)
+class AnnouncementAdmin(admin.ModelAdmin):
+    list_display = ['title', 'audience', 'team_filter', 'pinned', 'created_by', 'created_at']
+    list_filter = ['audience', 'pinned']
+    search_fields = ['title', 'message']
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ['recipient', 'notif_type', 'severity', 'title', 'is_read', 'created_at']
+    list_filter = ['notif_type', 'severity', 'is_read']
+    search_fields = ['recipient__username', 'title']

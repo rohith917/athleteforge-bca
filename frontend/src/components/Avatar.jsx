@@ -5,7 +5,7 @@ import { resolveMediaUrl } from '../utils/resolveMediaUrl'
 import { uiAvatarUrl } from '../utils/mediaUrls'
 
 export default function Avatar({ src, name = 'User', size = 'md', className = '' }) {
-  const sizes = { sm: 32, md: 40, lg: 96 }
+  const sizes = { xs: 26, sm: 32, md: 40, lg: 96 }
   const px = sizes[size] || sizes.md
   const resolved = resolveMediaUrl(src)
   const fallback = uiAvatarUrl(name, px * 2)

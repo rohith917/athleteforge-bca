@@ -1,5 +1,5 @@
 /**
- * Main layout — MDNT home colors only (black / red / lime)
+ * Main layout — refined dark theme (Apple x Nike x Linear system in luxury.css)
  */
 import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
@@ -17,7 +17,7 @@ export default function Layout() {
   const location = useLocation()
 
   return (
-    <div className="app-layout dashboard-mdnt home-theme-app">
+    <div className="app-layout dashboard-luxury">
       <ChartThemeSync />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}

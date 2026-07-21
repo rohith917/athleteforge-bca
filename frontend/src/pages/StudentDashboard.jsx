@@ -20,6 +20,8 @@ import ReadinessGauge from '../components/analytics/ReadinessGauge'
 import RecoveryPanel from '../components/analytics/RecoveryPanel'
 import WellnessCheckIn from '../components/analytics/WellnessCheckIn'
 import PerformanceRadar from '../components/analytics/PerformanceRadar'
+import GoalTracker from '../components/analytics/GoalTracker'
+import AnnouncementsFeed from '../components/analytics/AnnouncementsFeed'
 import Avatar from '../components/Avatar'
 import RoleWelcomeBar from '../components/dashboard/RoleWelcomeBar'
 import StudentQuickActions from '../components/dashboard/StudentQuickActions'
@@ -207,6 +209,11 @@ export default function StudentDashboard() {
           <DashboardAccentImage src={DASHBOARD_IMAGES.student.progress} alt="Training progress" variant="bg" />
           <StudentTrainingTips />
         </div>
+      </div>
+
+      <div className="row g-4 mb-4">
+        <div className="col-lg-8"><GoalTracker athleteId={athlete?.id} title="My Goals" /></div>
+        <div className="col-lg-4"><AnnouncementsFeed /></div>
       </div>
 
       <div className="row g-4 mt-2">

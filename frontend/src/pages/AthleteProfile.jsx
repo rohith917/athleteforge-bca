@@ -12,6 +12,7 @@ import PerformanceRadar from '../components/analytics/PerformanceRadar'
 import ReadinessGauge from '../components/analytics/ReadinessGauge'
 import InjuryRiskGauge from '../components/analytics/InjuryRiskGauge'
 import ActivityTimeline from '../components/analytics/ActivityTimeline'
+import GoalTracker from '../components/analytics/GoalTracker'
 import { calcRecoveryScore } from '../utils/metricsEngine'
 
 export default function AthleteProfile() {
@@ -144,7 +145,7 @@ export default function AthleteProfile() {
       )}
 
       {lp && Object.keys(lp).length > 0 && (
-        <div className="glass-card">
+        <div className="glass-card mb-4">
           <h6 className="analytics-card-title">Latest Performance Metrics</h6>
           <div className="profile-metrics-grid">
             {['speed_score', 'strength_score', 'endurance_score', 'flexibility_score', 'agility_score'].map((k) => (
@@ -156,6 +157,8 @@ export default function AthleteProfile() {
           </div>
         </div>
       )}
+
+      <GoalTracker athleteId={profile.id} />
     </div>
   )
 }
