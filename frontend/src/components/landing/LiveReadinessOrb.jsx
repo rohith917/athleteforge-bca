@@ -1,7 +1,9 @@
 /**
  * Animated live readiness score — MDNT-style tech showcase.
- * Real 3D: mouse-tracked perspective tilt + a light-source glare that
- * shifts with the tilt, so the orb reads as a sphere you can "spin".
+ * Real 3D: continuously auto-rotates in a slow figure-8 (so it's visibly
+ * 3D the instant the page loads, no hover required) and mouse movement
+ * takes over the tilt directly, with a light-source glare that follows
+ * the cursor.
  */
 import { useState, useEffect, useRef, useCallback } from 'react'
 
@@ -13,11 +15,14 @@ const STATUSES = [
 ]
 
 const MAX_TILT = 22
+const AUTO_TILT = 10
 
 export default function LiveReadinessOrb({ initialScore = 78 }) {
   const [score, setScore] = useState(initialScore)
   const [tilt, setTilt] = useState({ x: 0, y: 0, glareX: 50, glareY: 50 })
   const orbRef = useRef(null)
+  const hoveringRef = useRef(false)
+  const rafRef = useRef(null)
 
   useEffect(() => {
     setScore(initialScore)
@@ -33,7 +38,28 @@ export default function LiveReadinessOrb({ initialScore = 78 }) {
     return () => clearInterval(tick)
   }, [])
 
+  // Idle auto-rotation — a slow figure-8 so the 3D tilt is obvious without
+  // needing to hover. Pauses the moment the pointer takes over.
+  useEffect(() => {
+    const start = performance.now()
+    const loop = (now) => {
+      if (!hoveringRef.current) {
+        const t = (now - start) / 1000
+        setTilt({
+          x: Math.sin(t * 0.6) * AUTO_TILT,
+          y: Math.sin(t * 0.4) * AUTO_TILT * 1.4,
+          glareX: 50 + Math.sin(t * 0.4) * 30,
+          glareY: 50 + Math.sin(t * 0.6) * 30,
+        })
+      }
+      rafRef.current = requestAnimationFrame(loop)
+    }
+    rafRef.current = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [])
+
   const handlePointerMove = useCallback((e) => {
+    hoveringRef.current = true
     const el = orbRef.current
     if (!el) return
     const rect = el.getBoundingClientRect()
@@ -48,7 +74,7 @@ export default function LiveReadinessOrb({ initialScore = 78 }) {
   }, [])
 
   const handlePointerLeave = useCallback(() => {
-    setTilt({ x: 0, y: 0, glareX: 50, glareY: 50 })
+    hoveringRef.current = false
   }, [])
 
   const status = STATUSES.find(s => score >= s.min) || STATUSES[STATUSES.length - 1]
@@ -62,7 +88,7 @@ export default function LiveReadinessOrb({ initialScore = 78 }) {
           '--readiness-pct': score,
           '--glare-x': `${tilt.glareX}%`,
           '--glare-y': `${tilt.glareY}%`,
-          transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${tilt.x || tilt.y ? 1.05 : 1})`,
+          transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${hoveringRef.current ? 1.05 : 1})`,
         }}
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
