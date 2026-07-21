@@ -1,5 +1,5 @@
 /**
- * Theme context — dark / light mode. Only admins may toggle; others always see light.
+ * Theme context — dark / light mode, toggleable by any signed-in user, persisted to localStorage.
  */
 import { createContext, useContext, useState, useEffect } from 'react'
 

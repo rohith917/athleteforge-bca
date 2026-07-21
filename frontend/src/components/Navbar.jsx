@@ -7,6 +7,7 @@ import { useTheme } from '../context/ThemeContext'
 import { useToast } from '../context/ToastContext'
 import { FaSignOutAlt, FaMoon, FaSun, FaBars } from 'react-icons/fa'
 import Avatar from './Avatar'
+import NotificationBell from './NotificationBell'
 const roleLabels = { admin: 'ADMIN', coach: 'COACH', student: 'STUDENT' }
 
 export default function Navbar({ onMenuToggle }) {
@@ -44,7 +45,8 @@ export default function Navbar({ onMenuToggle }) {
       </div>
 
       <div className="navbar-actions">
-        {isAdmin && canToggleTheme && (
+        <NotificationBell />
+        {canToggleTheme && (
           <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme" aria-label="Toggle theme">
             {isDark ? <FaSun /> : <FaMoon />}
           </button>

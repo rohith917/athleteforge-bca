@@ -13,11 +13,15 @@ import {
   getErrorMessage,
   setAuthenticating,
   setCsrfToken,
+  getAuthToken,
 } from '../services/api'
 import {
   clearAllClientAuth,
   markNewSession,
   signalLogoutAllTabs,
+  persistLoginPayload,
+  getUserSnapshot,
+  setUserSnapshot,
   AUTH_LOGOUT_KEY,
 } from '../utils/authSession'
 
@@ -49,29 +53,11 @@ export function AuthProvider({ children }) {
   const fetchCurrentUser = useCallback(async () => {
     const response = await authAPI.getUser()
     setUser(response.data)
+    setUserSnapshot(response.data)
     markNewSession(response.data?.id)
     markServerAwake()
     return response.data
   }, [])
-
-  const verifySession = useCallback(async (fallbackUser, retries = 8) => {
-    for (let attempt = 0; attempt < retries; attempt += 1) {
-      try {
-        await initCsrf()
-        const verified = await fetchCurrentUser()
-        if (verified?.id) return verified
-      } catch (err) {
-        if (!isNotLoggedInError(err)) throw err
-        if (attempt < retries - 1) await sleep(700 * (attempt + 1))
-      }
-    }
-    if (fallbackUser?.id) {
-      setUser(fallbackUser)
-      markNewSession(fallbackUser.id)
-      return fallbackUser
-    }
-    throw new Error('Session could not be established. Tap "Clear stuck session" on login and try again.')
-  }, [fetchCurrentUser])
 
   const bootstrapAuth = useCallback(async ({ silent = false, isRetry = false } = {}) => {
     const gen = ++authGeneration.current
@@ -91,6 +77,12 @@ export function AuthProvider({ children }) {
       await initCsrf()
       if (gen !== authGeneration.current) return
 
+      const snapshot = getUserSnapshot()
+      if (getAuthToken() && snapshot?.id) {
+        setUser(snapshot)
+        markNewSession(snapshot.id)
+      }
+
       try {
         await fetchCurrentUser()
       } catch (err) {
@@ -100,12 +92,18 @@ export function AuthProvider({ children }) {
           setApiStatus('ok')
           return
         }
+        if (getAuthToken() && snapshot?.id) {
+          setUser(snapshot)
+          setApiStatus('ok')
+          return
+        }
         throw err
       }
       if (gen !== authGeneration.current) return
       setApiStatus('ok')
-    } catch {
+    } catch (err) {
       if (gen !== authGeneration.current) return
+      console.error('[Auth] Session bootstrap failed:', err)
       clearUser()
       setApiStatus('error')
     } finally {
@@ -158,6 +156,11 @@ export function AuthProvider({ children }) {
         clearUser()
         return null
       }
+      const snapshot = getUserSnapshot()
+      if (getAuthToken() && snapshot?.id) {
+        setUser(snapshot)
+        return snapshot
+      }
       clearUser()
       setApiStatus('error')
       return null
@@ -190,6 +193,7 @@ export function AuthProvider({ children }) {
         throw new Error('Login succeeded but no user data was returned.')
       }
 
+      persistLoginPayload(response.data)
       if (response.data?.csrfToken) {
         setCsrfToken(response.data.csrfToken)
       } else {
@@ -197,12 +201,23 @@ export function AuthProvider({ children }) {
       }
 
       setUser(loggedInUser)
+      setUserSnapshot(loggedInUser)
       markNewSession(loggedInUser.id)
-      const verified = await verifySession(loggedInUser)
-      markServerAwake()
-      setApiStatus('ok')
-      setAuthChecked(true)
-      return { ...response.data, user: verified }
+
+      try {
+        const verified = await fetchCurrentUser()
+        setUserSnapshot(verified)
+        markServerAwake()
+        setApiStatus('ok')
+        setAuthChecked(true)
+        return { ...response.data, user: verified }
+      } catch (err) {
+        console.warn('[Auth] Post-login verification failed, using login response user:', err)
+        markServerAwake()
+        setApiStatus('ok')
+        setAuthChecked(true)
+        return { ...response.data, user: loggedInUser }
+      }
     } finally {
       setAuthenticating(false)
       setActionLoading(false)
@@ -225,18 +240,25 @@ export function AuthProvider({ children }) {
       if (!newUser?.id) {
         throw new Error('Registration succeeded but no user data was returned.')
       }
+      persistLoginPayload(response.data)
       if (response.data?.csrfToken) {
         setCsrfToken(response.data.csrfToken)
       } else {
         await initCsrf()
       }
       setUser(newUser)
+      setUserSnapshot(newUser)
       markNewSession(newUser.id)
-      const verified = await verifySession(newUser)
+      try {
+        const verified = await fetchCurrentUser()
+        setUserSnapshot(verified)
+      } catch (err) {
+        console.warn('[Auth] Post-register verification failed, trusting register response:', err)
+      }
       markServerAwake()
       setApiStatus('ok')
       setAuthChecked(true)
-      return { ...response.data, user: verified }
+      return { ...response.data, user: newUser }
     } finally {
       setAuthenticating(false)
       setActionLoading(false)
@@ -249,8 +271,8 @@ export function AuthProvider({ children }) {
     try {
       await initCsrf()
       await authAPI.logout()
-    } catch {
-      /* always clear client state */
+    } catch (err) {
+      console.warn('[Auth] Server logout call failed, clearing client state anyway:', err)
     } finally {
       clearUser()
       signalLogoutAllTabs()

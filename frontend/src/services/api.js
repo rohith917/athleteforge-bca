@@ -86,8 +86,28 @@ export function setCsrfToken(token) {
   }
 }
 
+const AUTH_TOKEN_KEY = 'af_token'
+
+export function getAuthToken() {
+  try {
+    return sessionStorage.getItem(AUTH_TOKEN_KEY) || ''
+  } catch {
+    return ''
+  }
+}
+
+export function setAuthToken(token) {
+  try {
+    if (token) sessionStorage.setItem(AUTH_TOKEN_KEY, token)
+    else sessionStorage.removeItem(AUTH_TOKEN_KEY)
+  } catch {
+    /* ignore */
+  }
+}
+
 export function clearAuthTokens() {
   csrfToken = ''
+  setAuthToken('')
   try {
     sessionStorage.removeItem('af_csrf')
   } catch {
@@ -123,9 +143,48 @@ export async function initCsrf() {
   }
 }
 
-/** Wake server, refresh CSRF, and confirm session cookie is valid (with retries). */
-export async function ensureApiSession(retries = 6) {
+/** Run an authenticated API call with wake + CSRF + retries (split-frontend safe). */
+export async function withApiReady(requestFn, { retries = 5 } = {}) {
   await wakeServer()
+  let lastError
+  for (let attempt = 0; attempt < retries; attempt += 1) {
+    await initCsrf()
+    try {
+      const result = await requestFn()
+      markServerAwake()
+      return result
+    } catch (err) {
+      lastError = err
+      const status = err?.response?.status
+      const retryable = !err?.response
+        || status === 401
+        || status === 403
+        || err?.code === 'ECONNABORTED'
+      if (retryable && attempt < retries - 1) {
+        resetServerAwake()
+        await wakeServer()
+        await sleep(900 + attempt * 1100)
+        continue
+      }
+      throw err
+    }
+  }
+  throw lastError
+}
+
+/** Wake server, refresh CSRF, and confirm session (user endpoint or dashboard probe). */
+export async function ensureApiSession(retries = 8) {
+  await wakeServer()
+  if (getAuthToken()) {
+    try {
+      await initCsrf()
+      await authAPI.getUser({ timeout: DEFAULT_TIMEOUT })
+      markServerAwake()
+      return true
+    } catch {
+      /* fall through to retry loop */
+    }
+  }
   for (let attempt = 0; attempt < retries; attempt += 1) {
     await initCsrf()
     try {
@@ -134,12 +193,33 @@ export async function ensureApiSession(retries = 6) {
       return true
     } catch (err) {
       const status = err?.response?.status
+      if (isSplitFrontend || isCloudHost) {
+        try {
+          await api.get('/dashboard/stats/', { timeout: DEFAULT_TIMEOUT })
+          markServerAwake()
+          return true
+        } catch (probeErr) {
+          const probeStatus = probeErr?.response?.status
+          if (probeStatus && probeStatus !== 401 && probeStatus !== 403) {
+            if (attempt < retries - 1) {
+              resetServerAwake()
+              await wakeServer()
+              await sleep(1000 * (attempt + 1))
+              continue
+            }
+          }
+        }
+      }
       if (status === 401 || status === 403) {
-        if (attempt < retries - 1) await sleep(700 * (attempt + 1))
+        if (attempt < retries - 1) await sleep(800 * (attempt + 1))
         continue
       }
-      if (attempt < retries - 1) await sleep(1000 * (attempt + 1))
-      continue
+      if (attempt < retries - 1) {
+        resetServerAwake()
+        await wakeServer()
+        await sleep(1200 * (attempt + 1))
+        continue
+      }
     }
   }
   return false
@@ -170,6 +250,10 @@ export async function downloadReport(type, format = 'pdf') {
 
 api.interceptors.request.use((config) => {
   const method = (config.method || 'get').toLowerCase()
+  const apiToken = getAuthToken()
+  if (apiToken) {
+    config.headers.Authorization = `Token ${apiToken}`
+  }
   if (['post', 'put', 'patch', 'delete'].includes(method)) {
     const token = getCsrfToken()
     if (token) config.headers['X-CSRFToken'] = token
@@ -205,6 +289,7 @@ api.interceptors.response.use(
       !authenticating &&
       !original?._authRetry &&
       method === 'get' &&
+      getAuthToken() &&
       !url.includes('/auth/login/') &&
       !url.includes('/auth/register/') &&
       !url.includes('/auth/logout/') &&
@@ -215,12 +300,7 @@ api.interceptors.response.use(
       resetServerAwake()
       await wakeServer()
       await initCsrf()
-      try {
-        await api.get('/auth/user/', { timeout: DEFAULT_TIMEOUT })
-        return api.request(original)
-      } catch {
-        /* fall through */
-      }
+      return api.request(original)
     }
 
     if (
@@ -232,7 +312,7 @@ api.interceptors.response.use(
       !url.includes('/auth/csrf/') &&
       !url.includes('/auth/user/')
     ) {
-      onUnauthorized?.()
+      if (!getAuthToken()) onUnauthorized?.()
     }
 
     return Promise.reject(error)
@@ -304,7 +384,7 @@ export const injuriesAPI = {
 }
 
 export const competitionsAPI = {
-  getAll: () => api.get('/competitions/'),
+  getAll: (params) => api.get('/competitions/', { params }),
   create: (data) => api.post('/competitions/', data),
   update: (id, data) => api.put(`/competitions/${id}/`, data),
   delete: (id) => api.delete(`/competitions/${id}/`),

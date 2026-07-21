@@ -3,15 +3,17 @@
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { athletesAPI, ensureApiSession } from '../services/api'
+import { athletesAPI, withApiReady } from '../services/api'
 import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
 import DataErrorPanel from '../components/DataErrorPanel'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import { FaPlus, FaSearch, FaUsers } from 'react-icons/fa'
+import { FaPlus, FaUsers } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader'
 import AthleteGridCard from '../components/analytics/AthleteGridCard'
+import SearchFilterBar from '../components/ui/SearchFilterBar'
 import { Skeleton } from '../components/ui/Skeleton'
+import { useDebouncedValue } from '../hooks/useDebouncedValue'
 
 export default function Athletes() {
   const [athletes, setAthletes] = useState([])
@@ -21,21 +23,16 @@ export default function Athletes() {
   const [loadError, setLoadError] = useState('')
   const { isStaff } = useAuth()
   const { showToast } = useToast()
+  const debouncedSearch = useDebouncedValue(search)
 
   const fetchAthletes = async () => {
     setLoading(true)
     setLoadError('')
     try {
-      const ok = await ensureApiSession()
-      if (!ok) {
-        setLoadError('Session not verified — sign in again (admin / admin123).')
-        setAthletes([])
-        return
-      }
       const params = {}
-      if (search) params.search = search
+      if (debouncedSearch) params.search = debouncedSearch
       if (statusFilter) params.status = statusFilter
-      const res = await athletesAPI.getAll(params)
+      const res = await withApiReady(() => athletesAPI.getAll(params))
       setAthletes(parseListResponse(res.data))
     } catch (err) {
       setLoadError(getLoadErrorMessage(err, 'athletes'))
@@ -44,7 +41,7 @@ export default function Athletes() {
     } finally { setLoading(false) }
   }
 
-  useEffect(() => { fetchAthletes() }, [search, statusFilter])
+  useEffect(() => { fetchAthletes() }, [debouncedSearch, statusFilter])
 
   const handleDelete = async (id, name) => {
     if (!window.confirm(`Delete "${name}"?`)) return
@@ -69,25 +66,30 @@ export default function Athletes() {
         action={isStaff ? <Link to="/dashboard/athletes/new" className="btn-gold text-decoration-none"><FaPlus /> Add Athlete</Link> : null}
       />
 
-      <div className="filter-bar-premium">
-        <div className="search-input-wrap flex-grow-1">
-          <FaSearch />
-          <input type="text" className="form-control-custom" placeholder="Search athletes..."
-            value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
-        <select className="form-select-custom" style={{ maxWidth: 180 }}
-          value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-          <option value="">All Status</option>
-          <option value="Active">Active</option>
-          <option value="Injured">Injured</option>
-          <option value="Inactive">Inactive</option>
-        </select>
-        <div className="d-flex gap-3 ms-auto" style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-          <span><strong className="text-gold">{counts.total}</strong> Total</span>
-          <span><strong style={{ color: '#22C55E' }}>{counts.active}</strong> Active</span>
-          <span><strong style={{ color: '#EF4444' }}>{counts.injured}</strong> Injured</span>
-        </div>
-      </div>
+      <SearchFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search athletes..."
+        filters={[{
+          key: 'status',
+          value: statusFilter,
+          onChange: setStatusFilter,
+          placeholder: 'All Status',
+          maxWidth: 180,
+          options: [
+            { value: 'Active', label: 'Active' },
+            { value: 'Injured', label: 'Injured' },
+            { value: 'Inactive', label: 'Inactive' },
+          ],
+        }]}
+        right={
+          <>
+            <span><strong className="text-gold">{counts.total}</strong> Total</span>
+            <span><strong style={{ color: '#22C55E' }}>{counts.active}</strong> Active</span>
+            <span><strong style={{ color: '#EF4444' }}>{counts.injured}</strong> Injured</span>
+          </>
+        }
+      />
 
       {loadError && <DataErrorPanel message={loadError} onRetry={fetchAthletes} />}
 

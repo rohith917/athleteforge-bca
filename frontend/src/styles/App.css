@@ -160,7 +160,7 @@ body {
 .sidebar {
   width: var(--sidebar-width);
   background: var(--bg-sidebar);
-  color: #fff;
+  color: var(--text-primary);
   display: flex; flex-direction: column;
   position: fixed; height: 100vh; z-index: 200;
   border-right: 1px solid var(--af-border);
@@ -235,6 +235,49 @@ body {
   color: var(--af-gold);
 }
 .theme-toggle:hover { border-color: var(--af-gold); box-shadow: 0 0 12px var(--af-gold-glow); }
+
+/* ---- Notification bell ---- */
+.notification-bell-wrap { position: relative; }
+.notification-bell-btn { position: relative; }
+.notification-badge {
+  position: absolute; top: -4px; right: -4px;
+  min-width: 16px; height: 16px; padding: 0 3px;
+  background: var(--af-danger); color: #fff;
+  border-radius: 8px; font-size: 0.62rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1; box-shadow: 0 0 8px rgba(239,68,68,0.6);
+}
+.notification-dropdown {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  width: 320px; max-height: 400px; overflow-y: auto;
+  background: var(--bg-card); border: 1px solid var(--border-color);
+  border-radius: var(--radius); box-shadow: var(--shadow-lg);
+  z-index: 300; animation: fadeInUp 0.2s ease;
+}
+.notification-dropdown-header {
+  padding: 14px 18px; font-weight: 700; font-size: 0.8rem;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--text-secondary); border-bottom: 1px solid var(--border-color);
+}
+.notification-empty { padding: 24px 18px; color: var(--text-muted); font-size: 0.85rem; margin: 0; }
+.notification-list { display: flex; flex-direction: column; }
+.notification-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 18px; border-bottom: 1px solid var(--border-color);
+}
+.notification-item:last-child { border-bottom: none; }
+.notification-icon { flex-shrink: 0; margin-top: 2px; color: var(--af-gold); }
+.notification-item.severity-high .notification-icon { color: var(--af-danger); }
+.notification-message {
+  flex: 1; font-size: 0.85rem; color: var(--text-primary);
+  text-decoration: none; line-height: 1.4;
+}
+.notification-message:hover { color: var(--af-gold); }
+.notification-dismiss {
+  background: none; border: none; color: var(--text-muted);
+  font-size: 1.1rem; line-height: 1; cursor: pointer; padding: 0 2px;
+}
+.notification-dismiss:hover { color: var(--af-danger); }
 
 .user-chip {
   display: flex; align-items: center; gap: 8px;

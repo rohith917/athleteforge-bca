@@ -147,13 +147,58 @@
 
 /* Stats delivered */
 .upd-stats-section {
-  padding: clamp(80px, 10vw, 120px) clamp(20px, 4vw, 48px);
+  padding: 0 0 clamp(80px, 10vw, 120px);
   background: var(--mdnt-black);
+}
+
+.upd-stats-banner {
+  position: relative;
+  height: clamp(220px, 32vw, 380px);
+  overflow: hidden;
+  margin-bottom: clamp(48px, 8vw, 80px);
+}
+
+.upd-stats-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.upd-stats-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 20%, rgba(10, 10, 10, 0.85) 100%);
+}
+
+.upd-stats-banner-caption {
+  position: absolute;
+  left: clamp(20px, 4vw, 48px);
+  bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.upd-stats-banner-caption span {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mdnt-muted);
+}
+
+.upd-stats-banner-caption strong {
+  font-family: var(--mdnt-font-display);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--upd-lime);
 }
 
 .upd-stats-header {
   max-width: 1400px;
   margin: 0 auto 48px;
+  padding: 0 clamp(20px, 4vw, 48px);
 }
 
 .upd-stats-header .eyebrow {
@@ -176,6 +221,7 @@
 .upd-stats-grid {
   max-width: 1400px;
   margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 48px);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 1px;
@@ -299,6 +345,34 @@
 
 .upd-flip-front {
   background: var(--mdnt-surface);
+  overflow: hidden;
+  padding: 0;
+}
+
+.upd-flip-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(30%) brightness(0.55);
+  transition: transform 0.6s var(--mdnt-ease), filter 0.5s;
+}
+
+.upd-flip-card:hover .upd-flip-bg {
+  transform: scale(1.05);
+  filter: grayscale(0%) brightness(0.65);
+}
+
+.upd-flip-front-content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0.35) 0%, rgba(10, 10, 10, 0.88) 100%);
 }
 
 .upd-flip-back {
@@ -378,23 +452,50 @@
   justify-content: center;
 }
 
-.upd-ai-avatar {
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--mdnt-surface) 0%, var(--mdnt-charcoal) 100%);
+.upd-ai-photo-frame {
+  position: relative;
+  width: min(100%, 340px);
+  aspect-ratio: 4 / 5;
+  border-radius: 20px;
+  overflow: hidden;
   border: 2px solid var(--upd-lime);
+  box-shadow: 0 0 60px var(--upd-lime-glow);
+}
+
+.upd-ai-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.upd-ai-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(10, 10, 10, 0.75) 100%);
+}
+
+.upd-ai-avatar-badge {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--upd-lime);
+  color: var(--mdnt-black);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 5rem;
-  box-shadow: 0 0 60px var(--upd-lime-glow);
+  font-size: 1.4rem;
+  box-shadow: 0 8px 24px var(--upd-lime-glow);
 }
 
 .upd-ai-live {
   position: absolute;
-  bottom: 20px;
-  right: calc(50% - 130px);
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: 8px;

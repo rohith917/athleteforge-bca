@@ -1,29 +1,33 @@
-import { FaBell, FaUserClock, FaBandAid, FaTrophy, FaWeight } from 'react-icons/fa'
+import { FaBell, FaBandAid, FaTrophy } from 'react-icons/fa'
+import { useNotifications } from '../../hooks/useNotifications'
 
-const NOTIFS = [
-  { icon: FaUserClock, text: 'Athlete missed training session', time: '10m', type: 'warning' },
-  { icon: FaBandAid, text: 'Injury risk increased for 2 athletes', time: '1h', type: 'danger' },
-  { icon: FaTrophy, text: 'Competition approaching in 5 days', time: '3h', type: 'info' },
-  { icon: FaWeight, text: 'Weight target achieved — Rahul S.', time: '6h', type: 'success' },
-]
+const ICONS = { competition: FaTrophy, injury: FaBandAid }
+const SEVERITY_TYPE = { high: 'danger', medium: 'warning' }
 
 export default function NotificationCenter() {
+  const { alerts, loading } = useNotifications()
+
   return (
     <div className="notification-center glass-card">
       <div className="notif-header">
         <h6 className="analytics-card-title mb-0"><FaBell /> Notifications</h6>
-        <span className="notif-count">{NOTIFS.length}</span>
+        <span className="notif-count">{alerts.length}</span>
       </div>
       <div className="notif-list">
-        {NOTIFS.map((n, i) => (
-          <div className={`notif-item notif-${n.type}`} key={i}>
-            <n.icon />
-            <div>
-              <p>{n.text}</p>
-              <small>{n.time} ago</small>
+        {!loading && alerts.length === 0 && (
+          <p className="text-muted mb-0" style={{ fontSize: '0.85rem' }}>No active alerts right now.</p>
+        )}
+        {alerts.map((a) => {
+          const Icon = ICONS[a.type] || FaBell
+          return (
+            <div className={`notif-item notif-${SEVERITY_TYPE[a.severity] || 'info'}`} key={a.id}>
+              <Icon />
+              <div>
+                <p>{a.message}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

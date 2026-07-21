@@ -3,6 +3,8 @@
  */
 import { Link } from 'react-router-dom'
 import { FaArrowRight, FaBrain } from 'react-icons/fa'
+import SafeImage from '../SafeImage'
+import { LOCAL_IMAGES, LOCAL_SVG } from '../../utils/mediaUrls'
 
 const TRUSTED = [
   'BCA Athletics', 'Sprint Academy', 'Elite FC', 'Aqua Performance',
@@ -18,12 +20,12 @@ const STATS = [
 ]
 
 const SERVICES = [
-  { num: '01', title: 'Performance AI', desc: 'Deep metric analysis across speed, strength, endurance, flexibility & agility with trend forecasting.', link: '/register' },
-  { num: '02', title: 'Injury Engine', desc: 'Risk scoring, injury history, prevention protocols, and smart recovery timelines — before injuries happen.', link: '/register' },
-  { num: '03', title: 'Readiness Orb', desc: 'Live fusion score combining performance, attendance, and injury safety into one competition-ready number.', link: '/register' },
-  { num: '04', title: 'Voice Coach', desc: 'Web Speech-powered coaching briefs — hear your full AI analysis and weekly plan aloud.', link: '/register' },
-  { num: '05', title: 'AI Copilot', desc: 'Chat or speak naturally. Ask about readiness, training plans, injuries, medals — get instant deep answers.', link: '/register' },
-  { num: '06', title: 'Team Reports', desc: 'PDF & Excel exports, admin dashboards, role-based access for coaches, athletes, and selectors.', link: '/register' },
+  { num: '01', title: 'Performance AI', desc: 'Deep metric analysis across speed, strength, endurance, flexibility & agility with trend forecasting.', link: '/register', img: LOCAL_IMAGES.servicePerformance, fallback: LOCAL_SVG.athlete },
+  { num: '02', title: 'Injury Engine', desc: 'Risk scoring, injury history, prevention protocols, and smart recovery timelines — before injuries happen.', link: '/register', img: LOCAL_IMAGES.serviceInjury, fallback: LOCAL_SVG.coach },
+  { num: '03', title: 'Readiness Orb', desc: 'Live fusion score combining performance, attendance, and injury safety into one competition-ready number.', link: '/register', img: LOCAL_IMAGES.serviceReadiness, fallback: LOCAL_SVG.track },
+  { num: '04', title: 'Voice Coach', desc: 'Web Speech-powered coaching briefs — hear your full AI analysis and weekly plan aloud.', link: '/register', img: LOCAL_IMAGES.serviceVoice, fallback: LOCAL_SVG.coach },
+  { num: '05', title: 'AI Copilot', desc: 'Chat or speak naturally. Ask about readiness, training plans, injuries, medals — get instant deep answers.', link: '/register', img: LOCAL_IMAGES.serviceCopilot, fallback: LOCAL_SVG.track },
+  { num: '06', title: 'Team Reports', desc: 'PDF & Excel exports, admin dashboards, role-based access for coaches, athletes, and selectors.', link: '/register', img: LOCAL_IMAGES.serviceReports, fallback: LOCAL_SVG.football },
 ]
 
 const DIFF = [
@@ -52,6 +54,19 @@ export function UpdTrustedMarquee() {
 export function UpdStatsDelivered() {
   return (
     <section className="upd-stats-section">
+      <div className="upd-stats-banner">
+        <SafeImage
+          src={LOCAL_IMAGES.statsBanner}
+          fallback={LOCAL_SVG.track}
+          alt="Athletes training on track"
+          className="upd-stats-banner-img"
+        />
+        <div className="upd-stats-banner-overlay" />
+        <div className="upd-stats-banner-caption">
+          <span>Real training environments</span>
+          <strong>Data-backed performance</strong>
+        </div>
+      </div>
       <div className="upd-stats-header">
         <span className="eyebrow">Real Results</span>
         <h2>What we&apos;ve delivered.</h2>
@@ -83,9 +98,12 @@ export function UpdFlipServices() {
           <div key={s.num} className="upd-flip-card">
             <div className="upd-flip-inner">
               <div className="upd-flip-front">
-                <span className="upd-flip-num">{s.num}</span>
-                <h3>{s.title}</h3>
-                <span className="upd-flip-hint">Hover to flip</span>
+                <SafeImage src={s.img} fallback={s.fallback} alt={s.title} className="upd-flip-bg" />
+                <div className="upd-flip-front-content">
+                  <span className="upd-flip-num">{s.num}</span>
+                  <h3>{s.title}</h3>
+                  <span className="upd-flip-hint">Hover to flip</span>
+                </div>
               </div>
               <div className="upd-flip-back">
                 <p>{s.desc}</p>
@@ -113,7 +131,16 @@ export function UpdMeetAI() {
     <section className="upd-meet-ai">
       <div className="upd-meet-ai-inner">
         <div className="upd-ai-avatar-wrap">
-          <div className="upd-ai-avatar" aria-hidden="true"><FaBrain /></div>
+          <div className="upd-ai-photo-frame">
+            <SafeImage
+              src={LOCAL_IMAGES.meetAi}
+              fallback={LOCAL_SVG.athlete}
+              alt="AI coach analyzing athlete performance"
+              className="upd-ai-photo"
+            />
+            <div className="upd-ai-photo-overlay" />
+            <div className="upd-ai-avatar-badge" aria-hidden="true"><FaBrain /></div>
+          </div>
           <div className="upd-ai-live">
             <span className="live-dot" />
             Live Now
@@ -122,14 +149,13 @@ export function UpdMeetAI() {
         <div className="upd-meet-ai-content">
           <span className="eyebrow">Live Now</span>
           <h2>
-            Meet Forge AI,<br />
-            <span className="lime">your performance</span><br />
-            strategist.
+            Daily AI guidance<br />
+            <span className="lime">for training decisions</span><br />
+            and recovery.
           </h2>
           <div className="upd-ai-chat-bubble">
-            <strong>Forge AI · Online</strong>
-            Hi! I&apos;m Forge AI — AthleteForge&apos;s performance strategist. I have your readiness score,
-            injury risk, training plan, and competition data ready. How can I help you perform better today?
+            <strong>AI Copilot</strong>
+            Ask about today’s agenda, whether to train, specific benchmarks to record, meal ideas, or how to recover faster. Data-driven answers for coaches and athletes.
           </div>
           <p style={{ color: 'var(--mdnt-muted)', marginBottom: 28, lineHeight: 1.7 }}>
             Available 24/7. Trained on athlete performance science. Get instant strategy for

@@ -425,6 +425,19 @@
   color: var(--mdnt-accent, #ff3d3d);
 }
 
+/* Auth pages stay cinematic-dark regardless of the dashboard theme preference */
+.auth-split-page .btn-gold,
+.auth-split-page .btn-hero-primary {
+  background: #ffffff !important;
+  color: #0a0a0a !important;
+}
+
+.auth-split-page .btn-gold:hover,
+.auth-split-page .btn-hero-primary:hover {
+  background: #ff3d3d !important;
+  color: #ffffff !important;
+}
+
 /* AI panel inside dashboard */
 .dashboard-mdnt .ai-panel-header {
   background: var(--mdnt-elevated);

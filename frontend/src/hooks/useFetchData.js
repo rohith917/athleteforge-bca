@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { ensureApiSession } from '../services/api'
+import { withApiReady } from '../services/api'
 import { getLoadErrorMessage } from '../utils/apiHelpers'
 
 /**
@@ -23,15 +23,9 @@ export function useFetchData(fetcher, deps = [], options = {}) {
     setLoading(true)
     setError('')
     try {
-      if (requireSession) {
-        const ok = await ensureApiSession()
-        if (!ok) {
-          setError(sessionError)
-          setData(initialData)
-          return
-        }
-      }
-      const result = await fetcher()
+      const result = requireSession
+        ? await withApiReady(fetcher)
+        : await fetcher()
       setData(result)
     } catch (err) {
       setError(getLoadErrorMessage(err, fallbackError))

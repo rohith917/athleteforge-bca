@@ -1,7 +1,7 @@
 /**
  * Main layout — MDNT home colors only (black / red / lime)
  */
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Navbar from './Navbar'
@@ -10,17 +10,11 @@ import ChartThemeSync from './ChartThemeSync'
 import ErrorBoundary from './ErrorBoundary'
 import AICopilotWidget from './landing/AICopilotWidget'
 import { useAuth } from '../context/AuthContext'
-import { useTheme } from '../context/ThemeContext'
 
 export default function Layout() {
   const { user, isStudent } = useAuth()
-  const { setTheme } = useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
-
-  useEffect(() => {
-    setTheme('dark')
-  }, [setTheme])
 
   return (
     <div className="app-layout dashboard-mdnt home-theme-app">

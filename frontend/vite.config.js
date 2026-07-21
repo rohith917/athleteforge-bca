@@ -16,6 +16,18 @@ function spa404Plugin() {
 
 export default defineConfig({
   plugins: [react(), spa404Plugin()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          charts: ['chart.js', 'react-chartjs-2'],
+          motion: ['framer-motion'],
+          bootstrap: ['bootstrap', 'react-bootstrap'],
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
     host: true,

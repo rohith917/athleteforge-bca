@@ -6,7 +6,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
-import { dashboardAPI, ensureApiSession } from '../services/api'
+import { dashboardAPI, withApiReady } from '../services/api'
+import DashboardAccentImage from '../components/DashboardAccentImage'
+import { DASHBOARD_IMAGES } from '../utils/dashboardImages'
 import { fetchWithTimeout } from '../utils/fetchWithTimeout'
 import {
   FaUsers, FaUserShield, FaUserGraduate, FaUserTie,
@@ -59,15 +61,11 @@ export default function AdminDashboard() {
       if (!activeUser?.id) {
         activeUser = await checkAuth()
       }
-      if (!activeUser?.id) {
-        const sessionOk = await ensureApiSession()
-        if (!sessionOk) {
-          setLoadError('SESSION NOT VERIFIED — SIGN IN WITH ADMIN / ADMIN123.')
-          setStats(null)
-          return
-        }
-      }
-      const res = await fetchWithTimeout(dashboardAPI.getStats(), 90000, 'Admin dashboard')
+      const res = await fetchWithTimeout(
+        withApiReady(() => dashboardAPI.getStats()),
+        90000,
+        'Admin dashboard',
+      )
       if (res.data?.role !== 'admin') {
         setLoadError('ADMIN ACCESS REQUIRED — SIGN IN WITH ADMIN / ADMIN123.')
         setStats(null)
@@ -155,6 +153,12 @@ export default function AdminDashboard() {
 
       <TechCommandHub role="admin" readinessScore={88} />
 
+      <div className="af-dash-accent-row mb-4" aria-hidden="true">
+        <DashboardAccentImage src={DASHBOARD_IMAGES.admin.track} alt="Track athletics" variant="banner" />
+        <DashboardAccentImage src={DASHBOARD_IMAGES.admin.team} alt="Team sports" variant="banner" />
+        <DashboardAccentImage src={DASHBOARD_IMAGES.admin.analytics} alt="Performance analytics" variant="banner" />
+      </div>
+
       {stats.unlinked_students > 0 && (
         <div className="alert-custom mb-4 admin-alert-warn">
           <FaExclamationTriangle className="me-2" />
@@ -195,8 +199,12 @@ export default function AdminDashboard() {
 
       <div className="row g-4 mb-4">
         <div className="col-lg-4">
-          <div className="chart-panel-premium glass-card">
-            <h6>USERS BY ROLE</h6>
+          <div className="chart-panel-premium glass-card af-dash-accent-wrap">
+            <DashboardAccentImage src={DASHBOARD_IMAGES.admin.analytics} alt="" variant="bg" />
+            <h6 className="af-dash-accent-header">
+              <DashboardAccentImage src={DASHBOARD_IMAGES.admin.team} alt="" variant="thumb" />
+              USERS BY ROLE
+            </h6>
             <ChartMount height={200} key={`admin-roles-${isDark}`}>
               {chartsReady && (
                 <Doughnut data={roleChart} options={{

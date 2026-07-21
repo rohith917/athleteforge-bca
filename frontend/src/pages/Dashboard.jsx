@@ -7,7 +7,9 @@ import RoleWelcomeBar from '../components/dashboard/RoleWelcomeBar'
 import CoachQuickActions from '../components/dashboard/CoachQuickActions'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Bar, Line, Doughnut } from 'react-chartjs-2'
-import { dashboardAPI, injuriesAPI, ensureApiSession } from '../services/api'
+import { dashboardAPI, injuriesAPI, withApiReady } from '../services/api'
+import DashboardAccentImage from '../components/DashboardAccentImage'
+import { DASHBOARD_IMAGES } from '../utils/dashboardImages'
 import { fetchWithTimeout } from '../utils/fetchWithTimeout'
 import {
   FaUsers, FaBandAid, FaTrophy, FaClipboardCheck, FaHeartbeat,
@@ -57,17 +59,9 @@ export default function Dashboard() {
       if (!activeUser?.id) {
         activeUser = await checkAuth()
       }
-      if (!activeUser?.id) {
-        const sessionOk = await ensureApiSession()
-        if (!sessionOk) {
-          setLoadError('Session not verified — sign in again (coach / coach123).')
-          setStats(null)
-          return
-        }
-      }
       const [statsRes, injRes] = await Promise.all([
-        fetchWithTimeout(dashboardAPI.getStats(), 90000, 'Dashboard'),
-        injuriesAPI.getAll().catch(() => ({ data: [] })),
+        fetchWithTimeout(withApiReady(() => dashboardAPI.getStats()), 90000, 'Dashboard'),
+        withApiReady(() => injuriesAPI.getAll()).catch(() => ({ data: [] })),
       ])
       setStats(statsRes.data)
       const injData = injRes.data?.results ?? injRes.data ?? []
@@ -195,8 +189,17 @@ export default function Dashboard() {
         ))}
       </div>
 
+      <div className="af-dash-accent-row mb-4" aria-hidden="true">
+        <DashboardAccentImage src={DASHBOARD_IMAGES.coach.training} alt="Coach training session" variant="banner" />
+        <DashboardAccentImage src={DASHBOARD_IMAGES.coach.teamHuddle} alt="Team huddle" variant="banner" />
+        <DashboardAccentImage src={DASHBOARD_IMAGES.coach.performance} alt="Performance training" variant="banner" />
+      </div>
+
       <div className="row g-4 mb-4">
-        <div className="col-lg-4"><TeamOverview stats={stats} /></div>
+        <div className="col-lg-4 af-dash-accent-wrap">
+          <DashboardAccentImage src={DASHBOARD_IMAGES.coach.roster} alt="Athlete profile" variant="bg" />
+          <TeamOverview stats={stats} />
+        </div>
         <div className="col-lg-4"><ReadinessGauge wellness={wellness} /></div>
         <div className="col-lg-4"><InjuryRiskGauge stats={{ ...stats, attendanceRate: attRate, recoveryScore: recovery.score }} /></div>
       </div>
@@ -222,7 +225,10 @@ export default function Dashboard() {
         </div>
         <div className="col-lg-6">
           <div className="chart-panel-premium" style={{ height: '100%' }}>
-            <h6>Attendance Intelligence</h6>
+            <h6 className="af-dash-accent-header">
+              <DashboardAccentImage src={DASHBOARD_IMAGES.coach.performance} alt="" variant="thumb" />
+              Attendance Intelligence
+            </h6>
             <ChartMount height={280} key={`att-${isDark}`}>
               {chartsReady && (
                 <Line data={attendanceChart} options={{ ...baseChartOptions, scales: { x: { ticks: { color: tickColor }, grid: { display: false } }, y: { min: 0, max: 100, ticks: { color: tickColor }, grid: { color: gridColor } } } }} />

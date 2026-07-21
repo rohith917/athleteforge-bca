@@ -19,6 +19,7 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
 
 from .ai_insights import get_ai_insights_for_athlete, get_demo_ai_insights
 from .free_ai import generate_free_ai_answer, get_ai_provider_status
@@ -42,6 +43,19 @@ from .reports import (
     generate_athletes_pdf, generate_performance_pdf, generate_injuries_pdf,
     generate_athletes_excel, generate_performance_excel, generate_attendance_excel
 )
+
+
+def _issue_auth_token(user):
+    """API token for split frontend (athleteforge-frontend) when cross-site cookies fail."""
+    Token.objects.filter(user=user).delete()
+    return Token.objects.create(user=user).key
+
+
+def _revoke_auth_token(request):
+    """Remove bearer token on logout."""
+    auth = request.META.get('HTTP_AUTHORIZATION', '')
+    if auth.startswith('Token '):
+        Token.objects.filter(key=auth[6:].strip()).delete()
 
 
 def _resolve_user_from_login(data):
@@ -112,6 +126,7 @@ class LoginView(APIView):
                 'message': 'Login successful',
                 'user': UserSerializer(user, context={'request': request}).data,
                 'csrfToken': get_token(request),
+                'token': _issue_auth_token(user),
             })
             return response
         return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -129,6 +144,8 @@ class RegisterView(APIView):
         return Response({
             'message': 'Registration successful',
             'user': UserSerializer(user, context={'request': request}).data,
+            'csrfToken': get_token(request),
+            'token': _issue_auth_token(user),
         }, status=status.HTTP_201_CREATED)
 
 
@@ -182,6 +199,7 @@ class LogoutView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        _revoke_auth_token(request)
         if request.user.is_authenticated:
             logout(request)
         request.session.flush()
@@ -291,8 +309,15 @@ class PerformanceViewSet(viewsets.ModelViewSet):
             Performance.objects.select_related('athlete').all(), self.request.user
         )
         athlete_id = self.request.query_params.get('athlete_id')
+        search = self.request.query_params.get('search')
         if athlete_id:
             queryset = queryset.filter(athlete_id=athlete_id)
+        if search:
+            queryset = queryset.filter(
+                Q(athlete__first_name__icontains=search) |
+                Q(athlete__last_name__icontains=search) |
+                Q(notes__icontains=search)
+            )
         return queryset
 
     def perform_create(self, serializer):
@@ -333,10 +358,18 @@ class InjuryViewSet(viewsets.ModelViewSet):
         )
         athlete_id = self.request.query_params.get('athlete_id')
         recovery_status = self.request.query_params.get('recovery_status')
+        search = self.request.query_params.get('search')
         if athlete_id:
             queryset = queryset.filter(athlete_id=athlete_id)
         if recovery_status:
             queryset = queryset.filter(recovery_status=recovery_status)
+        if search:
+            queryset = queryset.filter(
+                Q(athlete__first_name__icontains=search) |
+                Q(athlete__last_name__icontains=search) |
+                Q(injury_type__icontains=search) |
+                Q(body_part__icontains=search)
+            )
         return queryset
 
     def perform_create(self, serializer):
@@ -367,6 +400,20 @@ class CompetitionViewSet(viewsets.ModelViewSet):
     queryset = Competition.objects.prefetch_related('results').all()
     serializer_class = CompetitionSerializer
     permission_classes = [IsAuthenticated, IsCoachOrAdmin]
+
+    def get_queryset(self):
+        queryset = Competition.objects.prefetch_related('results').all()
+        search = self.request.query_params.get('search')
+        level = self.request.query_params.get('level')
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) |
+                Q(sport__icontains=search) |
+                Q(venue__icontains=search)
+            )
+        if level:
+            queryset = queryset.filter(level__iexact=level)
+        return queryset
 
     @action(detail=True, methods=['post'])
     def add_result(self, request, pk=None):

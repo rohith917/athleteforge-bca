@@ -1,24 +1,10 @@
 /**
  * Main App — public landing + protected dashboard routes.
+ * Routes are lazy-loaded so each page ships as its own chunk.
  */
+import { Suspense, lazy } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
-import ThemeRoleGuard from './components/ThemeRoleGuard'
-import Landing from './pages/Landing'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import ForgotPassword from './pages/ForgotPassword'
-import ResetPassword from './pages/ResetPassword'
-import UserManagement from './pages/UserManagement'
-import Athletes from './pages/Athletes'
-import AthleteForm from './pages/AthleteForm'
-import AthleteProfile from './pages/AthleteProfile'
-import Performance from './pages/Performance'
-import Injuries from './pages/Injuries'
-import Competitions from './pages/Competitions'
-import Attendance from './pages/Attendance'
-import WeightTracking from './pages/WeightTracking'
-import Reports from './pages/Reports'
 import {
   PrivateRoute,
   GuestRoute,
@@ -28,10 +14,34 @@ import {
   DashboardRouter,
   FallbackRoute,
 } from './routes/AuthGuards'
+
+const Landing = lazy(() => import('./pages/Landing'))
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
+const ResetPassword = lazy(() => import('./pages/ResetPassword'))
+const UserManagement = lazy(() => import('./pages/UserManagement'))
+const Athletes = lazy(() => import('./pages/Athletes'))
+const AthleteForm = lazy(() => import('./pages/AthleteForm'))
+const AthleteProfile = lazy(() => import('./pages/AthleteProfile'))
+const Performance = lazy(() => import('./pages/Performance'))
+const Injuries = lazy(() => import('./pages/Injuries'))
+const Competitions = lazy(() => import('./pages/Competitions'))
+const Attendance = lazy(() => import('./pages/Attendance'))
+const WeightTracking = lazy(() => import('./pages/WeightTracking'))
+const Reports = lazy(() => import('./pages/Reports'))
+
+function RouteFallback() {
+  return (
+    <div className="loading-spinner-wrap fullscreen">
+      <div className="spinner-ring" aria-hidden="true" />
+    </div>
+  )
+}
+
 export default function App() {
   return (
-    <>
-      <ThemeRoleGuard />
+    <Suspense fallback={<RouteFallback />}>
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Landing />} />
@@ -58,6 +68,6 @@ export default function App() {
 
         <Route path="*" element={<FallbackRoute />} />
       </Routes>
-    </>
+    </Suspense>
   )
 }

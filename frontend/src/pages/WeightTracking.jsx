@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler } from 'chart.js'
 import { Line } from 'react-chartjs-2'
-import { weightAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { weightAPI, athletesAPI, withApiReady } from '../services/api'
 import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
 import DataErrorPanel from '../components/DataErrorPanel'
 import { useToast } from '../context/ToastContext'
@@ -39,13 +39,11 @@ export default function WeightTracking() {
     setLoading(true)
     setLoadError('')
     try {
-      const ok = await ensureApiSession()
-      if (!ok) {
-        setLoadError('Session not verified — sign in again.')
-        return
-      }
       const params = filterAthlete ? { athlete_id: filterAthlete } : {}
-      const [wRes, aRes] = await Promise.all([weightAPI.getAll(params), athletesAPI.getAll()])
+      const [wRes, aRes] = await Promise.all([
+        withApiReady(() => weightAPI.getAll(params)),
+        withApiReady(() => athletesAPI.getAll()),
+      ])
       setRecords(parseListResponse(wRes.data))
       setAthletes(parseListResponse(aRes.data))
     } catch (err) {

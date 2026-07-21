@@ -380,7 +380,7 @@ def generate_training_plan(athlete, perf, injury, readiness):
 
     if perf.get('available'):
         weak = perf.get('weakest_metric', 'flexibility')
-        plan.append(f"Add 2× 20-min sessions targeting {weak} (AI weakest metric).")
+        plan.append(f"Add 2× 20-min sessions targeting {weak} (weakest metric).")
         if perf.get('declining_count', 0) >= 2:
             plan.append('Review sleep and nutrition — multiple metrics declining simultaneously.')
 
@@ -390,8 +390,8 @@ def generate_training_plan(athlete, perf, injury, readiness):
     else:
         plan.append('Prehab: 15-min activation (bands, hip mobility) before every main session.')
 
-    plan.append('Log RPE (1–10) after each session in AthleteForge for next AI analysis.')
-    plan.append('Sunday: review readiness score and adjust Monday session intensity.')
+    plan.append('Log RPE (1–10) after each session for next AI analysis.')
+    plan.append('Review readiness and adjust next day intensity.')
     plan.append(f"Sport focus ({sport}): maintain sport-specific drills 3×/week minimum.")
 
     return {
@@ -399,6 +399,156 @@ def generate_training_plan(athlete, perf, injury, readiness):
         'items': plan,
         'priority': plan[0],
         'session_count_recommended': 4 if readiness['score'] >= 70 else 3,
+    }
+
+
+def should_train_today(athlete, readiness, injury, attendance):
+    """Clear yes / modified / rest recommendation for coaches."""
+    score = readiness.get('score', 60)
+    risk = injury.get('risk_level', 'low')
+    att_rate = attendance.get('rate_60d', 70)
+
+    if risk == 'high' or score < 50:
+        return {
+            'decision': 'REST OR VERY LIGHT',
+            'reason': 'Low readiness or active high-risk injury. Focus on mobility, physio, or technique walk-through only.',
+            'intensity': '0-30%',
+            'note': 'Do not record max-effort metrics today.'
+        }
+    if risk == 'medium' or score < 60 or att_rate < 50:
+        return {
+            'decision': 'MODIFIED / TECHNIQUE FOCUS',
+            'reason': 'Monitor load day. Reduce volume 20-30%. Emphasize skill and controlled movement.',
+            'intensity': '50-70%',
+            'note': 'Prioritize quality over quantity. Log RPE and any discomfort.'
+        }
+    return {
+        'decision': 'YES — TRAIN',
+        'reason': f'Readiness {score}% supports normal or progressive session.',
+        'intensity': '80-100%',
+        'note': 'Good day for targeted intensity. Push the weakest metric safely.'
+    }
+
+
+def generate_daily_benchmarks(athlete, readiness, perf, focus=None):
+    """Suggest concrete targets to record in Performance for the day."""
+    sport = athlete.sport or 'sport'
+    score = readiness.get('score', 65)
+    base = {}
+    if perf.get('available') and perf.get('metrics'):
+        for m in perf['metrics']:
+            base[m['metric']] = m['current']
+
+    targets = []
+    mult = 1.0
+    if score >= 80:
+        mult = 1.06
+    elif score >= 70:
+        mult = 1.03
+    elif score < 60:
+        mult = 0.95
+
+    metric_map = {
+        'speed': ('sprint / acceleration work', 'Target higher than recent best if feeling good.'),
+        'strength': ('main lifts or power', 'Focus on controlled tempo or 3-5 rep max feel.'),
+        'endurance': ('tempo or repeat efforts', 'Hold pace with good form.'),
+        'flexibility': ('mobility screen or yoga flow', 'Note range improvements.'),
+        'agility': ('change of direction drills', 'Emphasize first-step quickness.'),
+    }
+
+    focus_metric = focus or (perf.get('weakest_metric', 'agility') if perf.get('available') else 'agility')
+
+    for key, (desc, tip) in metric_map.items():
+        recent = base.get(key)
+        if recent:
+            target = round(recent * mult, 1)
+            targets.append({
+                'metric': key,
+                'recent': recent,
+                'target': target,
+                'advice': f"{desc.capitalize()}. {tip} Suggested target today: ~{target} (recent {recent})."
+            })
+        else:
+            targets.append({
+                'metric': key,
+                'recent': None,
+                'target': None,
+                'advice': f"{desc.capitalize()}. {tip}"
+            })
+
+    return {
+        'focus_metric': focus_metric,
+        'intensity_guideline': f"Overall session intensity recommendation: {score}% readiness context.",
+        'targets': targets,
+        'log_instruction': 'Record these exact scores in the Performance module after the session so the AI can track progress tomorrow.'
+    }
+
+
+def generate_daily_coach_agenda(athlete, readiness, injury, attendance, benchmarks, train_decision):
+    """Coach-oriented daily briefing for a specific player."""
+    lines = []
+    lines.append(f"Today's agenda for {athlete.full_name} ({athlete.sport}).")
+    lines.append(f"Train decision: {train_decision['decision']}. {train_decision['reason']}")
+    lines.append(f"Recommended intensity: {train_decision['intensity']}. {train_decision['note']}")
+
+    if benchmarks and benchmarks.get('targets'):
+        weak = benchmarks.get('focus_metric')
+        lines.append(f"Focus area today: {weak}. Record the following benchmarks:")
+        for t in benchmarks['targets'][:3]:
+            if t.get('target'):
+                lines.append(f"  • {t['metric'].title()}: aim ~{t['target']} (recent ~{t['recent']})")
+    lines.append("After session: Mark attendance + log the performance numbers above in the Performance module.")
+    return ' '.join(lines)
+
+
+def generate_student_daily_support(athlete, readiness, injury, weight, attendance):
+    """Practical daily advice for the student/athlete themselves (nutrition + recovery + agenda)."""
+    score = readiness.get('score', 65)
+    sport = athlete.sport or 'training'
+    risk = injury.get('risk_level', 'low')
+
+    agenda = []
+    if score >= 80:
+        agenda.append("High-output day. Warm up thoroughly, hit your main quality work early, then recover hard.")
+    elif score >= 60:
+        agenda.append("Solid training day. Emphasize technique and controlled effort. One focus drill only.")
+    else:
+        agenda.append("Light technique + mobility day. Keep heart rate moderate. No max efforts.")
+
+    if risk != 'low':
+        agenda.append("Injury caution active — shorten high-load portions and log any pain (1-10) after every set.")
+
+    # Simple meal ideas (generic but useful)
+    pre = "Pre-session: Oats or rice with banana + peanut butter or eggs 60-90 min before. Hydrate 500ml water."
+    post = "Post-session (within 45 min): Protein (eggs/chicken/paneer/whey) + carbs (banana, rice, toast). Aim 30-40g protein."
+    if 'cricket' in sport.lower() or 'football' in sport.lower():
+        pre = "Pre: Rice + dal/curry or toast + eggs + fruit 90 min prior. Light on fibre right before."
+    elif 'swim' in sport.lower():
+        pre = "Pre: Banana + toast or energy bar + water. Easy to digest."
+
+    supplements = [
+        "Optional basics: Omega-3 (fish oil) for inflammation, Vitamin D if low sun exposure.",
+        "Creatine 5g daily can help power output for strength/speed sports (if approved by coach).",
+        "No magic pills — food first. Stay consistent with sleep before adding anything new."
+    ]
+
+    recovery = [
+        "Sleep 7.5-9 hours tonight — biggest recovery lever.",
+        "10-15 min easy mobility or foam rolling focused on today’s main muscle groups.",
+        "Contrast shower or cold exposure 5-8 min if available. Light walk after eating.",
+        "Log how you feel (sleep, soreness 1-10, energy) in the app tomorrow morning for better AI advice."
+    ]
+
+    if attendance and attendance.get('rate_60d', 70) < 60:
+        recovery.append("Attendance has been low recently — even light sessions help maintain adaptations. Show up.")
+
+    return {
+        'agenda': ' '.join(agenda),
+        'pre_meal': pre,
+        'post_meal': post,
+        'supplements': supplements,
+        'recovery': recovery,
+        'log_reminder': 'After training, mark attendance and optionally log a quick wellness note.'
     }
 
 
@@ -430,9 +580,9 @@ def generate_recovery_timeline(athlete, injury, readiness):
 
 
 def generate_coaching_brief(athlete, perf, injury, attendance, progress, readiness, competition, weight, plan):
-    """Long narrative for voice/copilot."""
+    """Clean narrative brief (no branded AI name)."""
     parts = [
-        f"AthleteForge AI Brief for {athlete.full_name} ({athlete.sport}, {athlete.team or 'unassigned'}).",
+        f"{athlete.full_name} ({athlete.sport}, {athlete.team or 'unassigned'}).",
         readiness['summary'],
         attendance['recommendation'],
     ]
@@ -442,10 +592,10 @@ def generate_coaching_brief(athlete, perf, injury, attendance, progress, readine
     parts.append(competition['summary'])
     if weight.get('available'):
         parts.append(weight['summary'])
-    parts.append(f"This week's priority: {plan['priority']}")
+    parts.append(f"Priority focus: {plan['priority']}")
     parts.append(
-        f"Overall grade {progress.get('performance_grade', 'N/A')} "
-        f"at {progress.get('overall_average', 0)}/100 across {perf.get('sessions_analyzed', 0)} performance sessions."
+        f"Overall performance grade: {progress.get('performance_grade', 'N/A')} "
+        f"({progress.get('overall_average', 0)}/100)."
     )
     return ' '.join(parts)
 
@@ -492,7 +642,9 @@ def generate_progress_summary(athlete):
 
 
 def answer_copilot_question(insights, question):
-    """Context-aware detailed answer from full insights bundle."""
+    """Context-aware detailed answer. Supports coach daily decisions and student daily practical support.
+    No branded AI names in responses.
+    """
     q = (question or '').lower().strip()
     athlete = insights.get('athlete_name', 'Athlete')
     readiness = insights.get('readiness_analysis', {})
@@ -504,6 +656,62 @@ def answer_copilot_question(insights, question):
     plan = insights.get('training_plan', {})
     brief = insights.get('coaching_brief', '')
 
+    train_dec = insights.get('train_today_decision', {})
+    bench = insights.get('daily_benchmarks', {})
+    coach_agenda = insights.get('coach_daily_agenda', '')
+    student_sup = insights.get('student_daily_support', {})
+
+    # === Coach daily questions ===
+    if any(w in q for w in ('today agenda', "today's agenda", 'agenda today', 'daily agenda', 'what to do today')):
+        if coach_agenda:
+            return coach_agenda
+        return f"{athlete} today: {train_dec.get('decision', 'Follow readiness')}. {train_dec.get('reason', '')}"
+
+    if any(w in q for w in ('should train', 'train today', 'should he train', 'can he train', 'ready to train')):
+        if train_dec:
+            return (
+                f"Train decision for {athlete}: {train_dec.get('decision')}. "
+                f"{train_dec.get('reason')} Recommended intensity: {train_dec.get('intensity')}. "
+                f"{train_dec.get('note')}"
+            )
+        return f"{athlete} readiness {readiness.get('score', '?')}%. {readiness.get('verdict', '')}"
+
+    if any(w in q for w in ('benchmark', 'target today', 'what to record', 'what numbers', 'log today', 'performance target')):
+        if bench and bench.get('targets'):
+            out = [f"Daily benchmarks for {athlete} (record these in Performance after session):"]
+            for t in bench['targets'][:4]:
+                out.append(t.get('advice', ''))
+            out.append(bench.get('log_instruction', ''))
+            return ' '.join(out)
+        return "Log your 5-metric scores in the Performance module after the session. The AI will use them for tomorrow's analysis."
+
+    # === Student daily practical questions ===
+    if any(w in q for w in ('meal', 'eat', 'food', 'nutrition', 'pre workout', 'post workout')):
+        if student_sup:
+            return (
+                f"Today's agenda: {student_sup.get('agenda', '')} "
+                f"Pre-session: {student_sup.get('pre_meal', '')} "
+                f"Post-session: {student_sup.get('post_meal', '')}"
+            )
+        return "Eat a balanced carb + protein meal 60-90 min before training. Protein + carbs within 45 min after. Hydrate well."
+
+    if any(w in q for w in ('supplement', 'supplements', 'creatine', 'protein', 'vitamin')):
+        if student_sup and student_sup.get('supplements'):
+            return "General guidance (discuss with coach/doctor): " + " ".join(student_sup['supplements'][:2])
+        return "Food first. Useful basics for most athletes: Omega-3, Vitamin D if needed. Stay consistent with sleep and protein intake."
+
+    if any(w in q for w in ('recover', 'recovery', 'sore', 'sleep', 'how to recover', 'feel better')):
+        if student_sup and student_sup.get('recovery'):
+            recs = student_sup['recovery']
+            return f"Recovery focus for {athlete}: " + " ".join(recs[:3]) + " " + student_sup.get('log_reminder', '')
+        return "Prioritize 8 hours sleep, 10-15 min mobility tonight, and log how you feel tomorrow morning."
+
+    if any(w in q for w in ("what's my role today", 'role today', 'my agenda today', 'what should i do today', 'student today')):
+        if student_sup:
+            return f"{student_sup.get('agenda', '')} {student_sup.get('log_reminder', '')}"
+        return f"Focus on quality movement at your current readiness of {readiness.get('score', '?')}%. Log everything after the session."
+
+    # === Original strong categories (kept and cleaned) ===
     if any(w in q for w in ('readiness', 'ready', 'compete', 'competition ready')):
         return (
             f"{athlete} readiness: {readiness.get('score', '?')}% — {readiness.get('status', '')}. "
@@ -521,9 +729,7 @@ def answer_copilot_question(insights, question):
             lines.append(f"Tip: {tip}")
         if injury.get('injury_history'):
             hist = injury['injury_history'][0]
-            lines.append(
-                f"Latest: {hist['type']} ({hist['body_part']}) — {hist['severity']}, {hist['status']}."
-            )
+            lines.append(f"Latest: {hist['type']} ({hist['body_part']}) — {hist['severity']}, {hist['status']}.")
         return ' '.join(lines)
 
     if any(w in q for w in ('perform', 'speed', 'strength', 'endurance', 'flex', 'agil', 'metric', 'trend')):
@@ -531,9 +737,7 @@ def answer_copilot_question(insights, question):
             return perf.get('message', 'Need more performance data.')
         lines = [perf.get('recommendation', '')]
         for m in perf.get('metrics', []):
-            lines.append(
-                f"{m['label']}: {m['current']} (was {m['previous']}, {m['change_percent']:+.1f}%) — {m['trend']}."
-            )
+            lines.append(f"{m['label']}: {m['current']} (was {m['previous']}, {m['change_percent']:+.1f}%) — {m['trend']}.")
         return ' '.join(lines)
 
     if any(w in q for w in ('attend', 'session', 'miss', 'present')):
@@ -546,7 +750,7 @@ def answer_copilot_question(insights, question):
     if any(w in q for w in ('train', 'plan', 'workout', 'week', 'should i')):
         items = plan.get('items', [])
         return (
-            f"Weekly plan for {athlete}: Priority — {plan.get('priority', '')} "
+            f"Weekly plan priority: {plan.get('priority', '')}. "
             + ' '.join(f"({i+1}) {item}" for i, item in enumerate(items[:5]))
         )
 
@@ -557,12 +761,17 @@ def answer_copilot_question(insights, question):
         return weight.get('summary', weight.get('message', 'No weight data logged.'))
 
     if any(w in q for w in ('summary', 'brief', 'overview', 'everything', 'full')):
-        return brief[:900]
+        # Clean full summary
+        extra = ''
+        if coach_agenda:
+            extra = f" Today's coach focus: {coach_agenda[:220]}"
+        return (brief + extra)[:850]
 
+    # Improved neutral default / fallback
+    base = brief[:420] if brief else f"{athlete} readiness is currently {readiness.get('score', '?')}%. "
     return (
-        f"{brief[:500]} "
-        f"Ask me about: readiness, injuries, performance metrics, training plan, "
-        f"attendance, competition results, or weight/BMI."
+        base +
+        "Ask about: today's agenda, should I train today, benchmarks for today, meal plan, recovery, readiness, injury risk, or performance trends."
     )
 
 
@@ -580,6 +789,12 @@ def get_ai_insights_for_athlete(athlete):
     brief = generate_coaching_brief(
         athlete, perf, injury, attendance, progress, readiness, competition, weight, plan
     )
+
+    # New daily coach + student support
+    train_decision = should_train_today(athlete, readiness, injury, attendance)
+    benchmarks = generate_daily_benchmarks(athlete, readiness, perf)
+    coach_daily = generate_daily_coach_agenda(athlete, readiness, injury, attendance, benchmarks, train_decision)
+    student_daily = generate_student_daily_support(athlete, readiness, injury, weight, attendance)
 
     action_items = [
         {'priority': 'high', 'text': plan['priority']},
@@ -610,6 +825,11 @@ def get_ai_insights_for_athlete(athlete):
         'recovery_timeline': timeline,
         'coaching_brief': brief,
         'action_items': action_items,
+        # New daily agenda / decision data
+        'train_today_decision': train_decision,
+        'daily_benchmarks': benchmarks,
+        'coach_daily_agenda': coach_daily,
+        'student_daily_support': student_daily,
         'sport_tips': [
             f"{athlete.sport}-specific: prioritize energy system work matching event demands.",
             'Log session RPE within 30 minutes post-training for accurate AI load tracking.',
@@ -638,7 +858,7 @@ def get_demo_ai_insights():
             'summary': 'Readiness 82% — Train Smart. Performance 84, attendance 94%, injury safety 88.',
         },
         'coaching_brief': (
-            'AthleteForge AI Brief for Rahul Sharma (Track & Field). Readiness 82% — Train Smart. '
+            'Rahul Sharma (Track & Field). Readiness 82% — Train Smart. '
             'Attendance 94% (Excellent). Speed +12%, Strength +8%; focus Flexibility (-3%). '
             'Low injury risk. 2 gold medals. Priority: Build week with progressive overload.'
         ),

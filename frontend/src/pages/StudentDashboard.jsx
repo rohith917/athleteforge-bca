@@ -5,7 +5,9 @@ import { useState, useEffect } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Line } from 'react-chartjs-2'
-import { dashboardAPI, ensureApiSession } from '../services/api'
+import { dashboardAPI, withApiReady } from '../services/api'
+import DashboardAccentImage from '../components/DashboardAccentImage'
+import { DASHBOARD_IMAGES } from '../utils/dashboardImages'
 import { fetchWithTimeout } from '../utils/fetchWithTimeout'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
@@ -52,15 +54,11 @@ export default function StudentDashboard() {
       if (!activeUser?.id) {
         activeUser = await checkAuth()
       }
-      if (!activeUser?.id) {
-        const sessionOk = await ensureApiSession()
-        if (!sessionOk) {
-          setLoadError('Session not verified — sign in again (rahul.sharma@email.com / student123).')
-          setStats(null)
-          return
-        }
-      }
-      const res = await fetchWithTimeout(dashboardAPI.getStats(), 90000, 'Dashboard')
+      const res = await fetchWithTimeout(
+        withApiReady(() => dashboardAPI.getStats()),
+        90000,
+        'Dashboard',
+      )
       setStats(res.data)
     } catch (err) {
       const status = err?.response?.status
@@ -149,7 +147,8 @@ export default function StudentDashboard() {
       <RoleWelcomeBar role="student" />
       <StudentQuickActions />
 
-      <div className="profile-premium-hero glass-card mb-4 student-profile-hero">
+      <div className="profile-premium-hero glass-card mb-4 student-profile-hero af-dash-accent-wrap">
+        <DashboardAccentImage src={DASHBOARD_IMAGES.student.motivation} alt="" variant="bg" />
         <Avatar
           src={user?.profile_photo || athlete?.avatar_url || athlete?.photo}
           name={athlete?.full_name || user?.username}
@@ -195,19 +194,28 @@ export default function StudentDashboard() {
 
       <div className="row g-4 mb-4">
         <div className="col-lg-4"><ReadinessGauge wellness={wellness} /></div>
-        <div className="col-lg-4"><StudentInjuryStatus /></div>
+        <div className="col-lg-4 af-dash-accent-wrap">
+          <DashboardAccentImage src={DASHBOARD_IMAGES.student.injury} alt="Recovery and injury care" variant="bg" />
+          <StudentInjuryStatus />
+        </div>
         <div className="col-lg-4"><WellnessCheckIn onUpdate={setWellness} /></div>
       </div>
 
       <div className="row g-4 mb-4">
         <div className="col-lg-8"><RecoveryPanel stats={stats} /></div>
-        <div className="col-lg-4"><StudentTrainingTips /></div>
+        <div className="col-lg-4 af-dash-accent-wrap">
+          <DashboardAccentImage src={DASHBOARD_IMAGES.student.progress} alt="Training progress" variant="bg" />
+          <StudentTrainingTips />
+        </div>
       </div>
 
       <div className="row g-4 mt-2">
         <div className="col-lg-5">
           <div className="chart-panel-premium glass-card h-100">
-            <h6><FaMedal className="me-2" />My Performance Profile</h6>
+            <h6 className="af-dash-accent-header">
+              <DashboardAccentImage src={DASHBOARD_IMAGES.student.medal} alt="" variant="thumb" />
+              <FaMedal className="me-2" />My Performance Profile
+            </h6>
             <PerformanceRadar scores={radarScores} bare />
           </div>
         </div>

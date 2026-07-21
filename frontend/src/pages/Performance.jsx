@@ -4,7 +4,9 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip, Legend } from 'chart.js'
 import { Line } from 'react-chartjs-2'
-import { performanceAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { performanceAPI, athletesAPI, withApiReady } from '../services/api'
+import DashboardAccentImage from '../components/DashboardAccentImage'
+import { DASHBOARD_IMAGES } from '../utils/dashboardImages'
 import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
 import DataErrorPanel from '../components/DataErrorPanel'
 import { useAuth } from '../context/AuthContext'
@@ -16,6 +18,8 @@ import PerformanceRadar from '../components/analytics/PerformanceRadar'
 import TrainingLoadPanel from '../components/analytics/TrainingLoadPanel'
 import { GOLD, baseChartOptions } from '../utils/chartTheme'
 import { Skeleton } from '../components/ui/Skeleton'
+import SearchFilterBar from '../components/ui/SearchFilterBar'
+import { useDebouncedValue } from '../hooks/useDebouncedValue'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Filler, Tooltip, Legend)
 
@@ -34,10 +38,12 @@ export default function Performance() {
   const [showForm, setShowForm] = useState(false)
   const [chartData, setChartData] = useState(null)
   const [filterAthlete, setFilterAthlete] = useState('')
+  const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
   const { isStaff, isStudent, user } = useAuth()
   const { showToast } = useToast()
+  const debouncedSearch = useDebouncedValue(search)
 
   useEffect(() => {
     if (isStudent && user?.athlete_id) {
@@ -49,19 +55,17 @@ export default function Performance() {
     setLoading(true)
     setLoadError('')
     try {
-      const ok = await ensureApiSession()
-      if (!ok) {
-        setLoadError('Session not verified — sign in again.')
-        return
-      }
-      const params = filterAthlete ? { athlete_id: filterAthlete } : {}
+      const params = {}
+      if (filterAthlete) params.athlete_id = filterAthlete
+      if (debouncedSearch) params.search = debouncedSearch
       const [perfRes, athRes] = await Promise.all([
-        performanceAPI.getAll(params), athletesAPI.getAll(),
+        withApiReady(() => performanceAPI.getAll(params)),
+        withApiReady(() => athletesAPI.getAll()),
       ])
       const recs = parseListResponse(perfRes.data)
       setRecords(recs)
       setAthletes(parseListResponse(athRes.data))
-      const dashRes = await performanceAPI.getDashboard(params)
+      const dashRes = await withApiReady(() => performanceAPI.getDashboard(params))
       const d = dashRes.data
       setChartData({
         labels: d.labels,
@@ -79,7 +83,7 @@ export default function Performance() {
     } finally { setLoading(false) }
   }
 
-  useEffect(() => { fetchData() }, [filterAthlete])
+  useEffect(() => { fetchData() }, [filterAthlete, debouncedSearch])
 
   const avgScores = useMemo(() => {
     if (!records.length) return {}
@@ -130,13 +134,19 @@ export default function Performance() {
       {loadError && <DataErrorPanel message={loadError} onRetry={fetchData} />}
 
       {!isStudent && (
-        <div className="filter-bar-premium mb-4">
-          <select className="form-select-custom" style={{ maxWidth: 280 }} value={filterAthlete}
-            onChange={(e) => setFilterAthlete(e.target.value)}>
-            <option value="">All Athletes</option>
-            {athletes.map((a) => <option key={a.id} value={a.id}>{a.full_name || `${a.first_name} ${a.last_name}`}</option>)}
-          </select>
-        </div>
+        <SearchFilterBar
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search by athlete or notes..."
+          filters={[{
+            key: 'athlete',
+            value: filterAthlete,
+            onChange: setFilterAthlete,
+            placeholder: 'All Athletes',
+            maxWidth: 240,
+            options: athletes.map((a) => ({ value: a.id, label: a.full_name || `${a.first_name} ${a.last_name}` })),
+          }]}
+        />
       )}
 
       <div className="row g-3 mb-4">
@@ -191,14 +201,20 @@ export default function Performance() {
       <div className="row g-4 mb-4">
         <div className="col-lg-5">
           <div className="chart-panel-premium glass-card h-100">
-            <h6>Performance Profile</h6>
+            <h6 className="af-dash-accent-header">
+              <DashboardAccentImage src={DASHBOARD_IMAGES.performance} alt="" variant="thumb" />
+              Performance Profile
+            </h6>
             <PerformanceRadar scores={avgScores} />
           </div>
         </div>
         <div className="col-lg-7">
           {chartData && (
             <div className="chart-panel-premium glass-card" style={{ height: '100%', minHeight: 320 }}>
-              <h6>Performance Trends</h6>
+              <h6 className="af-dash-accent-header">
+                <DashboardAccentImage src={DASHBOARD_IMAGES.coach.training} alt="" variant="thumb" />
+                Performance Trends
+              </h6>
               <div style={{ height: 260 }}>
                 <Line data={chartData} options={{
                   ...baseChartOptions,

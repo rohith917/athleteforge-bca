@@ -2,7 +2,9 @@
  * Injury Management V2 — cards, RTP workflow, heatmap
  */
 import { useState, useEffect } from 'react'
-import { injuriesAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { injuriesAPI, athletesAPI, withApiReady } from '../services/api'
+import DashboardAccentImage from '../components/DashboardAccentImage'
+import { DASHBOARD_IMAGES } from '../utils/dashboardImages'
 import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
 import DataErrorPanel from '../components/DataErrorPanel'
 import { useAuth } from '../context/AuthContext'
@@ -13,6 +15,8 @@ import KpiCard from '../components/analytics/KpiCard'
 import InjuryCard from '../components/analytics/InjuryCard'
 import InjuryHeatmap from '../components/analytics/InjuryHeatmap'
 import { Skeleton } from '../components/ui/Skeleton'
+import SearchFilterBar from '../components/ui/SearchFilterBar'
+import { useDebouncedValue } from '../hooks/useDebouncedValue'
 
 const emptyForm = {
   athlete: '', injury_type: '', body_part: '', injury_date: new Date().toISOString().split('T')[0],
@@ -28,22 +32,24 @@ export default function Injuries() {
   const [form, setForm] = useState(emptyForm)
   const [showForm, setShowForm] = useState(false)
   const [filter, setFilter] = useState('')
+  const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
   const { isStaff, isStudent } = useAuth()
   const { showToast } = useToast()
+  const debouncedSearch = useDebouncedValue(search)
 
   const fetchData = async () => {
     setLoading(true)
     setLoadError('')
     try {
-      const ok = await ensureApiSession()
-      if (!ok) {
-        setLoadError('Session not verified — sign in again.')
-        return
-      }
-      const params = filter ? { recovery_status: filter } : {}
-      const [injRes, athRes] = await Promise.all([injuriesAPI.getAll(params), athletesAPI.getAll()])
+      const params = {}
+      if (filter) params.recovery_status = filter
+      if (debouncedSearch) params.search = debouncedSearch
+      const [injRes, athRes] = await Promise.all([
+        withApiReady(() => injuriesAPI.getAll(params)),
+        withApiReady(() => athletesAPI.getAll()),
+      ])
       setInjuries(parseListResponse(injRes.data))
       setAthletes(parseListResponse(athRes.data))
     } catch (err) {
@@ -52,7 +58,7 @@ export default function Injuries() {
     } finally { setLoading(false) }
   }
 
-  useEffect(() => { fetchData() }, [filter])
+  useEffect(() => { fetchData() }, [filter, debouncedSearch])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -165,15 +171,23 @@ export default function Injuries() {
 
       <div className="row g-4 mb-4">
         <div className={isStudent ? 'col-12' : 'col-lg-8'}>
-          <div className="filter-bar-premium mb-3" style={{ marginBottom: 16 }}>
-            <select className="form-select-custom" style={{ maxWidth: 220 }} value={filter}
-              onChange={(e) => setFilter(e.target.value)}>
-              <option value="">All Status</option>
-              <option value="Recovering">Recovering</option>
-              <option value="Ongoing Treatment">Ongoing Treatment</option>
-              <option value="Recovered">Recovered</option>
-            </select>
-          </div>
+          <SearchFilterBar
+            search={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Search injuries..."
+            filters={[{
+              key: 'recovery_status',
+              value: filter,
+              onChange: setFilter,
+              placeholder: 'All Status',
+              maxWidth: 220,
+              options: [
+                { value: 'Recovering', label: 'Recovering' },
+                { value: 'Ongoing Treatment', label: 'Ongoing Treatment' },
+                { value: 'Recovered', label: 'Recovered' },
+              ],
+            }]}
+          />
 
           {loading ? (
             <div className="injury-grid">
@@ -191,7 +205,8 @@ export default function Injuries() {
           )}
         </div>
         {!isStudent && (
-          <div className="col-lg-4">
+          <div className="col-lg-4 af-dash-accent-wrap">
+            <DashboardAccentImage src={DASHBOARD_IMAGES.injuries} alt="Injury recovery" variant="bg" />
             <InjuryHeatmap injuries={injuries} />
           </div>
         )}

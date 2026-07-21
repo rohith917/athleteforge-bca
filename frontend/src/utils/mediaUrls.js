@@ -1,7 +1,7 @@
 /**
- * Reliable image URLs — Unsplash with local SVG fallbacks (works offline on localhost).
+ * Reliable image URLs — bundled JPGs (always work) + SVG fallbacks + optional Unsplash.
  */
-export const LOCAL_IMAGES = {
+export const LOCAL_SVG = {
   hero: '/images/hero-track.svg',
   coach: '/images/hero-coach.svg',
   athlete: '/images/hero-athlete.svg',
@@ -14,7 +14,32 @@ export const LOCAL_IMAGES = {
   portrait: '/images/athlete-portrait.svg',
 }
 
-/** Verified Unsplash sports photos (auto=format for reliability). */
+/** Bundled photos in /public/images — work offline and on Render without external CDN. */
+export const LOCAL_IMAGES = {
+  hero: '/images/hero-track.jpg',
+  coach: '/images/hero-coach.jpg',
+  athlete: '/images/hero-athlete.jpg',
+  auth: '/images/hero-athlete.jpg',
+  track: '/images/sport-track.jpg',
+  football: '/images/sport-football.jpg',
+  swim: '/images/sport-swim.jpg',
+  basketball: '/images/sport-basketball.jpg',
+  cricket: '/images/sport-cricket.jpg',
+  portrait: '/images/hero-athlete.jpg',
+  galleryTrack: '/images/sport-track.jpg',
+  galleryFootball: '/images/gallery-football.jpg',
+  gallerySwim: '/images/gallery-swim.jpg',
+  servicePerformance: '/images/service-performance.jpg',
+  serviceInjury: '/images/service-injury.jpg',
+  serviceReadiness: '/images/service-readiness.jpg',
+  serviceVoice: '/images/service-voice.jpg',
+  serviceCopilot: '/images/service-copilot.jpg',
+  serviceReports: '/images/service-reports.jpg',
+  meetAi: '/images/meet-ai.jpg',
+  statsBanner: '/images/stats-banner.jpg',
+}
+
+/** Optional Unsplash enhancement (used only when explicitly requested). */
 export const REMOTE_IMAGES = {
   hero: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1920&q=80',
   coach: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50e?auto=format&fit=crop&w=1200&q=80',
@@ -33,8 +58,8 @@ export const REMOTE_IMAGES = {
 
 export function getImagePair(key) {
   return {
-    primary: REMOTE_IMAGES[key] || LOCAL_IMAGES[key] || LOCAL_IMAGES.portrait,
-    fallback: LOCAL_IMAGES[key] || LOCAL_IMAGES.portrait,
+    primary: LOCAL_IMAGES[key] || LOCAL_SVG[key] || LOCAL_SVG.portrait,
+    fallback: LOCAL_SVG[key] || LOCAL_SVG.portrait,
   }
 }
 

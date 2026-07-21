@@ -3,7 +3,7 @@
  */
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { adminAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { adminAPI, athletesAPI, withApiReady } from '../services/api'
 import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
 import DataErrorPanel from '../components/DataErrorPanel'
 import { useToast } from '../context/ToastContext'
@@ -35,18 +35,12 @@ export default function UserManagement() {
     setLoading(true)
     setLoadError('')
     try {
-      const ok = await ensureApiSession()
-      if (!ok) {
-        setLoadError('Session not verified — sign in as admin / admin123.')
-        setUsers([])
-        return
-      }
       const params = {}
       if (search) params.search = search
       if (roleFilter) params.role = roleFilter
-      const res = await adminAPI.getUsers(params)
+      const res = await withApiReady(() => adminAPI.getUsers(params))
       setUsers(Array.isArray(res.data) ? res.data : parseListResponse(res.data))
-      const athRes = await athletesAPI.getAll()
+      const athRes = await withApiReady(() => athletesAPI.getAll())
       setAthletes(parseListResponse(athRes.data))
     } catch (err) {
       setLoadError(getLoadErrorMessage(err, 'users'))

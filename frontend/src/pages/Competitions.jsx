@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut, Bar } from 'react-chartjs-2'
-import { competitionsAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { competitionsAPI, athletesAPI, withApiReady } from '../services/api'
 import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
 import DataErrorPanel from '../components/DataErrorPanel'
 import { useToast } from '../context/ToastContext'
@@ -13,6 +13,8 @@ import PageHeader from '../components/PageHeader'
 import KpiCard from '../components/analytics/KpiCard'
 import { GOLD, MEDAL_GOLD, baseChartOptions } from '../utils/chartTheme'
 import { Skeleton } from '../components/ui/Skeleton'
+import SearchFilterBar from '../components/ui/SearchFilterBar'
+import { useDebouncedValue } from '../hooks/useDebouncedValue'
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Tooltip, Legend)
 
@@ -28,21 +30,25 @@ export default function Competitions() {
   const [selectedComp, setSelectedComp] = useState(null)
   const [showCompForm, setShowCompForm] = useState(false)
   const [showResultForm, setShowResultForm] = useState(false)
+  const [search, setSearch] = useState('')
+  const [levelFilter, setLevelFilter] = useState('')
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
   const { showToast } = useToast()
+  const debouncedSearch = useDebouncedValue(search)
 
   const fetchData = async () => {
     setLoading(true)
     setLoadError('')
     try {
-      const ok = await ensureApiSession()
-      if (!ok) {
-        setLoadError('Session not verified — sign in again.')
-        return
-      }
+      const params = {}
+      if (debouncedSearch) params.search = debouncedSearch
+      if (levelFilter) params.level = levelFilter
+
       const [compRes, athRes, medalRes] = await Promise.all([
-        competitionsAPI.getAll(), athletesAPI.getAll(), competitionsAPI.getMedals(),
+        withApiReady(() => competitionsAPI.getAll(params)),
+        withApiReady(() => athletesAPI.getAll()),
+        withApiReady(() => competitionsAPI.getMedals()),
       ])
       setCompetitions(parseListResponse(compRes.data))
       setAthletes(parseListResponse(athRes.data))
@@ -53,7 +59,7 @@ export default function Competitions() {
     } finally { setLoading(false) }
   }
 
-  useEffect(() => { fetchData() }, [])
+  useEffect(() => { fetchData() }, [debouncedSearch, levelFilter])
 
   const allResults = useMemo(
     () => competitions.flatMap((c) => (c.results || []).map((r) => ({ ...r, compName: c.name }))),
@@ -106,6 +112,25 @@ export default function Competitions() {
         action={<button type="button" className="btn-gold" onClick={() => setShowCompForm(!showCompForm)}><FaPlus /> Add Competition</button>}
       />
       {loadError && <DataErrorPanel message={loadError} onRetry={fetchData} />}
+
+      <SearchFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Search competitions..."
+        filters={[{
+          key: 'level',
+          value: levelFilter,
+          onChange: setLevelFilter,
+          placeholder: 'All Levels',
+          maxWidth: 180,
+          options: [
+            { value: 'Local', label: 'Local' },
+            { value: 'State', label: 'State' },
+            { value: 'National', label: 'National' },
+            { value: 'International', label: 'International' },
+          ],
+        }]}
+      />
 
       {medals && (
         <div className="row g-3 mb-4">

@@ -81,6 +81,22 @@
   font-family: 'Inter', -apple-system, sans-serif;
 }
 
+/* Light mode — same editorial system, light surfaces, deepened accents for contrast */
+[data-theme="light"] .home-theme-app {
+  --home-black: #f5f6f8;
+  --home-charcoal: #ffffff;
+  --home-surface: #ffffff;
+  --home-border: rgba(10, 10, 15, 0.10);
+  --home-white: #12141a;
+  --home-muted: rgba(18, 20, 26, 0.6);
+  --home-red: #d81f2b;
+  --home-lime: #5b8a17;
+}
+
+[data-theme="light"] .home-theme-app .top-navbar {
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
 .home-theme-app .sidebar {
   background: var(--home-charcoal) !important;
   border-right: 1px solid var(--home-border) !important;

@@ -163,15 +163,15 @@ body:has(.landing-mdnt) {
   overflow: hidden;
 }
 
-.mdnt-hero-bg {
+.mdnt-hero-bg-img {
   position: absolute;
   inset: 0;
-  background:
-    url('/images/hero-track.svg'),
-    url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1920&q=80')
-    center/cover no-repeat;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   transform: scale(1.05);
   animation: mdntKenBurns 24s ease-in-out infinite alternate;
+  z-index: 0;
 }
 
 @keyframes mdntKenBurns {
@@ -314,6 +314,8 @@ body:has(.landing-mdnt) {
 }
 
 .mdnt-split-visual img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -525,6 +527,29 @@ body:has(.landing-mdnt) {
   grid-template-columns: 1fr 1fr;
   gap: 64px;
   align-items: center;
+}
+
+.mdnt-ai-strip-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.mdnt-ai-strip-photo {
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 16 / 10;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--mdnt-border);
+}
+
+.mdnt-ai-strip-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 @media (max-width: 991px) {

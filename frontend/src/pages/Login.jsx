@@ -30,7 +30,12 @@ export default function Login() {
       await login(identifier.trim(), password)
       navigate('/dashboard', { replace: true })
     } catch (err) {
-      setError(getErrorMessage(err, 'Invalid email/username or password.'))
+      const msg = getErrorMessage(err, 'Invalid email/username or password.')
+      if (msg.toLowerCase().includes('network') || msg.toLowerCase().includes('timeout') || msg.toLowerCase().includes('reach')) {
+        setError(`${msg} Wait 30–60 seconds for the server to wake up, then tap Sign In again.`)
+      } else {
+        setError(msg)
+      }
     }
   }
 
@@ -122,7 +127,8 @@ export default function Login() {
               }}>
                 <strong style={{ color: 'var(--text-primary)' }}>Demo accounts</strong><br />
                 Admin: <code>admin</code> / <code>admin123</code><br />
-                Coach: <code>coach</code> / <code>coach123</code>
+                Coach: <code>coach</code> / <code>coach123</code><br />
+                Student: <code>rahul.sharma@email.com</code> / <code>student123</code>
               </div>
               {error && <div className="alert-custom alert-danger-custom">{error}</div>}
               <form onSubmit={handleSubmit}>

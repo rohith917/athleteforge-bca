@@ -8,24 +8,24 @@ import { aiAPI } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
 
 const SUGGESTED = [
-  'Give me a full summary',
-  'What is my readiness score?',
-  'Injury risk and prevention tips',
-  'Weekly training plan',
-  'Performance metrics breakdown',
+  "Today's agenda",
+  'Should I train today?',
+  'Benchmarks / targets for today',
+  'Meal plan and recovery',
+  'Full summary',
 ]
 
 const PROVIDER_LABELS = {
-  groq: 'Groq Free AI',
-  gemini: 'Gemini Free AI',
-  rules: 'Forge AI',
+  groq: 'Groq',
+  gemini: 'Gemini',
+  rules: 'AI',
 }
 
 const LOADING_TEXT = {
-  groq: 'Groq is analyzing your athlete data...',
-  gemini: 'Gemini is analyzing your athlete data...',
+  groq: 'Analyzing athlete data...',
+  gemini: 'Analyzing athlete data...',
   rules: 'Analyzing full athlete dataset...',
-  rules_fallback: 'Forge AI answering (LLM unavailable)...',
+  rules_fallback: 'AI answering (LLM unavailable)...',
 }
 
 export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
@@ -34,9 +34,9 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
 
   const welcome = authenticated
     ? (isStudent
-      ? `Hi ${user.first_name || 'athlete'} — I have your full performance, injury, attendance, and competition data loaded. Try "Give me a full summary" or ask anything specific.`
-      : `Coach ${user.first_name || ''} — AI Copilot has deep analytics ready. Ask about readiness, injuries, training plans, or say "full summary".`.trim())
-    : 'AI Copilot online with demo data. Try: "What is my readiness?" · "Injury risk" · "Training plan" · or tap the mic.'
+      ? `Hi ${user.first_name || 'athlete'} — your performance, injury, attendance and readiness data is loaded. Ask about today's agenda, meal plan, recovery, or "should I train today".`
+      : `Coach — deep analytics ready. Ask "today's agenda", "should he train today", "benchmarks for today", or player-specific questions.`.trim())
+    : 'AI Copilot online with demo data. Ask about readiness, training decisions, or daily plan.'
 
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState([{ role: 'bot', text: welcome }])
@@ -63,7 +63,7 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
       })
       .catch(() => {
         setAiProvider('rules')
-        setAiLabel('Forge AI')
+        setAiLabel('AI')
       })
   }, [open])
 
@@ -92,7 +92,7 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
       const provider = res.data?.ai_provider || aiProvider
       const responseMode = res.data?.ai_mode || 'rules'
       setAiProvider(provider)
-      setAiLabel(PROVIDER_LABELS[provider] || res.data?.ai_provider || 'Forge AI')
+      setAiLabel(PROVIDER_LABELS[provider] || res.data?.ai_provider || 'AI')
       setLastMode(responseMode)
       setMessages(m => [...m, { role: 'bot', text: answer }])
       speakTip(answer)
@@ -147,7 +147,7 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
           >
             <div className="mdnt-copilot-header">
               <h3>
-                <FaBrain /> AI Copilot{' '}
+                <FaBrain /> Copilot{' '}
                 <span className="ai-badge">{scopeBadge}</span>
                 <span className="ai-badge ai-badge-provider">{aiLabel}</span>
               </h3>
@@ -173,7 +173,7 @@ export default function AICopilotWidget({ mode = 'demo', athleteId = null }) {
             <div className="mdnt-copilot-input-row">
               <input
                 className="mdnt-copilot-input"
-                placeholder="Ask anything — readiness, plan, injuries..."
+                placeholder="Ask: today's agenda, should I train, meal plan, benchmarks..."
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && askCopilot(input)}

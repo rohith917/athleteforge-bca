@@ -4,7 +4,9 @@
 import { useState, useEffect } from 'react'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
-import { attendanceAPI, athletesAPI, ensureApiSession } from '../services/api'
+import { attendanceAPI, athletesAPI, withApiReady } from '../services/api'
+import DashboardAccentImage from '../components/DashboardAccentImage'
+import { DASHBOARD_IMAGES } from '../utils/dashboardImages'
 import { parseListResponse, getLoadErrorMessage } from '../utils/apiHelpers'
 import DataErrorPanel from '../components/DataErrorPanel'
 import { useAuth } from '../context/AuthContext'
@@ -36,12 +38,7 @@ export default function Attendance() {
     setLoading(true)
     setLoadError('')
     try {
-      const ok = await ensureApiSession()
-      if (!ok) {
-        setLoadError('Session not verified — sign in again.')
-        return
-      }
-      const res = await athletesAPI.getAll()
+      const res = await withApiReady(() => athletesAPI.getAll())
       const ath = parseListResponse(res.data)
       setAthletes(ath)
       const map = {}
@@ -64,7 +61,7 @@ export default function Attendance() {
       const params = {}
       if (dateFrom) params.date_from = dateFrom
       if (dateTo) params.date_to = dateTo
-      const res = await attendanceAPI.getReport(params)
+      const res = await withApiReady(() => attendanceAPI.getReport(params))
       setReport(res.data)
     } catch { showToast('Failed to load report', 'error') }
   }
@@ -142,7 +139,10 @@ export default function Attendance() {
       )}
 
       <div className="glass-card">
-        <h6 className="analytics-card-title">{isStaff ? 'Attendance Analytics' : 'My Attendance History'}</h6>
+        <h6 className="analytics-card-title af-dash-accent-header">
+          <DashboardAccentImage src={DASHBOARD_IMAGES.attendance} alt="" variant="thumb" />
+          {isStaff ? 'Attendance Analytics' : 'My Attendance History'}
+        </h6>
         <div className="filter-bar-premium mb-4">
           <input type="date" className="form-control-custom" style={{ maxWidth: 180 }}
             value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
@@ -172,7 +172,10 @@ export default function Attendance() {
               <div className="row g-4 mb-4">
                 <div className="col-md-4">
                   <div className="chart-panel-premium" style={{ minHeight: 240 }}>
-                    <h6>Status Breakdown</h6>
+                    <h6 className="af-dash-accent-header">
+                      <DashboardAccentImage src={DASHBOARD_IMAGES.attendance} alt="" variant="thumb" />
+                      Status Breakdown
+                    </h6>
                     <div style={{ height: 180 }}>
                       <Doughnut data={statusChart} options={{
                         ...baseChartOptions,

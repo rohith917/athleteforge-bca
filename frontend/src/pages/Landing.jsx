@@ -17,7 +17,7 @@ import {
   UpdTrustedMarquee, UpdStatsDelivered, UpdFlipServices, UpdMeetAI,
 } from '../components/landing/UpdLandingSections'
 import SafeImage from '../components/SafeImage'
-import { REMOTE_IMAGES, LOCAL_IMAGES } from '../utils/mediaUrls'
+import { LOCAL_IMAGES, LOCAL_SVG } from '../utils/mediaUrls'
 
 const caseStudies = [
   {
@@ -26,8 +26,8 @@ const caseStudies = [
     metric: '40%',
     metricLabel: 'less downtime',
     desc: 'Reduced injury downtime 40% with centralized recovery tracking.',
-    img: REMOTE_IMAGES.track,
-    fallback: LOCAL_IMAGES.track,
+    img: LOCAL_IMAGES.track,
+    fallback: LOCAL_SVG.track,
   },
   {
     tag: 'Football',
@@ -35,8 +35,8 @@ const caseStudies = [
     metric: '32',
     metricLabel: 'athletes live',
     desc: 'Live readiness reports for 32 athletes before every match week.',
-    img: REMOTE_IMAGES.football,
-    fallback: LOCAL_IMAGES.football,
+    img: LOCAL_IMAGES.football,
+    fallback: LOCAL_SVG.football,
   },
   {
     tag: 'Swimming',
@@ -44,17 +44,17 @@ const caseStudies = [
     metric: '2wk',
     metricLabel: 'early alert',
     desc: 'AI flagged overtraining 2 weeks before regional championships.',
-    img: REMOTE_IMAGES.swim,
-    fallback: LOCAL_IMAGES.swim,
+    img: LOCAL_IMAGES.swim,
+    fallback: LOCAL_SVG.swim,
   },
 ]
 
 const gallery = [
-  { sport: 'Track', year: '2025', img: REMOTE_IMAGES.galleryTrack, fallback: LOCAL_IMAGES.track },
-  { sport: 'Football', year: '2024', img: REMOTE_IMAGES.galleryFootball, fallback: LOCAL_IMAGES.football },
-  { sport: 'Swimming', year: '2025', img: REMOTE_IMAGES.gallerySwim, fallback: LOCAL_IMAGES.swim },
-  { sport: 'Basketball', year: '2024', img: REMOTE_IMAGES.basketball, fallback: LOCAL_IMAGES.basketball },
-  { sport: 'Cricket', year: '2025', img: REMOTE_IMAGES.cricket, fallback: LOCAL_IMAGES.cricket },
+  { sport: 'Track', year: '2025', img: LOCAL_IMAGES.galleryTrack, fallback: LOCAL_SVG.track },
+  { sport: 'Football', year: '2024', img: LOCAL_IMAGES.galleryFootball, fallback: LOCAL_SVG.football },
+  { sport: 'Swimming', year: '2025', img: LOCAL_IMAGES.gallerySwim, fallback: LOCAL_SVG.swim },
+  { sport: 'Basketball', year: '2024', img: LOCAL_IMAGES.basketball, fallback: LOCAL_SVG.basketball },
+  { sport: 'Cricket', year: '2025', img: LOCAL_IMAGES.cricket, fallback: LOCAL_SVG.cricket },
 ]
 
 const aiFeatures = [
@@ -81,7 +81,14 @@ export default function Landing() {
       <div className="landing-mdnt">
         {/* Hero — MDNT editorial full-bleed */}
         <section className="mdnt-hero">
-          <div className="mdnt-hero-bg" aria-hidden="true" />
+          <SafeImage
+            src={LOCAL_IMAGES.hero}
+            fallback={LOCAL_SVG.hero}
+            alt=""
+            className="mdnt-hero-bg-img"
+            loading="eager"
+            aria-hidden="true"
+          />
           <div className="mdnt-hero-overlay" aria-hidden="true" />
           <div className="mdnt-hero-mesh" aria-hidden="true" />
           <motion.div
@@ -130,8 +137,8 @@ export default function Landing() {
         <section className="mdnt-split">
           <div className="mdnt-split-visual">
             <SafeImage
-              src={REMOTE_IMAGES.coach}
-              fallback={LOCAL_IMAGES.coach}
+              src={LOCAL_IMAGES.coach}
+              fallback={LOCAL_SVG.coach}
               alt="Coach reviewing athlete performance"
             />
             <div className="mdnt-split-visual-overlay" />
@@ -161,8 +168,8 @@ export default function Landing() {
         <section className="mdnt-split" style={{ direction: 'rtl' }}>
           <div className="mdnt-split-visual" style={{ direction: 'ltr' }}>
             <SafeImage
-              src={REMOTE_IMAGES.athlete}
-              fallback={LOCAL_IMAGES.athlete}
+              src={LOCAL_IMAGES.athlete}
+              fallback={LOCAL_SVG.athlete}
               alt="Athlete training"
             />
             <div className="mdnt-split-visual-overlay" />
@@ -217,11 +224,19 @@ export default function Landing() {
               </div>
             </div>
             <motion.div
+              className="mdnt-ai-strip-visual"
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7 }}
             >
+              <div className="mdnt-ai-strip-photo">
+                <SafeImage
+                  src={LOCAL_IMAGES.athlete}
+                  fallback={LOCAL_SVG.athlete}
+                  alt="Athlete using AI readiness tools"
+                />
+              </div>
               <LiveReadinessOrb initialScore={78} />
             </motion.div>
           </div>

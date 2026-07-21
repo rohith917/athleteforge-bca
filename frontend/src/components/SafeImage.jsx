@@ -14,7 +14,7 @@ export default function SafeImage({
   className = '',
   style,
   loading = 'lazy',
-  preferLocal = import.meta.env.DEV,
+  preferLocal = false,
 }) {
   const resolved = resolveMediaUrl(src) || src
   const primary = preferLocal && fallback ? fallback : (resolved || fallback)

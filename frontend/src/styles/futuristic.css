@@ -1,0 +1,95 @@
+/* ================================================================
+   FUTURISTIC POLISH — glow accents, motion, focus states.
+   Additive layer on top of the MDNT editorial theme; no !important
+   overrides of existing rules, just accents on top.
+   ================================================================ */
+
+/* Scrollbar */
+.home-theme-app ::-webkit-scrollbar { width: 10px; height: 10px; }
+.home-theme-app ::-webkit-scrollbar-track { background: transparent; }
+.home-theme-app ::-webkit-scrollbar-thumb {
+  background: var(--home-border, rgba(255,255,255,0.12));
+  border-radius: 6px;
+}
+.home-theme-app ::-webkit-scrollbar-thumb:hover { background: var(--home-red, #ff3d3d); }
+
+/* Glowing focus ring, consistent across inputs/buttons */
+.home-theme-app .form-control-custom:focus-visible,
+.home-theme-app .form-select-custom:focus-visible,
+.home-theme-app button:focus-visible,
+.home-theme-app a:focus-visible {
+  outline: 2px solid var(--home-lime, #b8ff3c);
+  outline-offset: 2px;
+}
+
+/* Ambient glow behind the page content */
+.home-theme-app .page-content {
+  position: relative;
+}
+.home-theme-app .page-content::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(255, 61, 61, 0.07) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.home-theme-app .page-content > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* KPI value glow pulse on hover */
+.home-theme-app .kpi-card,
+.home-theme-app .glass-card {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.home-theme-app .kpi-card:hover,
+.home-theme-app .glass-card:hover {
+  box-shadow: 0 0 0 1px rgba(255, 61, 61, 0.25), 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Notification bell glow badge pulse */
+@keyframes notifPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }
+  50% { box-shadow: 0 0 14px rgba(239, 68, 68, 0.9); }
+}
+.notification-badge { animation: notifPulse 2s ease-in-out infinite; }
+
+/* Sidebar active nav item — animated accent bar */
+.home-theme-app .nav-item {
+  position: relative;
+  overflow: hidden;
+}
+.home-theme-app .nav-item.active::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--home-red, #ff3d3d), var(--home-lime, #b8ff3c));
+  box-shadow: 0 0 8px var(--home-red, #ff3d3d);
+}
+
+/* Login / auth cinematic accent line */
+.auth-split-visual-content h1 {
+  position: relative;
+}
+
+/* Route-level page transition */
+@keyframes routeFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-content > * { animation: routeFade 0.35s ease; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .notification-badge,
+  .page-content > * {
+    animation: none !important;
+  }
+}

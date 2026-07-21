@@ -18,6 +18,8 @@ import './styles/premium.css'
 import './styles/luxury.css'
 import './styles/mdnt-dashboard.css'
 import './styles/site-unified.css'
+import './styles/dashboard-accent.css'
+import './styles/futuristic.css'
 
 const useHashRouter = typeof window !== 'undefined'
   && window.location.hostname.includes('athleteforge-frontend.onrender.com')
