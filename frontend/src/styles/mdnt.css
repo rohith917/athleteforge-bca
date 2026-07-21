@@ -620,6 +620,7 @@ body:has(.landing-mdnt) {
   flex-direction: column;
   align-items: center;
   gap: 24px;
+  perspective: 900px;
 }
 
 .mdnt-readiness-orb {
@@ -637,6 +638,25 @@ body:has(.landing-mdnt) {
     var(--mdnt-surface) calc(var(--readiness-pct, 78) * 3.6deg)
   );
   animation: orbPulse 3s ease-in-out infinite;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  will-change: transform;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mdnt-readiness-orb-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.08) 22%,
+    transparent 55%
+  );
+  mix-blend-mode: overlay;
+  transform: translateZ(30px);
 }
 
 @keyframes orbPulse {
@@ -654,6 +674,7 @@ body:has(.landing-mdnt) {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--mdnt-border);
+  transform: translateZ(20px);
 }
 
 .mdnt-readiness-score {
