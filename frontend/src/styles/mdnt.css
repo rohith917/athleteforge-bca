@@ -783,8 +783,8 @@ body:has(.landing-mdnt) {
 
 /* ---- Site footer ---- */
 .landing-site-footer.mdnt-footer {
-  background: var(--mdnt-black);
-  border-top: 1px solid var(--mdnt-border);
+  background: var(--mdnt-black) !important;
+  border-top: 1px solid var(--mdnt-border) !important;
   padding: 48px clamp(20px, 4vw, 48px);
 }
 
