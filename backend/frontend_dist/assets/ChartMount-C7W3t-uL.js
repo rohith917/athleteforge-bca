@@ -1,1 +1,0 @@
-import{j as n}from"./motion-DKFNNhgO.js";import{u as a}from"./useChartsReady-B8ylzHvX.js";function i({children:t,height:r=200,className:o=""}){const s=a();return n.jsx("div",{className:o,style:r?{height:r}:void 0,children:s?t:null})}export{i as C};

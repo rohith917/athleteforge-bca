@@ -1,15 +1,13 @@
 /**
  * Route guards — protected, guest-only, role-based, and fallback routing.
  */
-import { Suspense, lazy } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorBoundary from '../components/ErrorBoundary'
-
-const AdminDashboard = lazy(() => import('../pages/AdminDashboard'))
-const StudentDashboard = lazy(() => import('../pages/StudentDashboard'))
-const Dashboard = lazy(() => import('../pages/Dashboard'))
+import AdminDashboard from '../pages/AdminDashboard'
+import StudentDashboard from '../pages/StudentDashboard'
+import Dashboard from '../pages/Dashboard'
 
 export function PrivateRoute({ children }) {
   const { user, authChecked, bootstrapMessage, retryBootstrap, actionLoading } = useAuth()
@@ -139,16 +137,14 @@ export function DashboardRouter() {
 
   return (
     <ErrorBoundary>
-      <Suspense fallback={<LoadingSpinner message="Loading dashboard..." fullScreen />}>
-        {isAdmin && <AdminDashboard />}
-        {!isAdmin && isStudent && <StudentDashboard />}
-        {!isAdmin && !isStudent && isCoach && <Dashboard />}
-        {!isAdmin && !isStudent && !isCoach && (
-          <div className="alert-custom alert-danger-custom m-4">
-            Unknown role. Please contact your administrator.
-          </div>
-        )}
-      </Suspense>
+      {isAdmin && <AdminDashboard />}
+      {!isAdmin && isStudent && <StudentDashboard />}
+      {!isAdmin && !isStudent && isCoach && <Dashboard />}
+      {!isAdmin && !isStudent && !isCoach && (
+        <div className="alert-custom alert-danger-custom m-4">
+          Unknown role. Please contact your administrator.
+        </div>
+      )}
     </ErrorBoundary>
   )
 }

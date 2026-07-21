@@ -1,1 +1,0 @@
-import{j as s}from"./motion-DKFNNhgO.js";function n({className:e="",style:r={}}){return s.jsx("div",{className:`skeleton ${e}`.trim(),style:r})}function t({count:e=4}){return s.jsx("div",{className:"row g-3 mb-4",children:Array.from({length:e}).map((r,l)=>s.jsx("div",{className:"col-sm-6 col-xl-3",children:s.jsx(n,{className:"skeleton-kpi"})},l))})}export{t as K,n as S};

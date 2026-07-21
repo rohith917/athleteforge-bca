@@ -1,1 +1,0 @@
-import{j as t}from"./motion-DKFNNhgO.js";function n({message:r,onRetry:s,retryLabel:a="Retry",extraAction:e}){return r?t.jsxs("div",{className:"alert-custom alert-danger-custom admin-session-alert",children:[r,t.jsxs("div",{className:"mt-3 d-flex flex-wrap gap-2",children:[s&&t.jsx("button",{type:"button",className:"btn-gold",onClick:s,children:a}),e]})]}):null}export{n as D};

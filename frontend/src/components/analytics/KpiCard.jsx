@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import Sparkline from './Sparkline'
 
 const variants = {
@@ -16,13 +15,9 @@ export default function KpiCard({
   const changeClass = trend === 'down' ? 'kpi-change-down' : trend === 'neutral' ? 'kpi-change-neutral' : 'kpi-change-up'
 
   return (
-    <motion.div
-      className="kpi-card luxury-card"
-      style={{ '--kpi-accent': v.accent, '--kpi-glow': v.glow }}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: delay / 1000, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -2, transition: { duration: 0.2 } }}
+    <div
+      className="kpi-card luxury-card animate-in"
+      style={{ '--kpi-accent': v.accent, '--kpi-glow': v.glow, animationDelay: `${delay}ms` }}
     >
       <div className="kpi-card-top">
         <div className="kpi-icon"><Icon /></div>
@@ -35,6 +30,6 @@ export default function KpiCard({
       <div className="kpi-value">{value}</div>
       <div className="kpi-label">{label}</div>
       {sparkData && <Sparkline data={sparkData} color={v.accent} />}
-    </motion.div>
+    </div>
   )
 }
