@@ -18,6 +18,45 @@ import {
 } from '../components/landing/UpdLandingSections'
 import SafeImage from '../components/SafeImage'
 import { LOCAL_IMAGES, LOCAL_SVG } from '../utils/mediaUrls'
+import { useTilt3D } from '../hooks/useTilt3D'
+
+function TiltWorkCard({ c }) {
+  const { ref, onPointerMove, onPointerLeave } = useTilt3D({ maxTilt: 8 })
+  return (
+    <Link
+      ref={ref}
+      to="/register"
+      className="mdnt-work-card tilt-card"
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
+    >
+      <div className="mdnt-work-card-metric">
+        {c.metric}
+        <small>{c.metricLabel}</small>
+      </div>
+      <SafeImage src={c.img} fallback={c.fallback} alt={c.title} />
+      <div className="mdnt-work-card-overlay">
+        <span className="mdnt-work-card-tag">{c.tag}</span>
+        <h3>{c.title}</h3>
+      </div>
+    </Link>
+  )
+}
+
+function TiltGalleryItem({ g }) {
+  const { ref, onPointerMove, onPointerLeave } = useTilt3D({ maxTilt: 10 })
+  return (
+    <div
+      ref={ref}
+      className="mdnt-gallery-item tilt-card"
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
+    >
+      <SafeImage src={g.img} fallback={g.fallback} alt={g.sport} />
+      <span className="mdnt-gallery-item-meta">{g.sport} · {g.year}</span>
+    </div>
+  )
+}
 
 const caseStudies = [
   {
@@ -75,6 +114,7 @@ const fadeUp = {
 export default function Landing() {
   const { user, authChecked } = useAuth()
   const isAuthenticated = Boolean(authChecked && user)
+  const aiPhotoTilt = useTilt3D({ maxTilt: 8 })
 
   return (
     <PublicLayout mdnt>
@@ -230,7 +270,12 @@ export default function Landing() {
               viewport={{ once: true }}
               transition={{ duration: 0.7 }}
             >
-              <div className="mdnt-ai-strip-photo">
+              <div
+                ref={aiPhotoTilt.ref}
+                className="mdnt-ai-strip-photo tilt-card"
+                onPointerMove={aiPhotoTilt.onPointerMove}
+                onPointerLeave={aiPhotoTilt.onPointerLeave}
+              >
                 <SafeImage
                   src={LOCAL_IMAGES.athlete}
                   fallback={LOCAL_SVG.athlete}
@@ -266,17 +311,7 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
               >
-                <Link to="/register" className="mdnt-work-card">
-                  <div className="mdnt-work-card-metric">
-                    {c.metric}
-                    <small>{c.metricLabel}</small>
-                  </div>
-                  <SafeImage src={c.img} fallback={c.fallback} alt={c.title} />
-                  <div className="mdnt-work-card-overlay">
-                    <span className="mdnt-work-card-tag">{c.tag}</span>
-                    <h3>{c.title}</h3>
-                  </div>
-                </Link>
+                <TiltWorkCard c={c} />
               </motion.div>
             ))}
           </div>
@@ -300,10 +335,7 @@ export default function Landing() {
           </div>
           <div className="mdnt-gallery-grid">
             {gallery.map(g => (
-              <div key={g.sport} className="mdnt-gallery-item">
-                <SafeImage src={g.img} fallback={g.fallback} alt={g.sport} />
-                <span className="mdnt-gallery-item-meta">{g.sport} · {g.year}</span>
-              </div>
+              <TiltGalleryItem key={g.sport} g={g} />
             ))}
           </div>
         </section>
