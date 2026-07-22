@@ -7,6 +7,10 @@ import { resolveMediaUrl } from '../utils/resolveMediaUrl'
 
 const REMOTE_TIMEOUT_MS = 4500
 
+function isRemoteUrl(url) {
+  return typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))
+}
+
 export default function SafeImage({
   src,
   fallback = LOCAL_IMAGES.portrait,
@@ -20,19 +24,23 @@ export default function SafeImage({
   const primary = preferLocal && fallback ? fallback : (resolved || fallback)
   const [current, setCurrent] = useState(primary)
   const [stage, setStage] = useState(preferLocal ? 1 : 0)
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     const nextPrimary = preferLocal && fallback ? fallback : (resolved || fallback)
     setCurrent(nextPrimary)
     setStage(preferLocal ? 1 : 0)
+    setLoaded(false)
   }, [resolved, fallback, preferLocal])
 
+  // Only remote URLs can hang indefinitely — local bundled images never need
+  // a timeout, and a successful load (even a slow remote one) cancels this.
   useEffect(() => {
-    if (preferLocal || !resolved || resolved === fallback) return undefined
+    if (preferLocal || !resolved || resolved === fallback || !isRemoteUrl(resolved)) return undefined
 
     let done = false
     const timer = setTimeout(() => {
-      if (!done) {
+      if (!done && !loaded) {
         setStage(1)
         setCurrent(fallback)
       }
@@ -42,7 +50,9 @@ export default function SafeImage({
       done = true
       clearTimeout(timer)
     }
-  }, [resolved, fallback, preferLocal])
+  }, [resolved, fallback, preferLocal, loaded])
+
+  const handleLoad = () => setLoaded(true)
 
   const handleError = () => {
     if (stage === 0 && fallback && current !== fallback) {
@@ -63,6 +73,7 @@ export default function SafeImage({
       className={className}
       style={style}
       loading={loading}
+      onLoad={handleLoad}
       onError={handleError}
       decoding="async"
     />
