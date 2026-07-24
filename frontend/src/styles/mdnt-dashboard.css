@@ -145,7 +145,7 @@
 .voice-play-btn.speaking {
   background: var(--mdnt-lime);
   border-color: var(--mdnt-lime);
-  color: var(--mdnt-black);
+  color: #0a0a0a;
 }
 
 /* Smart recovery timeline */

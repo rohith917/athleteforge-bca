@@ -85,7 +85,7 @@
   text-transform: uppercase;
   text-decoration: none;
   background: var(--upd-lime);
-  color: var(--mdnt-black);
+  color: #0a0a0a;
   border: none;
   transition: transform 0.3s var(--mdnt-ease), box-shadow 0.3s;
 }
@@ -93,7 +93,7 @@
 .btn-upd-lime:hover {
   transform: translateY(-3px);
   box-shadow: 0 12px 40px var(--upd-lime-glow);
-  color: var(--mdnt-black);
+  color: #0a0a0a;
 }
 
 /* Trusted by marquee */
@@ -377,7 +377,7 @@
 
 .upd-flip-back {
   background: var(--upd-lime);
-  color: var(--mdnt-black);
+  color: #0a0a0a;
   transform: rotateY(180deg);
 }
 
@@ -419,7 +419,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--mdnt-black);
+  color: #0a0a0a;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -483,7 +483,7 @@
   height: 56px;
   border-radius: 50%;
   background: var(--upd-lime);
-  color: var(--mdnt-black);
+  color: #0a0a0a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -611,7 +611,7 @@
   top: 20px;
   right: 20px;
   background: var(--upd-lime);
-  color: var(--mdnt-black);
+  color: #0a0a0a;
   padding: 8px 14px;
   font-family: var(--mdnt-font-display);
   font-size: 1.4rem;
@@ -635,7 +635,7 @@
 
 .mdnt-copilot-trigger {
   background: var(--upd-lime);
-  color: var(--mdnt-black);
+  color: #0a0a0a;
   box-shadow: 0 8px 32px var(--upd-lime-glow);
 }
 
@@ -645,7 +645,7 @@
 
 .mdnt-nav .btn-mdnt-cta {
   background: var(--upd-lime);
-  color: var(--mdnt-black) !important;
+  color: #0a0a0a !important;
 }
 
 .mdnt-nav .btn-mdnt-cta:hover {

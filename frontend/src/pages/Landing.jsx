@@ -119,53 +119,81 @@ export default function Landing() {
   return (
     <PublicLayout mdnt>
       <div className="landing-mdnt">
-        {/* Hero — MDNT editorial full-bleed */}
-        <section className="mdnt-hero">
-          <SafeImage
-            src={LOCAL_IMAGES.hero}
-            fallback={LOCAL_SVG.hero}
-            alt=""
-            className="mdnt-hero-bg-img"
-            loading="eager"
-            aria-hidden="true"
-          />
-          <div className="mdnt-hero-overlay" aria-hidden="true" />
-          <div className="mdnt-hero-mesh" aria-hidden="true" />
+        {/* Hero — light, minimal, bold-type composition */}
+        <section className="gear-hero">
+          <div className="gear-hero-bg" aria-hidden="true" />
           <motion.div
-            className="mdnt-hero-content"
+            className="gear-hero-headline-block"
             initial="hidden"
             animate="visible"
             variants={fadeUp}
             custom={0}
           >
-            <div className="upd-hero-locations">
-              <span className="dot" />
-              BCA · AI-First · Performance Platform
-            </div>
-            <span className="upd-badge-ai">AI-First Sports Tech</span>
-            <h1 className="upd-hero-stack">
-              <span className="line line-dim">We bring</span>
-              <span className="line line-lime">performance</span>
-              <span className="line">to athletes.</span>
+            <h1 className="gear-hero-headline">
+              Gear up every season<br />
+              every <span className="gear-hero-headline-thin">workout</span>
             </h1>
-            <p className="mdnt-hero-desc">
-              We don&apos;t just track stats — we redefine how teams train. AI strategies.
-              Licensed coaches. Real readiness results.
-            </p>
-            <div className="mdnt-hero-actions">
+            <div className="gear-hero-actions">
               {isAuthenticated ? (
-                <Link to="/dashboard" className="btn-upd-lime">
+                <Link to="/dashboard" className="btn-mdnt-cta">
                   Go to Dashboard <FaArrowRight />
                 </Link>
               ) : (
                 <>
-                  <Link to="/register" className="btn-upd-lime">
-                    Start Your Project <FaArrowRight />
-                  </Link>
+                  <Link to="/register" className="btn-mdnt-cta">Get Started</Link>
                   <Link to="/login" className="btn-mdnt-outline">Sign In</Link>
                 </>
               )}
             </div>
+          </motion.div>
+
+          <motion.div
+            className="gear-hero-photo-wrap"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SafeImage
+              src={LOCAL_IMAGES.hero}
+              fallback={LOCAL_SVG.hero}
+              alt="Athlete training"
+              className="gear-hero-photo"
+              loading="eager"
+            />
+
+            <motion.div
+              className="gear-hero-proof"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.45 }}
+            >
+              <div className="gear-hero-avatars">
+                <span className="gear-avatar" style={{ '--avatar-bg': '#ff3d3d' }}>R</span>
+                <span className="gear-avatar" style={{ '--avatar-bg': '#5b8a17' }}>A</span>
+                <span className="gear-avatar" style={{ '--avatar-bg': '#0a0a0a' }}>S</span>
+              </div>
+              <p>
+                Trusted by coaches and athletes tracking performance, recovery,
+                and readiness every single day.
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="gear-hero-card"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.55 }}
+            >
+              <SafeImage
+                src={LOCAL_IMAGES.coach}
+                fallback={LOCAL_SVG.coach}
+                alt=""
+                aria-hidden="true"
+                className="gear-hero-card-img"
+              />
+              <span className="gear-hero-card-play" aria-hidden="true"><FaArrowRight /></span>
+              <span className="gear-hero-card-label">AI-First Sports Tech</span>
+            </motion.div>
           </motion.div>
         </section>
 

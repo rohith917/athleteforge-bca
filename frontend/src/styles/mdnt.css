@@ -24,10 +24,27 @@
   --mdnt-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Override global tokens on public MDNT pages */
-.landing-mdnt,
-.landing-mdnt ~ *,
-body:has(.landing-mdnt) {
+/* Light, minimal palette — deliberately overrides the dark :root defaults
+   for the whole public MDNT page (navbar + content). Scoped to
+   .public-page-mdnt, the actual common ancestor of both the navbar (a
+   preceding sibling of .landing-mdnt, not a descendant) and the page
+   content — variables set only on .landing-mdnt never reach the navbar.
+   Same variable names, so every existing mdnt.css/upd.css rule that
+   already references them (not hardcoded hex) picks this up automatically. */
+.public-page-mdnt {
+  --mdnt-black: #f3f5f7;
+  --mdnt-charcoal: #ffffff;
+  --mdnt-surface: #ffffff;
+  --mdnt-elevated: #f7f8fa;
+  --mdnt-border: rgba(10, 10, 10, 0.10);
+  --mdnt-border-strong: rgba(10, 10, 10, 0.20);
+  --mdnt-white: #0e0e10;
+  --mdnt-muted: rgba(10, 10, 10, 0.58);
+  --mdnt-dim: rgba(10, 10, 10, 0.38);
+  --mdnt-accent: #d81f2b;
+  --mdnt-accent-hover: #ff3d3d;
+  --mdnt-lime: #4d7a12;
+  --mdnt-font-display: 'Inter Tight', 'Inter', -apple-system, sans-serif;
   --bg-page: var(--mdnt-black);
   --bg-card: var(--mdnt-surface);
   --text-primary: var(--mdnt-white);
@@ -65,8 +82,8 @@ body:has(.landing-mdnt) {
   padding: 0 clamp(20px, 4vw, 48px);
 }
 
-.mdnt-nav .logo-text-main,
-.mdnt-nav .af-brand-name {
+.public-page-mdnt .mdnt-nav .logo-text-main,
+.public-page-mdnt .mdnt-nav .af-brand-name {
   font-family: var(--mdnt-font-display);
   font-size: 1.5rem;
   letter-spacing: 0.12em;
@@ -91,8 +108,8 @@ body:has(.landing-mdnt) {
   align-items: center;
 }
 
-.mdnt-nav .public-nav-home,
-.mdnt-nav .public-nav-login {
+.public-page-mdnt .mdnt-nav .public-nav-home,
+.public-page-mdnt .mdnt-nav .public-nav-login {
   font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -101,9 +118,9 @@ body:has(.landing-mdnt) {
   transition: color 0.25s;
 }
 
-.mdnt-nav .public-nav-home:hover,
-.mdnt-nav .public-nav-login:hover,
-.mdnt-nav .public-nav-home.active {
+.public-page-mdnt .mdnt-nav .public-nav-home:hover,
+.public-page-mdnt .mdnt-nav .public-nav-login:hover,
+.public-page-mdnt .mdnt-nav .public-nav-home.active {
   color: var(--mdnt-white) !important;
 }
 
@@ -111,45 +128,190 @@ body:has(.landing-mdnt) {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 28px;
-  font-size: 0.75rem;
+  padding: 15px 30px;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   text-decoration: none;
-  color: var(--mdnt-black) !important;
-  background: var(--mdnt-white);
+  color: #ffffff !important;
+  background: #0a0a0a;
   border: none;
-  border-radius: 0;
-  transition: background 0.3s, transform 0.3s var(--mdnt-ease);
+  border-radius: 999px;
+  transition: transform 0.3s var(--mdnt-ease), opacity 0.3s;
 }
 
 .btn-mdnt-cta:hover {
-  background: var(--mdnt-cream);
+  opacity: 0.85;
   transform: translateY(-2px);
-  color: var(--mdnt-black) !important;
+  color: #ffffff !important;
 }
 
 .btn-mdnt-outline {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 28px;
-  font-size: 0.75rem;
+  padding: 15px 30px;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   text-decoration: none;
-  color: var(--mdnt-white) !important;
-  background: transparent;
+  color: #0a0a0a !important;
+  background: #ffffff;
   border: 1px solid var(--mdnt-border-strong);
-  transition: border-color 0.3s, background 0.3s;
+  border-radius: 999px;
+  transition: border-color 0.3s, transform 0.3s var(--mdnt-ease);
 }
 
 .btn-mdnt-outline:hover {
-  border-color: var(--mdnt-white);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--mdnt-white) !important;
+  border-color: #0a0a0a;
+  transform: translateY(-2px);
+  color: #0a0a0a !important;
+}
+
+/* ---- Gear hero — light, minimal, bold-type ---- */
+.gear-hero {
+  position: relative;
+  padding: clamp(120px, 14vw, 168px) clamp(20px, 4vw, 48px) clamp(64px, 8vw, 96px);
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.gear-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, #dbe4ea 0%, #eef1f4 45%, var(--mdnt-black) 100%);
+}
+
+.gear-hero-headline {
+  font-family: var(--mdnt-font-display);
+  font-weight: 800;
+  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--mdnt-white);
+  margin-bottom: 32px;
+}
+
+.gear-hero-headline-thin {
+  font-weight: 400;
+  color: var(--mdnt-muted);
+}
+
+.gear-hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 56px;
+}
+
+.gear-hero-photo-wrap {
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.gear-hero-photo {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+  border-radius: 28px;
+  box-shadow: 0 30px 80px rgba(10, 10, 10, 0.18);
+}
+
+.gear-hero-proof {
+  position: absolute;
+  left: clamp(16px, 4vw, 64px);
+  bottom: clamp(24px, 5vw, 64px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 260px;
+  text-align: left;
+}
+
+.gear-hero-avatars {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.gear-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--avatar-bg, #0a0a0a);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 2px solid var(--mdnt-black);
+  margin-left: -10px;
+}
+
+.gear-avatar:first-child { margin-left: 0; }
+
+.gear-hero-proof p {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--mdnt-muted);
+  margin: 0;
+}
+
+.gear-hero-card {
+  position: absolute;
+  right: clamp(16px, 4vw, 64px);
+  bottom: clamp(24px, 5vw, 64px);
+  width: 130px;
+  height: 90px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(10, 10, 10, 0.28);
+}
+
+.gear-hero-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.7);
+}
+
+.gear-hero-card-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.9rem;
+  background: rgba(10, 10, 10, 0.15);
+}
+
+.gear-hero-card-label {
+  position: absolute;
+  left: 8px;
+  bottom: 6px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .gear-hero-proof, .gear-hero-card {
+    position: static;
+    margin-top: 20px;
+  }
+  .gear-hero-proof { justify-content: center; margin-left: auto; margin-right: auto; }
+  .gear-hero-card { margin-left: auto; margin-right: auto; }
 }
 
 /* ---- Hero ---- */
@@ -256,7 +418,7 @@ body:has(.landing-mdnt) {
 }
 
 .mdnt-marquee-wrap.accent .mdnt-marquee-item {
-  color: var(--mdnt-black);
+  color: #0a0a0a;
 }
 
 .mdnt-marquee-track {
@@ -342,7 +504,7 @@ body:has(.landing-mdnt) {
 
 .mdnt-split-content.cream {
   background: var(--mdnt-cream);
-  color: var(--mdnt-black);
+  color: #0a0a0a;
 }
 
 .mdnt-split-content.cream .mdnt-split-desc,
@@ -351,7 +513,7 @@ body:has(.landing-mdnt) {
 }
 
 .mdnt-split-content.cream .mdnt-split-title {
-  color: var(--mdnt-black);
+  color: #0a0a0a;
 }
 
 .mdnt-section-label {
@@ -394,7 +556,7 @@ body:has(.landing-mdnt) {
 }
 
 .mdnt-split-content.cream .mdnt-link-arrow {
-  color: var(--mdnt-black);
+  color: #0a0a0a;
 }
 
 .mdnt-link-arrow:hover {
@@ -769,7 +931,7 @@ body:has(.landing-mdnt) {
   padding: clamp(100px, 14vw, 160px) clamp(20px, 4vw, 48px);
   text-align: center;
   background: var(--mdnt-cream);
-  color: var(--mdnt-black);
+  color: #0a0a0a;
 }
 
 .mdnt-cta-block h2 {
@@ -1004,7 +1166,7 @@ body:has(.landing-mdnt) {
 
 .mdnt-copilot-voice.listening {
   background: var(--mdnt-lime);
-  color: var(--mdnt-black);
+  color: #0a0a0a;
   animation: voicePulse 1s ease infinite;
 }
 

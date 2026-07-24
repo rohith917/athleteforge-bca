@@ -231,7 +231,7 @@ body {
 }
 .nav-item.active svg { color: var(--lux-accent) !important; }
 
-.top-navbar, .public-navbar {
+.top-navbar {
   background: var(--bg-navbar) !important;
   backdrop-filter: blur(12px) !important;
   border-bottom: 1px solid var(--lux-border) !important;
