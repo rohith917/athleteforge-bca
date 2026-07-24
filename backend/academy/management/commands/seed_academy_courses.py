@@ -30,6 +30,11 @@ class Command(BaseCommand):
             ('injury-prevention-fundamentals', self._seed_injury_prevention_course),
             ('periodization-basics', self._seed_periodization_course),
             ('football-physical-demands', self._seed_football_physical_demands_course),
+            ('speed-development-fundamentals', self._seed_speed_course),
+            ('sports-psychology-fundamentals', self._seed_psychology_course),
+            ('sports-nutrition-fundamentals', self._seed_nutrition_course),
+            ('plyometrics-fundamentals', self._seed_plyometrics_course),
+            ('taekwondo-physical-demands', self._seed_taekwondo_physical_demands_course),
         ]
 
         created = 0
@@ -627,6 +632,275 @@ class Command(BaseCommand):
                 safety_considerations='Any hamstring tightness or pain during high-speed running should be addressed before continuing high-speed work.',
                 summary='Football\'s demands make the hamstrings, ankles, and knees common injury areas — proactive, progressive conditioning for these areas is standard practice, not just post-injury rehab.',
                 references='General football injury-epidemiology principles used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_speed_course(self, author):
+        category = CourseCategory.objects.get(slug='speed-development', sport=None)
+        course = Course.objects.create(
+            title='Speed Development Fundamentals',
+            subtitle='The building blocks of running faster: acceleration, max velocity, and mechanics',
+            description='Introduces the phases of a sprint and the core technical elements coaches look for when developing speed.',
+            category=category, level='beginner', status='published', estimated_hours=0.6, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Speed Fundamentals', order=1)
+
+        lessons = [
+            dict(
+                title='The Phases of a Sprint',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Distinguish acceleration from max-velocity sprinting.',
+                content='A sprint is not one uniform effort — it moves through distinct phases with different mechanical demands.',
+                scientific_explanation=(
+                    'Acceleration (roughly the first 10-30m for most athletes) is characterized by a forward '
+                    'body lean and longer ground contact times as the athlete builds speed from a stop. Max '
+                    'velocity sprinting involves a more upright posture, shorter ground contact times, and '
+                    'different muscular demands than acceleration.'
+                ),
+                practical_application='Train both phases deliberately — short acceleration-focused sprints (e.g. 10-20m) and separate longer efforts that allow the athlete to reach top speed.',
+                key_coaching_points='Match sprint distance to the phase being trained — very short reps rarely reach max velocity.',
+                common_mistakes='Only ever training one phase (e.g. always short accelerations) when the sport requires both qualities.',
+                safety_considerations='Maximal sprinting is high-stress on the hamstrings; ensure adequate warm-up and progressive exposure before maximal-effort sprints.',
+                summary='Acceleration and max-velocity sprinting are mechanically distinct phases and both deserve dedicated training attention.',
+                references='General sprint mechanics principles used in speed-development coaching.',
+                faqs=[],
+            ),
+            dict(
+                title='Sprint Technique Basics',
+                lesson_type='text', order=2, estimated_minutes=8,
+                learning_objectives='Identify the basic technical checkpoints coaches use when assessing sprint technique.',
+                content='A handful of simple checkpoints can guide sprint technique coaching without overcomplicating it.',
+                scientific_explanation='Efficient sprinting generally involves full hip extension behind the body, a relatively tall posture during max velocity, arm action that mirrors leg action, and minimal excess tension in the upper body (shoulders, face, hands).',
+                practical_application='Cue simple, observable checkpoints: "drive the arms," "stay tall," "relax the face and hands" rather than overloading an athlete with too many technical cues at once.',
+                key_coaching_points='One or two cues per session is usually more effective than a long technical checklist.',
+                common_mistakes='Overcoaching technique to the point an athlete becomes tense and mechanical rather than fluid.',
+                safety_considerations='Fatigue degrades technique — stop quality sprint work once form clearly breaks down rather than continuing to accumulate reps.',
+                summary='A few clear, simple technical cues are usually more effective for developing sprint technique than an exhaustive checklist.',
+                references='General sprint-technique coaching principles.',
+                faqs=[
+                    ('How many quality sprint reps should a session include?', 'It varies by athlete and training age, but quality (full recovery, good technique) generally matters more than accumulating a large number of reps.'),
+                ],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_psychology_course(self, author):
+        category = CourseCategory.objects.get(slug='sports-psychology', sport=None)
+        course = Course.objects.create(
+            title='Sports Psychology Fundamentals',
+            subtitle='The mental side of training and competing',
+            description='Introduces goal setting, pre-competition routines, and basic strategies for managing competitive pressure.',
+            category=category, level='beginner', status='published', estimated_hours=0.6, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Mental Skills Basics', order=1)
+
+        lessons = [
+            dict(
+                title='Goal Setting for Athletes',
+                lesson_type='text', order=1, estimated_minutes=7,
+                learning_objectives='Distinguish outcome goals from process goals.',
+                content='Not all goals are equally useful for driving day-to-day training behavior.',
+                scientific_explanation='Outcome goals (e.g. "win the tournament") depend partly on factors outside the athlete\'s control, like opponents. Process goals (e.g. "execute my warm-up routine consistently," "hit my technical cues") are fully within the athlete\'s control and more directly guide daily behavior.',
+                practical_application='Set a clear outcome goal for direction, but build the actual training plan around specific, controllable process goals.',
+                key_coaching_points='Ask athletes "what can you control today that moves you toward that goal?" rather than only discussing the outcome.',
+                common_mistakes='Fixating entirely on outcome goals (e.g. rankings, results) without any controllable process goals underneath them.',
+                safety_considerations='None specific.',
+                summary='Process goals — things fully within an athlete\'s control — are what actually drive consistent day-to-day improvement toward a larger outcome goal.',
+                references='General goal-setting principles used in sports psychology practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Pre-Competition Routines',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain the purpose of a consistent pre-competition routine.',
+                content='A pre-competition routine is a consistent sequence of actions an athlete follows before performing.',
+                scientific_explanation='A familiar, well-rehearsed routine gives the athlete something predictable to focus on under pressure, which can reduce competitive anxiety and help attention settle on the task rather than on uncontrollable outcome concerns.',
+                practical_application='Build a simple, repeatable routine (physical warm-up + a few mental cues) that the athlete practices in training, not just introduces on competition day.',
+                key_coaching_points='Rehearse the routine in training so it is familiar, not something new attempted for the first time under competition pressure.',
+                common_mistakes='Only using a special routine on competition day, so it feels unfamiliar exactly when it matters most.',
+                safety_considerations='None specific.',
+                summary='A well-rehearsed pre-competition routine gives athletes a controllable, familiar focus under pressure.',
+                references='General pre-performance-routine principles used in sports psychology practice.',
+                faqs=[],
+                quiz=dict(
+                    title='Sports Psychology Basics Check',
+                    passing_score_percent=70,
+                    questions=[
+                        dict(
+                            question_text='Which type of goal is fully within an athlete\'s control?',
+                            explanation='Process goals (e.g. executing a routine, hitting technical cues) are controllable; outcome goals depend partly on external factors.',
+                            choices=[('Outcome goals', False), ('Process goals', True), ('Neither type is controllable', False)],
+                        ),
+                        dict(
+                            question_text='Why should a pre-competition routine be rehearsed in training, not just used on competition day?',
+                            explanation='Rehearsal makes the routine familiar, so it can genuinely help focus under pressure rather than feeling unfamiliar exactly when it matters.',
+                            choices=[
+                                ('So it becomes familiar and can help focus under pressure', True),
+                                ('It has no real effect either way', False),
+                                ('Because rules require it', False),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_nutrition_course(self, author):
+        category = CourseCategory.objects.get(slug='sports-nutrition', sport=None)
+        course = Course.objects.create(
+            title='Sports Nutrition Fundamentals',
+            subtitle='The basics of fueling training and recovery',
+            description='Introduces macronutrient roles for athletes and practical fueling/timing basics around training.',
+            category=category, level='beginner', status='published', estimated_hours=0.6, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Nutrition Basics', order=1)
+
+        lessons = [
+            dict(
+                title='Macronutrients and Their Roles',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe the general role of carbohydrate, protein, and fat for athletes.',
+                content='The three macronutrients each play a different primary role in supporting training and recovery.',
+                scientific_explanation='Carbohydrate is the body\'s primary fuel source for moderate-to-high intensity exercise, stored as glycogen in muscle and liver. Protein supplies the amino acids needed for muscle repair and adaptation after training. Fat supports longer-duration, lower-intensity energy needs and various hormonal functions.',
+                practical_application='Athletes in heavy training generally need adequate carbohydrate to fuel sessions and adequate protein spread across the day to support recovery, alongside sufficient overall energy intake.',
+                key_coaching_points='Under-fueling (too little total energy intake) undermines both performance and recovery regardless of how the diet is otherwise balanced.',
+                common_mistakes='Cutting carbohydrate sharply during heavy training blocks, which can impair training quality and recovery.',
+                safety_considerations='Significant, prolonged under-eating in young athletes is a genuine health concern and warrants involving a qualified nutrition professional.',
+                summary='Carbohydrate fuels training, protein supports repair, and fat supports longer-duration energy needs — all three matter for an athlete\'s overall intake.',
+                references='General sports nutrition macronutrient principles.',
+                faqs=[],
+            ),
+            dict(
+                title='Fueling Around Training',
+                lesson_type='text', order=2, estimated_minutes=8,
+                learning_objectives='Explain basic principles for eating before and after training sessions.',
+                content='What and when an athlete eats around a session can affect both performance in that session and recovery afterward.',
+                scientific_explanation='Eating a carbohydrate-containing meal or snack a few hours before intense training helps ensure adequate fuel is available. After training, consuming protein and carbohydrate supports glycogen replenishment and the muscle repair process that follows exercise-induced fatigue.',
+                practical_application='A simple approach: a balanced meal 2-3 hours pre-session (or a lighter snack closer to start time), and a combined protein + carbohydrate meal or snack within a couple of hours post-session.',
+                key_coaching_points='Consistency of overall daily intake matters more than precise timing for most athletes — timing is a refinement, not a substitute for adequate daily nutrition.',
+                common_mistakes='Training in a fasted state before high-intensity sessions without a specific reason to do so, or skipping post-training food entirely.',
+                safety_considerations='Athletes with any diagnosed medical or disordered-eating condition should follow guidance from a qualified professional, not general coaching advice.',
+                summary='Basic pre- and post-session fueling supports both performance and recovery — but consistent overall daily nutrition matters most.',
+                references='General sports nutrition timing principles.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_plyometrics_course(self, author):
+        category = CourseCategory.objects.get(slug='plyometrics', sport=None)
+        course = Course.objects.create(
+            title='Plyometrics Fundamentals',
+            subtitle='Training the stretch-shortening cycle safely and progressively',
+            description='Introduces what plyometric training is, the stretch-shortening cycle, and how to progress it safely.',
+            category=category, level='intermediate', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Plyometrics Basics', order=1)
+
+        lessons = [
+            dict(
+                title='What Is Plyometric Training?',
+                lesson_type='text', order=1, estimated_minutes=7,
+                learning_objectives='Explain the stretch-shortening cycle in plain terms.',
+                content='Plyometric exercises use a rapid stretch of a muscle immediately followed by a rapid contraction.',
+                scientific_explanation=(
+                    'When a muscle-tendon unit is rapidly stretched (the eccentric phase) and immediately '
+                    'followed by a fast contraction (the concentric phase) — as in a jump landing followed '
+                    'immediately by another jump — elastic energy stored during the stretch contributes to the '
+                    'following contraction, producing more force than a concentric contraction alone. This is '
+                    'the stretch-shortening cycle.'
+                ),
+                practical_application='Common examples include hops, bounds, and jump-and-land-and-jump-again drills.',
+                key_coaching_points='The speed of the transition between the stretch and the contraction (minimal ground contact time) is what makes an exercise genuinely plyometric, not just "any jump."',
+                common_mistakes='Treating slow, controlled jump-and-stick drills the same as fast, reactive plyometric drills — they train different qualities.',
+                safety_considerations='Plyometrics load tendons and joints significantly; they require an athlete to already have adequate strength and landing mechanics as a foundation.',
+                summary='Plyometric training uses the stretch-shortening cycle — a fast stretch immediately followed by a fast contraction — to develop reactive power.',
+                references='General stretch-shortening-cycle and plyometric-training principles.',
+                faqs=[],
+            ),
+            dict(
+                title='Progressing Plyometrics Safely',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe a basic, safe progression model for introducing plyometric training.',
+                content='Plyometric training should be introduced and progressed gradually, not started at high intensity.',
+                scientific_explanation='Because plyometrics place high, rapid loads on tendons and connective tissue, tissue needs time to adapt. A common approach progresses from low-intensity, double-leg, in-place exercises toward higher-intensity, single-leg, and traveling variations only as the athlete demonstrates control at each level.',
+                practical_application='Start with basics like double-leg pogo hops or box step-downs before progressing to bounds, single-leg hops, or depth jumps.',
+                key_coaching_points='Landing quality (quiet, controlled landings) is the main signal for whether an athlete is ready to progress to a harder variation.',
+                common_mistakes='Jumping straight to high-intensity plyometrics (e.g. depth jumps) without a strength and landing-mechanics foundation first.',
+                safety_considerations='Young or novice athletes and anyone returning from a lower-limb injury need a longer, more gradual introduction before higher-intensity plyometric work.',
+                summary='Progress plyometrics gradually — from low-intensity, controlled variations toward higher-intensity ones — using landing quality as the main readiness signal.',
+                references='General plyometric-progression principles used in strength & conditioning practice.',
+                faqs=[],
+                quiz=dict(
+                    title='Plyometrics Fundamentals Check',
+                    passing_score_percent=70,
+                    questions=[
+                        dict(
+                            question_text='What is the "stretch-shortening cycle"?',
+                            explanation='A rapid stretch (eccentric) immediately followed by a rapid contraction (concentric), using stored elastic energy.',
+                            choices=[
+                                ('A slow, controlled stretch held for 30 seconds', False),
+                                ('A rapid stretch immediately followed by a rapid contraction', True),
+                                ('A type of static strength exercise', False),
+                            ],
+                        ),
+                        dict(
+                            question_text='What is the main signal that an athlete is ready to progress to a harder plyometric variation?',
+                            explanation='Landing quality — quiet, controlled landings — is the key readiness signal before progressing.',
+                            choices=[('How much they enjoyed it', False), ('Landing quality and control', True), ('How many reps they completed', False)],
+                        ),
+                    ],
+                ),
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_taekwondo_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='taekwondo')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Taekwondo: Physical Demands',
+            subtitle='What competitive Taekwondo asks of an athlete\'s body',
+            description='An introduction to the movement and energy-system demands of Olympic-style Taekwondo sparring.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+
+        lessons = [
+            dict(
+                title='Movement and Energy System Demands',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe the physical qualities competitive Taekwondo sparring demands.',
+                content='Olympic-style Taekwondo sparring involves short, explosive kicking exchanges separated by brief pauses, across multiple rounds.',
+                scientific_explanation=(
+                    'Matches consist of repeated short, high-intensity bursts (kicking exchanges, footwork) with '
+                    'brief recovery periods between them, across multiple rounds — placing demand on both '
+                    'explosive power (for scoring kicks) and the ability to repeat high-intensity efforts with '
+                    'incomplete recovery across a full match.'
+                ),
+                practical_application='Training should combine leg power development (for kick speed/force) with repeated-effort conditioning that mimics the match\'s work-to-rest pattern, rather than steady-state running alone.',
+                key_coaching_points='Match the conditioning work-to-rest ratio to what actually happens in competition rounds.',
+                common_mistakes='Relying only on long, steady-state aerobic training when the sport\'s actual demand is repeated short bursts.',
+                safety_considerations='The kicking leg and standing/support leg are both under high, repeated load — conditioning and technique work should address both.',
+                summary='Taekwondo sparring demands explosive leg power plus the ability to repeat high-intensity bursts with incomplete recovery — training should reflect that specific pattern.',
+                references='General combat-sport physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Common Injury Areas in Taekwondo',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify commonly stressed areas in Taekwondo and why.',
+                content='Taekwondo\'s kicking-based, single-leg-support movement pattern creates some recurring injury patterns.',
+                scientific_explanation='The standing (support) leg experiences high single-leg loading during kicks, stressing the ankle and knee. The kicking leg\'s hip flexors and groin are repeatedly worked through large ranges of motion at speed. Head contact risk also exists in sparring exchanges.',
+                practical_application='Include single-leg strength and balance work, hip mobility work, and appropriate protective equipment/rule adherence as standard parts of training.',
+                key_coaching_points='Balance and single-leg stability training directly supports the support-leg demands of kicking.',
+                common_mistakes='Training kicking technique and power extensively while neglecting single-leg strength/balance and hip mobility work that supports it.',
+                safety_considerations='Any groin, hip flexor, or ankle pain during kicking drills should be assessed before continuing high-volume kicking work.',
+                summary='The support leg (ankle/knee) and kicking leg\'s hip/groin region are common Taekwondo injury areas — targeted strength, balance, and mobility work help address both.',
+                references='General combat-sport injury-epidemiology principles used in sport-specific conditioning practice.',
                 faqs=[],
             ),
         ]
