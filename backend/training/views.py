@@ -1,12 +1,15 @@
+from datetime import date
+
 from django.utils import timezone
 from rest_framework import viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.models import Athlete
 from api.permissions import IsCoachOrAdmin, is_staff_role, get_athlete_for_user
 
+from .generator import GOAL_TEMPLATES, generate_training_program, get_generator_status
 from .models import (
     TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion,
     WellnessCheckIn, SessionRPE,
@@ -22,12 +25,12 @@ class TrainingProgramViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
-        if self.action in ('create', 'update', 'partial_update', 'destroy', 'add_day'):
+        if self.action in ('create', 'update', 'partial_update', 'destroy', 'add_day', 'generate'):
             return [IsCoachOrAdmin()]
         return [IsAuthenticated()]
 
     def get_serializer_class(self):
-        if self.action == 'retrieve':
+        if self.action in ('retrieve', 'generate'):
             return TrainingProgramDetailSerializer
         return TrainingProgramListSerializer
 
@@ -55,6 +58,52 @@ class TrainingProgramViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=201)
+
+    @action(detail=False, methods=['post'])
+    def generate(self, request):
+        """
+        Builds a complete draft program (days -> blocks -> exercises) from
+        structured inputs via the rule-based generator in generator.py
+        (or an LLM if GROQ_API_KEY/GEMINI_API_KEY is ever configured —
+        same seam api/free_ai.py uses for AI insights). Returns the full
+        program, ready to open directly in the builder for review/edits.
+        """
+        data = request.data
+        required = ['athlete', 'sport', 'goal', 'duration_weeks', 'sessions_per_week', 'start_date']
+        missing = [f for f in required if not data.get(f)]
+        if missing:
+            return Response({'error': f'Missing required fields: {", ".join(missing)}'}, status=400)
+
+        athlete = Athlete.objects.filter(id=data['athlete']).first()
+        if not athlete:
+            return Response({'error': 'Athlete not found.'}, status=404)
+
+        if data['goal'] not in GOAL_TEMPLATES:
+            return Response({'error': f'Unknown goal. Choose one of: {", ".join(GOAL_TEMPLATES)}'}, status=400)
+
+        try:
+            start_date = date.fromisoformat(data['start_date'])
+        except (TypeError, ValueError):
+            return Response({'error': 'start_date must be an ISO date (YYYY-MM-DD).'}, status=400)
+
+        program = generate_training_program(
+            athlete=athlete,
+            coach=request.user,
+            name=data.get('name') or f'{data["goal"].replace("_", " ").title()} Program — {athlete.full_name}',
+            sport=data['sport'],
+            goal=data['goal'],
+            duration_weeks=int(data['duration_weeks']),
+            sessions_per_week=int(data['sessions_per_week']),
+            start_date=start_date,
+            experience_level=data.get('experience_level', 'intermediate'),
+            equipment_notes=data.get('equipment_notes', ''),
+            injury_notes=data.get('injury_notes', ''),
+        )
+
+        serializer = self.get_serializer(program)
+        response_data = serializer.data
+        response_data['generator_mode'] = get_generator_status()['mode']
+        return Response(response_data, status=201)
 
 
 class ProgramDayViewSet(viewsets.ModelViewSet):
@@ -209,3 +258,15 @@ class SessionRPEViewSet(viewsets.ModelViewSet):
         else:
             athlete = get_athlete_for_user(user)
         serializer.save(athlete=athlete)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def generator_status(request):
+    """Which mode the Training Program Generator will run in — mirrors api/ai_status."""
+    status_info = get_generator_status()
+    return Response({
+        **status_info,
+        'label': 'AI-Assisted' if status_info['mode'] == 'llm' else 'Rule-Based Engine',
+        'goals': list(GOAL_TEMPLATES.keys()),
+    })

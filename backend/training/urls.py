@@ -12,5 +12,6 @@ router.register(r'wellness', views.WellnessCheckInViewSet, basename='training-we
 router.register(r'rpe', views.SessionRPEViewSet, basename='training-rpe')
 
 urlpatterns = [
+    path('generator/status/', views.generator_status, name='generator-status'),
     path('', include(router.urls)),
 ]
