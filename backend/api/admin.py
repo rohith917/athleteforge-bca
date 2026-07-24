@@ -5,7 +5,7 @@ from django.contrib import admin
 from .models import (
     Athlete, Performance, Injury, Competition,
     CompetitionResult, Attendance, WeightTracking,
-    UserProfile, PasswordResetToken, Goal, Announcement, Notification,
+    UserProfile, PasswordResetToken, Goal, Announcement, Notification, ContactInquiry,
 )
 
 
@@ -86,3 +86,10 @@ class NotificationAdmin(admin.ModelAdmin):
     list_display = ['recipient', 'notif_type', 'severity', 'title', 'is_read', 'created_at']
     list_filter = ['notif_type', 'severity', 'is_read']
     search_fields = ['recipient__username', 'title']
+
+
+@admin.register(ContactInquiry)
+class ContactInquiryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'email', 'organization', 'is_read', 'created_at']
+    list_filter = ['is_read']
+    search_fields = ['name', 'email', 'organization', 'message']

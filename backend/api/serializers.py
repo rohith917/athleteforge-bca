@@ -7,7 +7,7 @@ from rest_framework import serializers
 from .models import (
     Athlete, Performance, Injury, Competition,
     CompetitionResult, Attendance, WeightTracking, UserProfile, PasswordResetToken,
-    Goal, Announcement, Notification,
+    Goal, Announcement, Notification, ContactInquiry,
 )
 from .permissions import get_user_role, get_athlete_for_user, is_admin_role
 from .goal_utils import compute_goal_progress
@@ -403,6 +403,20 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ['id', 'notif_type', 'severity', 'title', 'message', 'link', 'is_read', 'created_at']
+
+
+class ContactInquirySerializer(serializers.ModelSerializer):
+    """Public contact form submission from the marketing site."""
+
+    class Meta:
+        model = ContactInquiry
+        fields = ['id', 'name', 'email', 'organization', 'message', 'created_at']
+        read_only_fields = ['id', 'created_at']
+
+    def validate_message(self, value):
+        if len(value.strip()) < 10:
+            raise serializers.ValidationError('Please include a few more details in your message.')
+        return value
 
 
 class DashboardStatsSerializer(serializers.Serializer):

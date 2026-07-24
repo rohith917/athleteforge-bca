@@ -123,6 +123,19 @@
     border: 1px solid var(--color-border);
   }
 
+  .tilt-card {
+    transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transform-style: preserve-3d;
+    transition: transform 0.2s ease-out;
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tilt-card {
+      transform: none !important;
+    }
+  }
+
   .noise::before {
     content: "";
     position: fixed;

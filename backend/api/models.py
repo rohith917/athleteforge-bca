@@ -379,3 +379,21 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.recipient} - {self.title}"
+
+
+class ContactInquiry(models.Model):
+    """Public marketing-site contact form submission."""
+
+    name = models.CharField(max_length=150)
+    email = models.EmailField()
+    organization = models.CharField(max_length=150, blank=True, default='')
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'contact_inquiries'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} <{self.email}>"

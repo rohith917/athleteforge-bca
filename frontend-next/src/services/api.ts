@@ -462,6 +462,17 @@ export const adminAPI = {
   deactivateUser: (id: number) => api.delete(`/admin/users/${id}/`),
 }
 
+export interface ContactInquiryPayload {
+  name: string
+  email: string
+  organization?: string
+  message: string
+}
+
+export const contactAPI = {
+  submit: (data: ContactInquiryPayload) => api.post('/contact/', data),
+}
+
 export const reportsAPI = {
   downloadPDF: (type: string) => `${API_BASE}/reports/pdf/?type=${type}`,
   downloadExcel: (type: string) => `${API_BASE}/reports/excel/?type=${type}`,

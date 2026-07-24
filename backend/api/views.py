@@ -39,7 +39,7 @@ from .serializers import (
     UserSerializer, RegisterSerializer, ForgotPasswordSerializer,
     ResetPasswordSerializer, AdminUserSerializer, AdminUserUpdateSerializer,
     AdminCreateUserSerializer, GoalSerializer, AnnouncementSerializer,
-    NotificationSerializer,
+    NotificationSerializer, ContactInquirySerializer,
 )
 from .reports import (
     generate_athletes_pdf, generate_performance_pdf, generate_injuries_pdf,
@@ -747,6 +747,18 @@ def leaderboard(request):
 @permission_classes([AllowAny])
 def health_check(request):
     return Response({'status': 'ok', 'service': 'AthleteForge'})
+
+
+# ==================== Public contact form ====================
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def contact_inquiry(request):
+    """Public marketing-site contact form submission."""
+    serializer = ContactInquirySerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 # ==================== AI Insights ====================
