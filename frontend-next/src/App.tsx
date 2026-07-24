@@ -11,11 +11,14 @@ import Register from '@/pages/Register'
 import ForgotPassword from '@/pages/ForgotPassword'
 import ResetPassword from '@/pages/ResetPassword'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
-import { PrivateRoute, GuestRoute, StaffRoute, FallbackRoute } from '@/routes/AuthGuards'
+import { PrivateRoute, GuestRoute, StaffRoute, CoachRoute, FallbackRoute } from '@/routes/AuthGuards'
 import DashboardHome from '@/pages/dashboard/DashboardHome'
 import Athletes from '@/pages/dashboard/Athletes'
 import AthleteForm from '@/pages/dashboard/AthleteForm'
 import AthleteProfile from '@/pages/dashboard/AthleteProfile'
+import Performance from '@/pages/dashboard/Performance'
+import Injuries from '@/pages/dashboard/Injuries'
+import Competitions from '@/pages/dashboard/Competitions'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -48,6 +51,9 @@ export default function App() {
           <Route path="athletes/new" element={<StaffRoute><AthleteForm /></StaffRoute>} />
           <Route path="athletes/:id" element={<AthleteProfile />} />
           <Route path="athletes/:id/edit" element={<StaffRoute><AthleteForm /></StaffRoute>} />
+          <Route path="performance" element={<Performance />} />
+          <Route path="injuries" element={<Injuries />} />
+          <Route path="competitions" element={<CoachRoute><Competitions /></CoachRoute>} />
         </Route>
 
         <Route path="*" element={<FallbackRoute />} />

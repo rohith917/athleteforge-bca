@@ -79,6 +79,15 @@ export interface Performance {
   created_at: string
 }
 
+export interface PerformanceDashboardData {
+  labels: string[]
+  speed: number[]
+  strength: number[]
+  endurance: number[]
+  flexibility: number[]
+  agility: number[]
+}
+
 export type InjurySeverity = 'Minor' | 'Moderate' | 'Severe'
 export type RecoveryStatus = 'Recovering' | 'Recovered' | 'Ongoing Treatment'
 
