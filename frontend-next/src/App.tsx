@@ -6,6 +6,8 @@ import { SmoothScroll } from '@/components/motion/SmoothScroll'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { Home } from '@/pages/Home'
+import Login from '@/pages/Login'
+import Register from '@/pages/Register'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -14,13 +16,22 @@ export default function App() {
     <SmoothScroll>
       <CustomCursor />
       {!loaded && <Preloader onComplete={() => setLoaded(true)} />}
-      <Navbar />
-      <main>
-        <Routes>
-          <Route path="/" element={<Home ready={loaded} />} />
-        </Routes>
-      </main>
-      <Footer />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Navbar />
+              <main>
+                <Home ready={loaded} />
+              </main>
+              <Footer />
+            </>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
     </SmoothScroll>
   )
 }
