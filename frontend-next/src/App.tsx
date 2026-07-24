@@ -11,7 +11,7 @@ import Register from '@/pages/Register'
 import ForgotPassword from '@/pages/ForgotPassword'
 import ResetPassword from '@/pages/ResetPassword'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
-import { PrivateRoute, GuestRoute, StaffRoute, CoachRoute, FallbackRoute } from '@/routes/AuthGuards'
+import { PrivateRoute, GuestRoute, StaffRoute, CoachRoute, AdminRoute, FallbackRoute } from '@/routes/AuthGuards'
 import DashboardHome from '@/pages/dashboard/DashboardHome'
 import Athletes from '@/pages/dashboard/Athletes'
 import AthleteForm from '@/pages/dashboard/AthleteForm'
@@ -23,6 +23,8 @@ import AttendancePage from '@/pages/dashboard/Attendance'
 import WeightTracking from '@/pages/dashboard/WeightTracking'
 import Leaderboard from '@/pages/dashboard/Leaderboard'
 import Announcements from '@/pages/dashboard/Announcements'
+import Reports from '@/pages/dashboard/Reports'
+import UserManagement from '@/pages/dashboard/UserManagement'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -62,6 +64,8 @@ export default function App() {
           <Route path="weight" element={<StaffRoute><WeightTracking /></StaffRoute>} />
           <Route path="leaderboard" element={<Leaderboard />} />
           <Route path="announcements" element={<Announcements />} />
+          <Route path="reports" element={<CoachRoute><Reports /></CoachRoute>} />
+          <Route path="admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
         </Route>
 
         <Route path="*" element={<FallbackRoute />} />
