@@ -44,6 +44,16 @@ export interface Athlete {
   updated_at: string
 }
 
+export interface AthleteProfileData extends Athlete {
+  performance_count: number
+  injury_count: number
+  competition_count: number
+  attendance_count: number
+  latest_performance: Performance | null
+  active_injuries: Injury[]
+  latest_weight: WeightTracking | null
+}
+
 export type AthleteListItem = Pick<
   Athlete,
   'id' | 'first_name' | 'last_name' | 'full_name' | 'email' | 'sport' | 'team' | 'status' | 'gender' | 'date_of_birth' | 'avatar_url'
@@ -231,6 +241,9 @@ export interface MedalCounts {
 }
 
 export interface DashboardStats {
+  role: 'admin' | 'coach' | 'student'
+  linked?: boolean
+  message?: string
   total_athletes: number
   active_athletes: number
   injured_athletes: number
@@ -239,11 +252,21 @@ export interface DashboardStats {
   gold_medals: number
   silver_medals: number
   bronze_medals: number
-  avg_performance: Record<string, number>
+  avg_performance: { speed?: number; strength?: number; endurance?: number; flexibility?: number; agility?: number }
   sport_distribution: Array<{ sport: string; count: number }>
   injury_by_severity: Array<{ severity: string; count: number }>
   monthly_attendance: Array<{ month: string; rate: number }>
-  performance_trend: Array<{ label: string; value: number }>
+  performance_trend: Array<{ date: string; athlete: string; avg_score: number }>
+  athlete?: Athlete | null
+  ai_preview?: unknown
+  total_users?: number
+  active_users?: number
+  inactive_users?: number
+  users_by_role?: { admin: number; coach: number; student: number }
+  total_performance_records?: number
+  total_attendance_records?: number
+  recent_users?: AdminUser[]
+  unlinked_students?: number
 }
 
 export interface LeaderboardEntry {

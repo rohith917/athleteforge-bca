@@ -10,6 +10,12 @@ import Login from '@/pages/Login'
 import Register from '@/pages/Register'
 import ForgotPassword from '@/pages/ForgotPassword'
 import ResetPassword from '@/pages/ResetPassword'
+import { DashboardLayout } from '@/components/layout/DashboardLayout'
+import { PrivateRoute, GuestRoute, StaffRoute, FallbackRoute } from '@/routes/AuthGuards'
+import DashboardHome from '@/pages/dashboard/DashboardHome'
+import Athletes from '@/pages/dashboard/Athletes'
+import AthleteForm from '@/pages/dashboard/AthleteForm'
+import AthleteProfile from '@/pages/dashboard/AthleteProfile'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -31,10 +37,20 @@ export default function App() {
             </>
           }
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+        <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+        <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
         <Route path="/reset-password" element={<ResetPassword />} />
+
+        <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
+          <Route index element={<DashboardHome />} />
+          <Route path="athletes" element={<StaffRoute><Athletes /></StaffRoute>} />
+          <Route path="athletes/new" element={<StaffRoute><AthleteForm /></StaffRoute>} />
+          <Route path="athletes/:id" element={<AthleteProfile />} />
+          <Route path="athletes/:id/edit" element={<StaffRoute><AthleteForm /></StaffRoute>} />
+        </Route>
+
+        <Route path="*" element={<FallbackRoute />} />
       </Routes>
     </SmoothScroll>
   )
