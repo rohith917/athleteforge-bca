@@ -35,6 +35,10 @@ class Command(BaseCommand):
             ('sports-nutrition-fundamentals', self._seed_nutrition_course),
             ('plyometrics-fundamentals', self._seed_plyometrics_course),
             ('taekwondo-physical-demands', self._seed_taekwondo_physical_demands_course),
+            ('mobility-flexibility-fundamentals', self._seed_mobility_course),
+            ('program-design-fundamentals', self._seed_program_design_course),
+            ('anti-doping-education-basics', self._seed_anti_doping_course),
+            ('swimming-physical-demands', self._seed_swimming_physical_demands_course),
         ]
 
         created = 0
@@ -901,6 +905,199 @@ class Command(BaseCommand):
                 safety_considerations='Any groin, hip flexor, or ankle pain during kicking drills should be assessed before continuing high-volume kicking work.',
                 summary='The support leg (ankle/knee) and kicking leg\'s hip/groin region are common Taekwondo injury areas — targeted strength, balance, and mobility work help address both.',
                 references='General combat-sport injury-epidemiology principles used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_mobility_course(self, author):
+        category = CourseCategory.objects.get(slug='mobility', sport=None)
+        course = Course.objects.create(
+            title='Mobility & Flexibility Fundamentals',
+            subtitle='The difference between the two, and how to train each',
+            description='Clarifies what mobility and flexibility actually mean, and introduces basic ways to train both.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Mobility & Flexibility Basics', order=1)
+
+        lessons = [
+            dict(
+                title='Mobility vs Flexibility: What\'s the Difference?',
+                lesson_type='text', order=1, estimated_minutes=7,
+                learning_objectives='Distinguish mobility from flexibility as distinct but related qualities.',
+                content='These terms are often used interchangeably, but they describe different things.',
+                scientific_explanation='Flexibility refers to a muscle\'s passive ability to lengthen (e.g. how far a limb can be moved by an external force). Mobility refers to how much usable, controlled range of motion a joint has under an athlete\'s own active control — it involves not just tissue length but also strength and motor control through that range.',
+                practical_application='An athlete can be flexible in a passive stretch test but still lack mobility if they can\'t actively control that range during movement — both may need training depending on the gap.',
+                key_coaching_points='Assess both passive range (flexibility) and active, controlled range (mobility) rather than assuming one implies the other.',
+                common_mistakes='Assuming a flexible athlete automatically has good functional mobility, or vice versa.',
+                safety_considerations='Excessive passive flexibility without adequate strength/control through that range (hypermobility) can itself be an injury risk factor.',
+                summary='Flexibility is passive range of motion; mobility is usable, controlled range under an athlete\'s own strength — both matter, and they are not the same thing.',
+                references='General mobility/flexibility terminology used in strength & conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Basic Mobility Training Approaches',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe simple ways to train mobility for a given joint.',
+                content='Mobility training generally combines moving through a range with some element of control or loading through that range.',
+                scientific_explanation='Simply stretching passively develops flexibility but not necessarily control through that range. Actively moving a joint through its range under some load or control (e.g. controlled articular rotations, loaded stretching) trains the nervous system to actually use the available range, which is what "mobility" specifically refers to.',
+                practical_application='Combine passive stretching (to build available range) with active, controlled movement through that range (to make it usable) rather than relying on passive stretching alone.',
+                key_coaching_points='Prioritize mobility work for joints and ranges the athlete\'s sport actually uses — mobility training should be somewhat targeted, not generic.',
+                common_mistakes='Only doing passive stretching and assuming that alone builds usable mobility.',
+                safety_considerations='Introduce new ranges of motion gradually, especially under load — don\'t jump straight to loaded work in a brand-new range.',
+                summary='Combining passive range-building with active, controlled movement through that range is what actually develops usable mobility, not passive stretching alone.',
+                references='General mobility-training principles used in strength & conditioning practice.',
+                faqs=[],
+                quiz=dict(
+                    title='Mobility & Flexibility Check',
+                    passing_score_percent=70,
+                    questions=[
+                        dict(
+                            question_text='Which term describes a joint\'s usable range of motion under the athlete\'s own active control?',
+                            explanation='Mobility specifically refers to controlled, active range of motion — not just passive tissue length.',
+                            choices=[('Flexibility', False), ('Mobility', True), ('Endurance', False)],
+                        ),
+                        dict(
+                            question_text='What does passive stretching alone tend to build?',
+                            explanation='Passive stretching builds passive range (flexibility) but not necessarily the active control needed to use that range.',
+                            choices=[('Usable, controlled mobility', False), ('Passive range of motion (flexibility)', True), ('Maximal strength', False)],
+                        ),
+                    ],
+                ),
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_program_design_course(self, author):
+        category = CourseCategory.objects.get(slug='program-design', sport=None)
+        course = Course.objects.create(
+            title='Program Design Fundamentals',
+            subtitle='How to structure a training session and a training week',
+            description='Introduces basic principles for sequencing exercises within a session and structuring a training week.',
+            category=category, level='intermediate', status='published', estimated_hours=0.6, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Program Design Basics', order=1)
+
+        lessons = [
+            dict(
+                title='Sequencing a Training Session',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain a sensible default order for organizing exercises within a session.',
+                content='The order exercises appear in a session affects how well an athlete can perform each one.',
+                scientific_explanation='Qualities requiring the highest skill and speed (technical work, plyometrics, sprint work) are generally placed early in a session, while the nervous system is freshest. Heavy strength work typically follows. Lower-skill, more fatigue-tolerant work (accessory exercises, aerobic conditioning) is usually placed later, since accumulated fatigue affects it less.',
+                practical_application='A common session order: warm-up -> speed/power/technical work -> primary strength work -> accessory work -> conditioning -> cool-down.',
+                key_coaching_points='Put the exercises that most need precision and freshness first, and the most fatigue-tolerant work last.',
+                common_mistakes='Placing high-skill, high-speed work (like plyometrics or technical sprint drills) at the end of a session after the athlete is already fatigued.',
+                safety_considerations='Technical/high-speed work performed under significant fatigue carries higher injury risk due to degraded movement quality.',
+                summary='Order a session from highest-skill/freshest-nervous-system work toward more fatigue-tolerant work, not arbitrarily.',
+                references='General session-sequencing principles used in strength & conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Structuring a Training Week',
+                lesson_type='text', order=2, estimated_minutes=8,
+                learning_objectives='Describe basic principles for spacing different training qualities across a week.',
+                content='How sessions are spaced across a week affects how well an athlete can recover and perform in each one.',
+                scientific_explanation='Similar or overlapping fatigue types (e.g. two very heavy leg-strength sessions) generally need more recovery time between them than dissimilar types (e.g. a heavy leg day followed by an upper-body-focused day). Spacing high-demand sessions with adequate recovery, rather than stacking them back-to-back, supports better quality in each.',
+                practical_application='Sequence the week so the highest-demand, most similar sessions aren\'t placed on consecutive days without adequate recovery between them.',
+                key_coaching_points='Map out a week\'s fatigue pattern, not just its exercise content, before finalizing the schedule.',
+                common_mistakes='Scheduling by convenience (e.g. "leg day is always Monday and Thursday") without considering whether that spacing actually allows adequate recovery.',
+                safety_considerations='Repeatedly stacking similar high-demand sessions without recovery is a load-management risk covered in more depth in Injury Prevention.',
+                summary='Space training qualities across the week with recovery in mind, not just convenience — similar high-demand sessions need more space between them.',
+                references='General weekly training-structure principles used in strength & conditioning practice.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_anti_doping_course(self, author):
+        category = CourseCategory.objects.get(slug='anti-doping-education', sport=None)
+        course = Course.objects.create(
+            title='Anti-Doping Education: Basics',
+            subtitle='What every athlete should understand about clean sport',
+            description='A general introduction to why anti-doping rules exist and the basic responsibilities athletes carry.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Clean Sport Basics', order=1)
+
+        lessons = [
+            dict(
+                title='Why Anti-Doping Rules Exist',
+                lesson_type='text', order=1, estimated_minutes=7,
+                learning_objectives='Explain the basic purpose of anti-doping regulation in sport.',
+                content='Anti-doping systems exist to protect fair competition and athlete health.',
+                scientific_explanation='Prohibited substances and methods are generally restricted for two overlapping reasons: they can provide an unfair competitive advantage, and many carry real health risks, particularly for developing young athletes. Sports governing bodies maintain and regularly update prohibited lists based on these concerns.',
+                practical_application='Athletes and coaches should treat anti-doping compliance as a standard part of training and competition, not an afterthought only relevant to elite athletes.',
+                key_coaching_points='Build awareness of anti-doping responsibility into an athlete\'s general education early, not just before major competitions.',
+                common_mistakes='Assuming anti-doping rules only matter at the highest competitive levels.',
+                safety_considerations='None specific — this lesson is educational context, not medical guidance.',
+                summary='Anti-doping rules exist to protect both fair competition and athlete health, and apply at every competitive level, not just elite sport.',
+                references='General anti-doping principles as commonly taught in athlete education programs.',
+                faqs=[],
+            ),
+            dict(
+                title='Athlete Responsibility Basics',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe basic athlete responsibilities under most anti-doping systems.',
+                content='Anti-doping systems generally place direct personal responsibility on the athlete for what enters their body.',
+                scientific_explanation='Under a "strict liability" principle common to most anti-doping frameworks, an athlete can be held responsible for a prohibited substance found in their system regardless of how it got there — including through contaminated supplements or medications taken without checking their status first.',
+                practical_application='Athletes should check any medication or supplement against their sport\'s current prohibited list (or with a qualified professional) before use, particularly around competition.',
+                key_coaching_points='Encourage athletes to ask before taking anything new, rather than assuming a product is safe because it is commercially available.',
+                common_mistakes='Assuming over-the-counter supplements are automatically safe under anti-doping rules without checking.',
+                safety_considerations='This is general educational content, not medical or legal advice — athletes with specific medication questions should consult their sport\'s official anti-doping body or a qualified professional.',
+                summary='Most anti-doping systems place direct responsibility on the athlete for what enters their body — checking before taking anything new is a basic protective habit.',
+                references='General "strict liability" principle as commonly explained in athlete anti-doping education.',
+                faqs=[
+                    ('Does this replace official anti-doping guidance from my sport\'s governing body?', 'No — always follow your sport\'s official anti-doping body for authoritative, current guidance and prohibited lists.'),
+                ],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_swimming_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='swimming')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Swimming: Physical Demands',
+            subtitle='What competitive swimming asks of an athlete\'s body',
+            description='An introduction to the movement and energy-system demands of competitive swimming.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+
+        lessons = [
+            dict(
+                title='Movement and Energy System Demands',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe the physical qualities competitive swimming demands.',
+                content='Swimming is a whole-body, non-weight-bearing sport with event-dependent energy demands.',
+                scientific_explanation=(
+                    'Unlike most land sports, swimming is largely non-weight-bearing, which changes the injury '
+                    'and conditioning picture, while placing high repetitive demand on the shoulders in '
+                    'particular. Energy demands vary substantially by event distance — sprint events rely more '
+                    'on anaerobic power, while distance events rely more on aerobic endurance — so training '
+                    'demands differ meaningfully across events.'
+                ),
+                practical_application='Training should be matched to the athlete\'s competitive event distance — sprint-focused athletes and distance-focused athletes have meaningfully different conditioning priorities.',
+                key_coaching_points='Don\'t apply one generic "swimmer conditioning" template regardless of event specialization.',
+                common_mistakes='Training all swimmers with the same energy-system emphasis regardless of their actual competitive events.',
+                safety_considerations='The shoulder\'s repetitive overhead-style loading in swimming makes shoulder-health maintenance work a standard, not optional, part of training.',
+                summary='Swimming is non-weight-bearing with high repetitive shoulder demand, and its energy-system demands vary significantly by event distance.',
+                references='General competitive-swimming physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Common Injury Areas in Swimming',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify commonly stressed areas in competitive swimming and why.',
+                content='Swimming\'s repetitive overhead stroke pattern creates a recognizable injury profile.',
+                scientific_explanation='"Swimmer\'s shoulder" — a broad term for shoulder pain linked to the very high repetition count of overhead stroke movements — is one of the most commonly discussed issues in competitive swimmers. Knee stress (particularly in breaststroke) and lower back stress (particularly in butterfly and starts/turns) are also commonly noted.',
+                practical_application='Include shoulder-stability and rotator-cuff/scapular strength work as a routine part of a swimmer\'s dryland training, alongside stroke-specific technique attention.',
+                key_coaching_points='Address shoulder-health maintenance proactively and continuously, not only after pain appears.',
+                common_mistakes='Treating dryland strength work as optional or secondary to pool volume.',
+                safety_considerations='Persistent shoulder pain during or after swimming warrants assessment rather than simply reducing volume temporarily and hoping it resolves.',
+                summary='The shoulder (from repetitive overhead stroke volume) is the standout injury area in swimming, with knee and lower-back stress also common depending on stroke — proactive dryland work helps address this.',
+                references='General competitive-swimming injury-epidemiology principles used in sport-specific conditioning practice.',
                 faqs=[],
             ),
         ]
