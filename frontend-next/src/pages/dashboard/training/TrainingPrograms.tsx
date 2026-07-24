@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { Dumbbell, Plus, Calendar, Layers } from 'lucide-react'
+import { Dumbbell, Plus, Calendar, Layers, Wand2 } from 'lucide-react'
 import { trainingAPI, athletesAPI } from '@/services/api'
 import { parseListResponse } from '@/lib/apiHelpers'
 import { useAuth } from '@/context/AuthContext'
@@ -72,7 +72,12 @@ export default function TrainingPrograms() {
         title={isStaff ? 'Training Programs' : 'My Training Programs'}
         description={isStaff ? 'Build and assign day-by-day training programs' : 'Programs your coach has assigned to you'}
         actions={isStaff ? (
-          <Button size="sm" magnetic={false} onClick={() => setShowForm((v) => !v)}><Plus size={16} /> New Program</Button>
+          <>
+            <Link to="/dashboard/training/generate">
+              <Button size="sm" variant="outline" magnetic={false}><Wand2 size={16} /> Generate Program</Button>
+            </Link>
+            <Button size="sm" magnetic={false} onClick={() => setShowForm((v) => !v)}><Plus size={16} /> New Program</Button>
+          </>
         ) : undefined}
       />
 

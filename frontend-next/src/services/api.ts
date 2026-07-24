@@ -14,7 +14,7 @@ import type {
   LearningSummary, QuizSubmitResult, ResearchSummaryItem,
   Organization, OrgRole, OrganizationMembership,
   TrainingProgramListItem, TrainingProgramDetail, ProgramDayItem, ProgramBlockItem, ProgramExerciseItem, BlockType,
-  WellnessCheckInItem, SessionRPEItem,
+  WellnessCheckInItem, SessionRPEItem, GeneratorStatus, GenerateProgramPayload, GeneratedProgram,
 } from '@/types'
 
 const API_BASE = resolveApiBase()
@@ -548,6 +548,9 @@ export const trainingAPI = {
   getRpe: (params?: Record<string, unknown>) => api.get<SessionRPEItem[]>('/training/rpe/', { params }),
   createRpe: (data: { session_date: string; rpe: number; duration_minutes: number; session_type?: string; notes?: string; athlete?: number }) =>
     api.post<SessionRPEItem>('/training/rpe/', data),
+
+  getGeneratorStatus: () => api.get<GeneratorStatus>('/training/generator/status/'),
+  generateProgram: (data: GenerateProgramPayload) => api.post<GeneratedProgram>('/training/programs/generate/', data),
 }
 
 export default api

@@ -34,6 +34,7 @@ import OrganizationsAdmin from '@/pages/dashboard/academy/OrganizationsAdmin'
 import TrainingPrograms from '@/pages/dashboard/training/TrainingPrograms'
 import ProgramBuilder from '@/pages/dashboard/training/ProgramBuilder'
 import AthleteMonitoring from '@/pages/dashboard/training/AthleteMonitoring'
+import GenerateProgram from '@/pages/dashboard/training/GenerateProgram'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -77,6 +78,7 @@ export default function App() {
           <Route path="admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
           <Route path="admin/organizations" element={<AdminRoute><OrganizationsAdmin /></AdminRoute>} />
           <Route path="training" element={<TrainingPrograms />} />
+          <Route path="training/generate" element={<StaffRoute><GenerateProgram /></StaffRoute>} />
           <Route path="monitoring" element={<AthleteMonitoring />} />
           <Route path="training/:id" element={<ProgramBuilder />} />
           <Route path="academy" element={<AcademyCatalog />} />

@@ -638,3 +638,32 @@ export interface SessionRPEItem {
   training_load: number
   created_at: string
 }
+
+// ==================== AI Training Program Generator ====================
+
+export type ProgramGoal =
+  | 'strength' | 'hypertrophy' | 'power' | 'endurance' | 'speed_agility' | 'general_fitness' | 'return_to_play'
+
+export interface GeneratorStatus {
+  available: boolean
+  mode: 'llm' | 'rules'
+  label: string
+  goals: ProgramGoal[]
+}
+
+export interface GenerateProgramPayload {
+  athlete: number
+  name?: string
+  sport: string
+  goal: ProgramGoal
+  duration_weeks: number
+  sessions_per_week: number
+  start_date: string
+  experience_level?: 'beginner' | 'intermediate' | 'advanced'
+  equipment_notes?: string
+  injury_notes?: string
+}
+
+export interface GeneratedProgram extends TrainingProgramDetail {
+  generator_mode: 'llm' | 'rules'
+}
