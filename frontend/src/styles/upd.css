@@ -643,11 +643,11 @@
   border-color: var(--upd-lime);
 }
 
-.mdnt-nav .btn-mdnt-cta {
-  background: var(--upd-lime);
-  color: #0a0a0a !important;
+.public-page-mdnt .mdnt-nav .btn-mdnt-cta {
+  background: #0a0a0a;
+  color: #ffffff !important;
 }
 
 .mdnt-nav .btn-mdnt-cta:hover {
-  box-shadow: 0 8px 28px var(--upd-lime-glow);
+  opacity: 0.85;
 }

@@ -168,9 +168,9 @@ export default function Landing() {
               transition={{ duration: 0.6, delay: 0.45 }}
             >
               <div className="gear-hero-avatars">
-                <span className="gear-avatar" style={{ '--avatar-bg': '#ff3d3d' }}>R</span>
-                <span className="gear-avatar" style={{ '--avatar-bg': '#5b8a17' }}>A</span>
-                <span className="gear-avatar" style={{ '--avatar-bg': '#0a0a0a' }}>S</span>
+                <span className="gear-avatar" style={{ '--avatar-bg': '#0a0a0a' }}>R</span>
+                <span className="gear-avatar" style={{ '--avatar-bg': '#a3161f' }}>A</span>
+                <span className="gear-avatar" style={{ '--avatar-bg': '#3a3a3a' }}>S</span>
               </div>
               <p>
                 Trusted by coaches and athletes tracking performance, recovery,

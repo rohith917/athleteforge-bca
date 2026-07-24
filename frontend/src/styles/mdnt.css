@@ -41,9 +41,19 @@
   --mdnt-white: #0e0e10;
   --mdnt-muted: rgba(10, 10, 10, 0.58);
   --mdnt-dim: rgba(10, 10, 10, 0.38);
-  --mdnt-accent: #d81f2b;
-  --mdnt-accent-hover: #ff3d3d;
-  --mdnt-lime: #4d7a12;
+  /* One restrained accent instead of two competing bright ones (red +
+     neon lime) — reads as more considered/premium. Everything that used
+     to be "lime" now uses the same deep red as the rest of the brand. */
+  --mdnt-accent: #a3161f;
+  --mdnt-accent-hover: #c01f29;
+  --mdnt-lime: #a3161f;
+  /* upd.css's .landing-mdnt rule re-derives --mdnt-lime from --upd-lime
+     (equal specificity, loads later, so it wins) — remap the source
+     variable too so both stay consistent instead of upd.css silently
+     reverting to the raw neon color. */
+  --upd-lime: #a3161f;
+  --upd-lime-dim: rgba(163, 22, 31, 0.10);
+  --upd-lime-glow: rgba(163, 22, 31, 0.22);
   --mdnt-font-display: 'Inter Tight', 'Inter', -apple-system, sans-serif;
   --bg-page: var(--mdnt-black);
   --bg-card: var(--mdnt-surface);
@@ -955,13 +965,13 @@
 }
 
 .mdnt-cta-block .btn-mdnt-cta {
-  background: var(--mdnt-black);
-  color: var(--mdnt-white) !important;
+  background: #0a0a0a;
+  color: #ffffff !important;
 }
 
 .mdnt-cta-block .btn-mdnt-cta:hover {
   background: var(--mdnt-accent);
-  color: var(--mdnt-white) !important;
+  color: #ffffff !important;
 }
 
 /* ---- Site footer ---- */
