@@ -29,6 +29,7 @@ import AcademyCatalog from '@/pages/dashboard/academy/AcademyCatalog'
 import CourseDetail from '@/pages/dashboard/academy/CourseDetail'
 import LessonPlayer from '@/pages/dashboard/academy/LessonPlayer'
 import MyCertificates from '@/pages/dashboard/academy/MyCertificates'
+import ResearchLibrary from '@/pages/dashboard/academy/ResearchLibrary'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -72,6 +73,7 @@ export default function App() {
           <Route path="admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
           <Route path="academy" element={<AcademyCatalog />} />
           <Route path="academy/certificates" element={<MyCertificates />} />
+          <Route path="academy/research" element={<ResearchLibrary />} />
           <Route path="academy/:slug" element={<CourseDetail />} />
           <Route path="academy/:courseSlug/lessons/:lessonSlug" element={<LessonPlayer />} />
         </Route>

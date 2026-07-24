@@ -495,3 +495,14 @@ export interface QuizSubmitResult {
   passing_score_percent: number
   attempt_id: number
 }
+
+export interface ResearchSummaryItem {
+  id: number
+  title: string
+  slug: string
+  topic: number | null
+  topic_name: string | null
+  summary: string
+  practical_takeaways: string
+  last_reviewed: string | null
+}

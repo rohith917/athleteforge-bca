@@ -11,7 +11,7 @@ import type {
   Attendance, WeightTracking, DashboardStats, LeaderboardResponse, Goal, Announcement,
   NotificationsResponse, AdminUser, AttendanceReport,
   Sport, CourseCategory, CourseListItem, CourseDetail, LessonDetail, Enrollment, Certificate,
-  LearningSummary, QuizSubmitResult,
+  LearningSummary, QuizSubmitResult, ResearchSummaryItem,
 } from '@/types'
 
 const API_BASE = resolveApiBase()
@@ -494,6 +494,7 @@ export const academyAPI = {
   getEnrollments: () => api.get<Enrollment[]>('/academy/enrollments/'),
   getCertificates: () => api.get<Certificate[]>('/academy/certificates/'),
   getLearningSummary: () => api.get<LearningSummary>('/academy/learning-summary/'),
+  getResearch: (params?: Record<string, unknown>) => api.get<ResearchSummaryItem[]>('/academy/research/', { params }),
 }
 
 export default api

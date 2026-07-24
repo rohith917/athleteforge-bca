@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { GraduationCap, Clock, Layers, Award, Flame } from 'lucide-react'
+import { GraduationCap, Clock, Layers, Award, Flame, BookOpen } from 'lucide-react'
 import { academyAPI } from '@/services/api'
 import { parseListResponse } from '@/lib/apiHelpers'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
@@ -44,7 +44,20 @@ export default function AcademyCatalog() {
 
   return (
     <div>
-      <PageHeader title="Sports Science Academy" description="Evidence-based courses in exercise science, coaching, and sport-specific development" />
+      <PageHeader
+        title="Sports Science Academy"
+        description="Evidence-based courses in exercise science, coaching, and sport-specific development"
+        actions={
+          <>
+            <Link to="/dashboard/academy/research" className="flex items-center gap-1.5 font-body text-xs font-semibold text-text-secondary hover:text-text">
+              <BookOpen size={14} /> Research Library
+            </Link>
+            <Link to="/dashboard/academy/certificates" className="flex items-center gap-1.5 font-body text-xs font-semibold text-text-secondary hover:text-text">
+              <Award size={14} /> My Certificates
+            </Link>
+          </>
+        }
+      />
 
       {summary && (
         <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
