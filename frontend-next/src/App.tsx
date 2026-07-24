@@ -33,6 +33,7 @@ import ResearchLibrary from '@/pages/dashboard/academy/ResearchLibrary'
 import OrganizationsAdmin from '@/pages/dashboard/academy/OrganizationsAdmin'
 import TrainingPrograms from '@/pages/dashboard/training/TrainingPrograms'
 import ProgramBuilder from '@/pages/dashboard/training/ProgramBuilder'
+import AthleteMonitoring from '@/pages/dashboard/training/AthleteMonitoring'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -76,6 +77,7 @@ export default function App() {
           <Route path="admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
           <Route path="admin/organizations" element={<AdminRoute><OrganizationsAdmin /></AdminRoute>} />
           <Route path="training" element={<TrainingPrograms />} />
+          <Route path="monitoring" element={<AthleteMonitoring />} />
           <Route path="training/:id" element={<ProgramBuilder />} />
           <Route path="academy" element={<AcademyCatalog />} />
           <Route path="academy/certificates" element={<MyCertificates />} />

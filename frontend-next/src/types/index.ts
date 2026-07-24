@@ -606,3 +606,35 @@ export interface TrainingProgramListItem {
 export interface TrainingProgramDetail extends TrainingProgramListItem {
   days: ProgramDayItem[]
 }
+
+// ==================== Athlete Monitoring ====================
+
+export interface WellnessCheckInItem {
+  id: number
+  athlete: number
+  athlete_name: string
+  date: string
+  sleep_hours: string | null
+  sleep_quality: number
+  fatigue: number
+  soreness: number
+  stress: number
+  mood: number
+  resting_heart_rate: number | null
+  notes: string
+  wellness_score: number
+  created_at: string
+}
+
+export interface SessionRPEItem {
+  id: number
+  athlete: number
+  athlete_name: string
+  session_date: string
+  rpe: number
+  duration_minutes: number
+  session_type: string
+  notes: string
+  training_load: number
+  created_at: string
+}

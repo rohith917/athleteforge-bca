@@ -14,6 +14,7 @@ import type {
   LearningSummary, QuizSubmitResult, ResearchSummaryItem,
   Organization, OrgRole, OrganizationMembership,
   TrainingProgramListItem, TrainingProgramDetail, ProgramDayItem, ProgramBlockItem, ProgramExerciseItem, BlockType,
+  WellnessCheckInItem, SessionRPEItem,
 } from '@/types'
 
 const API_BASE = resolveApiBase()
@@ -537,6 +538,16 @@ export const trainingAPI = {
   deleteExercise: (id: number) => api.delete(`/training/exercises/${id}/`),
   reorderExercises: (order: number[]) => api.post('/training/exercises/reorder/', { order }),
   completeExercise: (id: number) => api.post<{ is_completed: boolean }>(`/training/exercises/${id}/complete/`),
+
+  getWellness: (params?: Record<string, unknown>) => api.get<WellnessCheckInItem[]>('/training/wellness/', { params }),
+  createWellness: (data: {
+    date: string; sleep_hours?: string; sleep_quality: number; fatigue: number
+    soreness: number; stress: number; mood: number; resting_heart_rate?: number; notes?: string; athlete?: number
+  }) => api.post<WellnessCheckInItem>('/training/wellness/', data),
+
+  getRpe: (params?: Record<string, unknown>) => api.get<SessionRPEItem[]>('/training/rpe/', { params }),
+  createRpe: (data: { session_date: string; rpe: number; duration_minutes: number; session_type?: string; notes?: string; athlete?: number }) =>
+    api.post<SessionRPEItem>('/training/rpe/', data),
 }
 
 export default api
