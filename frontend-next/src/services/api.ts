@@ -10,6 +10,8 @@ import type {
   AuthUser, Athlete, AthleteListItem, Performance, Injury, Competition, CompetitionResult,
   Attendance, WeightTracking, DashboardStats, LeaderboardResponse, Goal, Announcement,
   NotificationsResponse, AdminUser, AttendanceReport,
+  Sport, CourseCategory, CourseListItem, CourseDetail, LessonDetail, Enrollment, Certificate,
+  LearningSummary, QuizSubmitResult,
 } from '@/types'
 
 const API_BASE = resolveApiBase()
@@ -476,6 +478,22 @@ export const contactAPI = {
 export const reportsAPI = {
   downloadPDF: (type: string) => `${API_BASE}/reports/pdf/?type=${type}`,
   downloadExcel: (type: string) => `${API_BASE}/reports/excel/?type=${type}`,
+}
+
+export const academyAPI = {
+  getSports: () => api.get<Sport[]>('/academy/sports/'),
+  getCategories: (params?: Record<string, unknown>) => api.get<CourseCategory[]>('/academy/categories/', { params }),
+  getCourses: (params?: Record<string, unknown>) => api.get<CourseListItem[]>('/academy/courses/', { params }),
+  getCourse: (slug: string) => api.get<CourseDetail>(`/academy/courses/${slug}/`),
+  enroll: (slug: string) => api.post<Enrollment>(`/academy/courses/${slug}/enroll/`),
+  getLesson: (slug: string) => api.get<LessonDetail>(`/academy/lessons/${slug}/`),
+  completeLesson: (slug: string) => api.post<{ lesson_completed: boolean; course_progress_percent: number; course_completed: boolean }>(`/academy/lessons/${slug}/complete/`),
+  bookmarkLesson: (slug: string) => api.post<{ is_bookmarked: boolean }>(`/academy/lessons/${slug}/bookmark/`),
+  submitQuiz: (slug: string, answers: Record<string, number>) =>
+    api.post<QuizSubmitResult>(`/academy/lessons/${slug}/submit_quiz/`, { answers }),
+  getEnrollments: () => api.get<Enrollment[]>('/academy/enrollments/'),
+  getCertificates: () => api.get<Certificate[]>('/academy/certificates/'),
+  getLearningSummary: () => api.get<LearningSummary>('/academy/learning-summary/'),
 }
 
 export default api

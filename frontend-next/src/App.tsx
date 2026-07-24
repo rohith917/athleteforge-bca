@@ -25,6 +25,10 @@ import Leaderboard from '@/pages/dashboard/Leaderboard'
 import Announcements from '@/pages/dashboard/Announcements'
 import Reports from '@/pages/dashboard/Reports'
 import UserManagement from '@/pages/dashboard/UserManagement'
+import AcademyCatalog from '@/pages/dashboard/academy/AcademyCatalog'
+import CourseDetail from '@/pages/dashboard/academy/CourseDetail'
+import LessonPlayer from '@/pages/dashboard/academy/LessonPlayer'
+import MyCertificates from '@/pages/dashboard/academy/MyCertificates'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -66,6 +70,10 @@ export default function App() {
           <Route path="announcements" element={<Announcements />} />
           <Route path="reports" element={<CoachRoute><Reports /></CoachRoute>} />
           <Route path="admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
+          <Route path="academy" element={<AcademyCatalog />} />
+          <Route path="academy/certificates" element={<MyCertificates />} />
+          <Route path="academy/:slug" element={<CourseDetail />} />
+          <Route path="academy/:courseSlug/lessons/:lessonSlug" element={<LessonPlayer />} />
         </Route>
 
         <Route path="*" element={<FallbackRoute />} />

@@ -315,3 +315,183 @@ export interface AttendanceReport {
 
 /** Generic DRF paginated-or-plain list response shape used across list endpoints. */
 export type ListResponse<T> = T[] | { results: T[]; count?: number; next?: string | null; previous?: string | null }
+
+// ==================== Academy (LMS) ====================
+
+export interface Sport {
+  id: number
+  name: string
+  slug: string
+  description: string
+  icon: string
+}
+
+export interface CourseCategory {
+  id: number
+  name: string
+  slug: string
+  description: string
+  parent: number | null
+  sport: number | null
+  sport_name: string | null
+  order: number
+  course_count: number
+  children: CourseCategory[]
+}
+
+export type CourseLevel = 'beginner' | 'intermediate' | 'advanced'
+export type CourseStatus = 'draft' | 'published' | 'archived'
+
+export interface CourseListItem {
+  id: number
+  title: string
+  slug: string
+  subtitle: string
+  category: number
+  category_name: string
+  sport_name: string | null
+  level: CourseLevel
+  status: CourseStatus
+  cover_image: string | null
+  estimated_hours: string
+  lesson_count: number
+  is_enrolled: boolean
+  created_at: string
+  published_at: string | null
+}
+
+export interface CourseDetail extends CourseListItem {
+  description: string
+  modules: CourseModule[]
+  progress_percent: number | null
+}
+
+export interface CourseModule {
+  id: number
+  title: string
+  description: string
+  order: number
+  lessons: LessonBrief[]
+}
+
+export type LessonType =
+  | 'video' | 'text' | 'pdf' | 'presentation' | 'exercise_demo' | 'assignment' | 'practical_assessment'
+
+export interface LessonBrief {
+  id: number
+  title: string
+  slug: string
+  lesson_type: LessonType
+  order: number
+  estimated_minutes: number
+  has_3d_demo: boolean
+  is_published: boolean
+  is_completed: boolean
+  has_quiz: boolean
+}
+
+export interface LessonFAQItem {
+  id: number
+  question: string
+  answer: string
+  order: number
+}
+
+export interface QuizChoiceItem {
+  id: number
+  choice_text: string
+  order: number
+}
+
+export interface QuizQuestionItem {
+  id: number
+  question_text: string
+  order: number
+  choices: QuizChoiceItem[]
+}
+
+export interface QuizDetail {
+  id: number
+  title: string
+  passing_score_percent: number
+  questions: QuizQuestionItem[]
+}
+
+export interface AssignmentDetail {
+  id: number
+  instructions: string
+  submission_type: 'text' | 'file' | 'video'
+}
+
+export interface LessonDetail {
+  id: number
+  title: string
+  slug: string
+  lesson_type: LessonType
+  order: number
+  estimated_minutes: number
+  learning_objectives: string
+  content: string
+  scientific_explanation: string
+  practical_application: string
+  key_coaching_points: string
+  common_mistakes: string
+  safety_considerations: string
+  progressions: string
+  regressions: string
+  summary: string
+  references: string
+  video_url: string
+  pdf_url: string
+  has_3d_demo: boolean
+  model_3d_ref: string
+  faqs: LessonFAQItem[]
+  attachments: { id: number; title: string; file: string; created_at: string }[]
+  quiz: QuizDetail | null
+  assignment: AssignmentDetail | null
+  course_id: number
+  course_title: string
+  module_title: string
+  is_completed: boolean
+  is_bookmarked: boolean
+}
+
+export interface Enrollment {
+  id: number
+  course: CourseListItem
+  enrolled_at: string
+  completed_at: string | null
+  last_accessed_at: string
+  progress_percent: number
+  is_completed: boolean
+}
+
+export interface Certificate {
+  id: number
+  certificate_number: string
+  course: number
+  course_title: string
+  user_name: string
+  issued_at: string
+}
+
+export interface LearningStreakData {
+  current_streak_days: number
+  longest_streak_days: number
+  last_activity_date: string | null
+}
+
+export interface LearningSummary {
+  continue_learning: Enrollment | null
+  courses_enrolled: number
+  courses_completed: number
+  certificates_earned: number
+  streak: LearningStreakData
+}
+
+export interface QuizSubmitResult {
+  score_percent: number
+  passed: boolean
+  passing_score_percent: number
+  attempt_id: number
+}
