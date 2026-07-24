@@ -32,11 +32,11 @@ export default function DashboardHome() {
     try {
       const [statsRes, leaderRes, annRes] = await Promise.all([
         dashboardAPI.getStats(),
-        leaderboardAPI.get().catch(() => ({ data: [] })),
+        leaderboardAPI.get().catch(() => ({ data: { leaderboard: [], sports: [] } })),
         announcementsAPI.getAll().catch(() => ({ data: [] })),
       ])
       setStats(statsRes.data)
-      setLeaders(parseListResponse<LeaderboardEntry>(leaderRes.data).slice(0, 5))
+      setLeaders((leaderRes.data.leaderboard || []).slice(0, 5))
       setAnnouncements(parseListResponse<Announcement>(annRes.data).slice(0, 4))
     } catch (err) {
       setError(getLoadErrorMessage(err, 'dashboard'))
@@ -198,10 +198,10 @@ export default function DashboardHome() {
                       {l.rank}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-body text-sm font-semibold text-text">{l.athlete_name}</p>
+                      <p className="truncate font-body text-sm font-semibold text-text">{l.name}</p>
                       <p className="truncate font-body text-xs text-text-muted">{l.sport}</p>
                     </div>
-                    <span className="font-display text-sm font-bold text-accent">{l.score}</span>
+                    <span className="font-display text-sm font-bold text-accent">{l.composite_score}</span>
                   </div>
                 ))}
               </div>

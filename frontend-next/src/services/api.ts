@@ -8,8 +8,8 @@ import axios, { type AxiosError, type AxiosRequestConfig, type AxiosResponse } f
 import { resolveApiBase, getPublicBackendUrl } from '@/config/apiConfig'
 import type {
   AuthUser, Athlete, AthleteListItem, Performance, Injury, Competition, CompetitionResult,
-  Attendance, WeightTracking, DashboardStats, LeaderboardEntry, Goal, Announcement,
-  NotificationsResponse, AdminUser,
+  Attendance, WeightTracking, DashboardStats, LeaderboardResponse, Goal, Announcement,
+  NotificationsResponse, AdminUser, AttendanceReport,
 } from '@/types'
 
 const API_BASE = resolveApiBase()
@@ -415,7 +415,7 @@ export const attendanceAPI = {
   getAll: (params?: Record<string, unknown>) => api.get<Attendance[]>('/attendance/', { params }),
   create: (data: Partial<Attendance>) => api.post<Attendance>('/attendance/', data),
   bulkMark: (records: Partial<Attendance>[]) => api.post('/attendance/bulk_mark/', { records }),
-  getReport: (params?: Record<string, unknown>) => api.get('/attendance/report/', { params }),
+  getReport: (params?: Record<string, unknown>) => api.get<AttendanceReport>('/attendance/report/', { params }),
 }
 
 export const weightAPI = {
@@ -431,7 +431,7 @@ export const dashboardAPI = {
 }
 
 export const leaderboardAPI = {
-  get: (params?: Record<string, unknown>) => api.get<LeaderboardEntry[]>('/leaderboard/', { params }),
+  get: (params?: Record<string, unknown>) => api.get<LeaderboardResponse>('/leaderboard/', { params }),
 }
 
 export const goalsAPI = {

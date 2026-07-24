@@ -19,6 +19,10 @@ import AthleteProfile from '@/pages/dashboard/AthleteProfile'
 import Performance from '@/pages/dashboard/Performance'
 import Injuries from '@/pages/dashboard/Injuries'
 import Competitions from '@/pages/dashboard/Competitions'
+import AttendancePage from '@/pages/dashboard/Attendance'
+import WeightTracking from '@/pages/dashboard/WeightTracking'
+import Leaderboard from '@/pages/dashboard/Leaderboard'
+import Announcements from '@/pages/dashboard/Announcements'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -54,6 +58,10 @@ export default function App() {
           <Route path="performance" element={<Performance />} />
           <Route path="injuries" element={<Injuries />} />
           <Route path="competitions" element={<CoachRoute><Competitions /></CoachRoute>} />
+          <Route path="attendance" element={<AttendancePage />} />
+          <Route path="weight" element={<StaffRoute><WeightTracking /></StaffRoute>} />
+          <Route path="leaderboard" element={<Leaderboard />} />
+          <Route path="announcements" element={<Announcements />} />
         </Route>
 
         <Route path="*" element={<FallbackRoute />} />

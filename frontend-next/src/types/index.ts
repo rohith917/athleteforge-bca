@@ -166,6 +166,11 @@ export interface WeightTracking {
   created_at: string
 }
 
+export interface BMIResult {
+  bmi: number
+  category: 'Underweight' | 'Normal' | 'Overweight' | 'Obese'
+}
+
 export type GoalMetric =
   | 'speed_score' | 'strength_score' | 'endurance_score'
   | 'flexibility_score' | 'agility_score' | 'weight_kg' | 'attendance_rate'
@@ -280,14 +285,32 @@ export interface DashboardStats {
 
 export interface LeaderboardEntry {
   athlete_id: number
-  athlete_name: string
+  name: string
   sport: string
-  score: number
+  team: string
+  avatar_url: string
+  overall_score: number
   gold: number
   silver: number
   bronze: number
+  medal_points: number
   attendance_rate: number
+  composite_score: number
   rank: number
+}
+
+export interface LeaderboardResponse {
+  leaderboard: LeaderboardEntry[]
+  sports: string[]
+}
+
+export interface AttendanceReport {
+  total_records: number
+  present: number
+  absent: number
+  late: number
+  attendance_rate: number
+  records: Attendance[]
 }
 
 /** Generic DRF paginated-or-plain list response shape used across list endpoints. */
