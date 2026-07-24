@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
-from .models import TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion
+from .models import (
+    TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion,
+    WellnessCheckIn, SessionRPE,
+)
 
 
 class ProgramExerciseSerializer(serializers.ModelSerializer):
@@ -80,5 +83,32 @@ class ExerciseCompletionSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'exercise', 'athlete', 'is_completed', 'actual_sets',
             'actual_reps', 'actual_load', 'athlete_notes', 'completed_at',
+        ]
+        read_only_fields = ['athlete']
+
+
+class WellnessCheckInSerializer(serializers.ModelSerializer):
+    athlete_name = serializers.CharField(source='athlete.full_name', read_only=True)
+    wellness_score = serializers.ReadOnlyField()
+
+    class Meta:
+        model = WellnessCheckIn
+        fields = [
+            'id', 'athlete', 'athlete_name', 'date', 'sleep_hours', 'sleep_quality',
+            'fatigue', 'soreness', 'stress', 'mood', 'resting_heart_rate', 'notes',
+            'wellness_score', 'created_at',
+        ]
+        read_only_fields = ['athlete']
+
+
+class SessionRPESerializer(serializers.ModelSerializer):
+    athlete_name = serializers.CharField(source='athlete.full_name', read_only=True)
+    training_load = serializers.ReadOnlyField()
+
+    class Meta:
+        model = SessionRPE
+        fields = [
+            'id', 'athlete', 'athlete_name', 'session_date', 'rpe', 'duration_minutes',
+            'session_type', 'notes', 'training_load', 'created_at',
         ]
         read_only_fields = ['athlete']

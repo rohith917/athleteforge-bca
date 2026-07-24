@@ -1,6 +1,9 @@
 from django.contrib import admin
 
-from .models import TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion
+from .models import (
+    TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion,
+    WellnessCheckIn, SessionRPE,
+)
 
 
 class ProgramDayInline(admin.TabularInline):
@@ -40,3 +43,17 @@ class ProgramBlockAdmin(admin.ModelAdmin):
 
 admin.site.register(ProgramExercise)
 admin.site.register(ExerciseCompletion)
+
+
+@admin.register(WellnessCheckIn)
+class WellnessCheckInAdmin(admin.ModelAdmin):
+    list_display = ('athlete', 'date', 'sleep_quality', 'fatigue', 'soreness', 'stress', 'mood')
+    list_filter = ('date',)
+    search_fields = ('athlete__first_name', 'athlete__last_name')
+
+
+@admin.register(SessionRPE)
+class SessionRPEAdmin(admin.ModelAdmin):
+    list_display = ('athlete', 'session_date', 'rpe', 'duration_minutes', 'session_type')
+    list_filter = ('session_date',)
+    search_fields = ('athlete__first_name', 'athlete__last_name')

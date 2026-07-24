@@ -4,12 +4,17 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from api.models import Athlete
 from api.permissions import IsCoachOrAdmin, is_staff_role, get_athlete_for_user
 
-from .models import TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion
+from .models import (
+    TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion,
+    WellnessCheckIn, SessionRPE,
+)
 from .serializers import (
     TrainingProgramListSerializer, TrainingProgramDetailSerializer,
     ProgramDaySerializer, ProgramBlockSerializer, ProgramExerciseSerializer,
+    WellnessCheckInSerializer, SessionRPESerializer,
 )
 
 
@@ -144,7 +149,6 @@ class ProgramExerciseViewSet(viewsets.ModelViewSet):
         athlete = get_athlete_for_user(user) if not is_staff_role(user) else None
         if not athlete:
             athlete_id = request.data.get('athlete')
-            from api.models import Athlete
             athlete = Athlete.objects.filter(id=athlete_id).first()
         if not athlete:
             return Response({'error': 'No athlete context for this completion.'}, status=400)
@@ -157,3 +161,51 @@ class ProgramExerciseViewSet(viewsets.ModelViewSet):
                 setattr(completion, field, request.data[field])
         completion.save()
         return Response({'is_completed': completion.is_completed})
+
+
+class WellnessCheckInViewSet(viewsets.ModelViewSet):
+    serializer_class = WellnessCheckInSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = WellnessCheckIn.objects.select_related('athlete').all()
+        user = self.request.user
+        if not is_staff_role(user):
+            athlete = get_athlete_for_user(user)
+            qs = qs.filter(athlete=athlete) if athlete else qs.none()
+        athlete_id = self.request.query_params.get('athlete_id')
+        if athlete_id:
+            qs = qs.filter(athlete_id=athlete_id)
+        return qs
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if is_staff_role(user):
+            athlete = Athlete.objects.filter(id=self.request.data.get('athlete')).first()
+        else:
+            athlete = get_athlete_for_user(user)
+        serializer.save(athlete=athlete)
+
+
+class SessionRPEViewSet(viewsets.ModelViewSet):
+    serializer_class = SessionRPESerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = SessionRPE.objects.select_related('athlete').all()
+        user = self.request.user
+        if not is_staff_role(user):
+            athlete = get_athlete_for_user(user)
+            qs = qs.filter(athlete=athlete) if athlete else qs.none()
+        athlete_id = self.request.query_params.get('athlete_id')
+        if athlete_id:
+            qs = qs.filter(athlete_id=athlete_id)
+        return qs
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if is_staff_role(user):
+            athlete = Athlete.objects.filter(id=self.request.data.get('athlete')).first()
+        else:
+            athlete = get_athlete_for_user(user)
+        serializer.save(athlete=athlete)

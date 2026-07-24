@@ -8,6 +8,8 @@ router.register(r'programs', views.TrainingProgramViewSet, basename='training-pr
 router.register(r'days', views.ProgramDayViewSet, basename='training-days')
 router.register(r'blocks', views.ProgramBlockViewSet, basename='training-blocks')
 router.register(r'exercises', views.ProgramExerciseViewSet, basename='training-exercises')
+router.register(r'wellness', views.WellnessCheckInViewSet, basename='training-wellness')
+router.register(r'rpe', views.SessionRPEViewSet, basename='training-rpe')
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -123,3 +123,74 @@ class ExerciseCompletion(models.Model):
 
     def __str__(self):
         return f'{self.athlete.full_name} - {self.exercise.name}'
+
+
+# ==================== Athlete Monitoring ====================
+
+class WellnessCheckIn(models.Model):
+    """
+    Daily athlete self-report, one per athlete per day. Modeled on the
+    classic 5-item wellness questionnaire (sleep, fatigue, soreness,
+    stress, mood) used widely in sports science — each item rated 1-5,
+    higher always means "better" (5 = great sleep, low fatigue, etc.)
+    so scores can be summed/averaged directly without sign-flipping.
+
+    resting_heart_rate is a manual-entry field today; the column is
+    named for a later wearable/device integration rather than being
+    itself that integration.
+    """
+
+    athlete = models.ForeignKey('api.Athlete', on_delete=models.CASCADE, related_name='wellness_checkins')
+    date = models.DateField()
+    sleep_hours = models.DecimalField(max_digits=4, decimal_places=1, null=True, blank=True)
+    sleep_quality = models.PositiveSmallIntegerField(help_text='1 (poor) - 5 (excellent)')
+    fatigue = models.PositiveSmallIntegerField(help_text='1 (very fatigued) - 5 (very fresh)')
+    soreness = models.PositiveSmallIntegerField(help_text='1 (very sore) - 5 (no soreness)')
+    stress = models.PositiveSmallIntegerField(help_text='1 (very stressed) - 5 (very relaxed)')
+    mood = models.PositiveSmallIntegerField(help_text='1 (poor) - 5 (great)')
+    resting_heart_rate = models.PositiveSmallIntegerField(null=True, blank=True)
+    notes = models.TextField(blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'training_wellness_checkins'
+        ordering = ['-date']
+        constraints = [
+            models.UniqueConstraint(fields=['athlete', 'date'], name='unique_wellness_checkin_per_day'),
+        ]
+
+    def __str__(self):
+        return f'{self.athlete.full_name} - {self.date}'
+
+    @property
+    def wellness_score(self):
+        """Simple average of the five 1-5 items; higher is better."""
+        items = [self.sleep_quality, self.fatigue, self.soreness, self.stress, self.mood]
+        return round(sum(items) / len(items), 1)
+
+
+class SessionRPE(models.Model):
+    """
+    Session-RPE training load record (Foster et al. method): athlete
+    rates session exertion 1-10 (Borg CR-10 scale) shortly after
+    training; load = RPE x session duration in minutes.
+    """
+
+    athlete = models.ForeignKey('api.Athlete', on_delete=models.CASCADE, related_name='session_rpe_records')
+    session_date = models.DateField()
+    rpe = models.PositiveSmallIntegerField(help_text='1 (very light) - 10 (maximal effort)')
+    duration_minutes = models.PositiveIntegerField()
+    session_type = models.CharField(max_length=100, blank=True, default='')
+    notes = models.TextField(blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'training_session_rpe'
+        ordering = ['-session_date']
+
+    def __str__(self):
+        return f'{self.athlete.full_name} - {self.session_date} (RPE {self.rpe})'
+
+    @property
+    def training_load(self):
+        return self.rpe * self.duration_minutes
