@@ -31,6 +31,8 @@ import LessonPlayer from '@/pages/dashboard/academy/LessonPlayer'
 import MyCertificates from '@/pages/dashboard/academy/MyCertificates'
 import ResearchLibrary from '@/pages/dashboard/academy/ResearchLibrary'
 import OrganizationsAdmin from '@/pages/dashboard/academy/OrganizationsAdmin'
+import TrainingPrograms from '@/pages/dashboard/training/TrainingPrograms'
+import ProgramBuilder from '@/pages/dashboard/training/ProgramBuilder'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -73,6 +75,8 @@ export default function App() {
           <Route path="reports" element={<CoachRoute><Reports /></CoachRoute>} />
           <Route path="admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
           <Route path="admin/organizations" element={<AdminRoute><OrganizationsAdmin /></AdminRoute>} />
+          <Route path="training" element={<TrainingPrograms />} />
+          <Route path="training/:id" element={<ProgramBuilder />} />
           <Route path="academy" element={<AcademyCatalog />} />
           <Route path="academy/certificates" element={<MyCertificates />} />
           <Route path="academy/research" element={<ResearchLibrary />} />

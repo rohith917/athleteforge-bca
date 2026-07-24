@@ -542,3 +542,67 @@ export interface OrganizationMembership {
   is_active: boolean
   joined_at: string
 }
+
+// ==================== Training Program Builder ====================
+
+export type ProgramStatus = 'draft' | 'active' | 'completed' | 'archived'
+
+export type BlockType =
+  | 'warm_up' | 'activation' | 'strength' | 'power' | 'plyometrics' | 'speed'
+  | 'endurance' | 'sport_specific' | 'tactical' | 'mobility' | 'flexibility'
+  | 'cool_down' | 'recovery'
+
+export interface ProgramExerciseItem {
+  id: number
+  block: number
+  name: string
+  sets: number | null
+  reps: string
+  load: string
+  rest_seconds: number | null
+  tempo: string
+  notes: string
+  order: number
+  is_completed: boolean | null
+}
+
+export interface ProgramBlockItem {
+  id: number
+  day: number
+  block_type: BlockType
+  block_type_display: string
+  title: string
+  notes: string
+  order: number
+  exercises: ProgramExerciseItem[]
+}
+
+export interface ProgramDayItem {
+  id: number
+  program: number
+  date: string
+  label: string
+  order: number
+  blocks: ProgramBlockItem[]
+}
+
+export interface TrainingProgramListItem {
+  id: number
+  name: string
+  athlete: number
+  athlete_name: string
+  coach: number | null
+  coach_name: string | null
+  sport: string
+  status: ProgramStatus
+  start_date: string | null
+  end_date: string | null
+  notes: string
+  day_count: number
+  created_at: string
+  updated_at: string
+}
+
+export interface TrainingProgramDetail extends TrainingProgramListItem {
+  days: ProgramDayItem[]
+}

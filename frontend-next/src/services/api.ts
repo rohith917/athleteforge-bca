@@ -13,6 +13,7 @@ import type {
   Sport, CourseCategory, CourseListItem, CourseDetail, LessonDetail, Enrollment, Certificate,
   LearningSummary, QuizSubmitResult, ResearchSummaryItem,
   Organization, OrgRole, OrganizationMembership,
+  TrainingProgramListItem, TrainingProgramDetail, ProgramDayItem, ProgramBlockItem, ProgramExerciseItem, BlockType,
 } from '@/types'
 
 const API_BASE = resolveApiBase()
@@ -510,6 +511,32 @@ export const academyAPI = {
   updateMembership: (id: number, data: Partial<OrganizationMembership>) =>
     api.patch<OrganizationMembership>(`/academy/memberships/${id}/`, data),
   deleteMembership: (id: number) => api.delete(`/academy/memberships/${id}/`),
+}
+
+export const trainingAPI = {
+  getPrograms: (params?: Record<string, unknown>) => api.get<TrainingProgramListItem[]>('/training/programs/', { params }),
+  getProgram: (id: number) => api.get<TrainingProgramDetail>(`/training/programs/${id}/`),
+  createProgram: (data: { name: string; athlete: number; sport?: string; start_date?: string; end_date?: string; notes?: string }) =>
+    api.post<TrainingProgramListItem>('/training/programs/', data),
+  updateProgram: (id: number, data: Partial<TrainingProgramListItem>) =>
+    api.patch<TrainingProgramListItem>(`/training/programs/${id}/`, data),
+  deleteProgram: (id: number) => api.delete(`/training/programs/${id}/`),
+  addDay: (programId: number, data: { date: string; label?: string }) =>
+    api.post<ProgramDayItem>(`/training/programs/${programId}/add_day/`, data),
+  deleteDay: (id: number) => api.delete(`/training/days/${id}/`),
+
+  createBlock: (data: { day: number; block_type: BlockType; title?: string; notes?: string }) =>
+    api.post<ProgramBlockItem>('/training/blocks/', data),
+  deleteBlock: (id: number) => api.delete(`/training/blocks/${id}/`),
+  reorderBlocks: (order: number[]) => api.post('/training/blocks/reorder/', { order }),
+
+  createExercise: (data: { block: number; name: string; sets?: number; reps?: string; load?: string; rest_seconds?: number; tempo?: string; notes?: string }) =>
+    api.post<ProgramExerciseItem>('/training/exercises/', data),
+  updateExercise: (id: number, data: Partial<ProgramExerciseItem>) =>
+    api.patch<ProgramExerciseItem>(`/training/exercises/${id}/`, data),
+  deleteExercise: (id: number) => api.delete(`/training/exercises/${id}/`),
+  reorderExercises: (order: number[]) => api.post('/training/exercises/reorder/', { order }),
+  completeExercise: (id: number) => api.post<{ is_completed: boolean }>(`/training/exercises/${id}/complete/`),
 }
 
 export default api
