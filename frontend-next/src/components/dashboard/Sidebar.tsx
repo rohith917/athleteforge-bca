@@ -1,7 +1,7 @@
 import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Users, LineChart, HeartPulse, Trophy, ClipboardCheck,
-  Scale, FileText, User, ShieldCheck, Home, Medal, Megaphone, GraduationCap,
+  Scale, FileText, User, ShieldCheck, Home, Medal, Megaphone, GraduationCap, Building2,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
@@ -17,6 +17,7 @@ const adminNav: NavItem[] = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Admin Panel', end: true },
   { path: '/dashboard/academy', icon: GraduationCap, label: 'Academy' },
   { path: '/dashboard/admin/users', icon: ShieldCheck, label: 'User Management' },
+  { path: '/dashboard/admin/organizations', icon: Building2, label: 'Organizations & Roles' },
   { path: '/dashboard/athletes', icon: Users, label: 'Athletes' },
   { path: '/dashboard/performance', icon: LineChart, label: 'Performance' },
   { path: '/dashboard/injuries', icon: HeartPulse, label: 'Injuries' },

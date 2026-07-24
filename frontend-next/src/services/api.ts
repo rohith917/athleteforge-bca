@@ -12,6 +12,7 @@ import type {
   NotificationsResponse, AdminUser, AttendanceReport,
   Sport, CourseCategory, CourseListItem, CourseDetail, LessonDetail, Enrollment, Certificate,
   LearningSummary, QuizSubmitResult, ResearchSummaryItem,
+  Organization, OrgRole, OrganizationMembership,
 } from '@/types'
 
 const API_BASE = resolveApiBase()
@@ -495,6 +496,20 @@ export const academyAPI = {
   getCertificates: () => api.get<Certificate[]>('/academy/certificates/'),
   getLearningSummary: () => api.get<LearningSummary>('/academy/learning-summary/'),
   getResearch: (params?: Record<string, unknown>) => api.get<ResearchSummaryItem[]>('/academy/research/', { params }),
+
+  getOrganizations: () => api.get<Organization[]>('/academy/organizations/'),
+  createOrganization: (data: Partial<Organization>) => api.post<Organization>('/academy/organizations/', data),
+  updateOrganization: (id: number, data: Partial<Organization>) => api.patch<Organization>(`/academy/organizations/${id}/`, data),
+
+  getRoles: (params?: Record<string, unknown>) => api.get<OrgRole[]>('/academy/roles/', { params }),
+  createRole: (data: Partial<OrgRole> & { permission_ids?: number[] }) => api.post<OrgRole>('/academy/roles/', data),
+
+  getMemberships: (params?: Record<string, unknown>) => api.get<OrganizationMembership[]>('/academy/memberships/', { params }),
+  createMembership: (data: { user: number; organization: number; role: number; is_primary?: boolean }) =>
+    api.post<OrganizationMembership>('/academy/memberships/', data),
+  updateMembership: (id: number, data: Partial<OrganizationMembership>) =>
+    api.patch<OrganizationMembership>(`/academy/memberships/${id}/`, data),
+  deleteMembership: (id: number) => api.delete(`/academy/memberships/${id}/`),
 }
 
 export default api

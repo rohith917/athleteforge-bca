@@ -506,3 +506,39 @@ export interface ResearchSummaryItem {
   practical_takeaways: string
   last_reviewed: string | null
 }
+
+export type OrgType = 'academy' | 'club' | 'university' | 'federation' | 'independent'
+
+export interface Organization {
+  id: number
+  name: string
+  slug: string
+  org_type: OrgType
+  parent_organization: number | null
+  logo: string | null
+  is_active: boolean
+  created_at: string
+}
+
+export interface OrgRole {
+  id: number
+  organization: number | null
+  name: string
+  slug: string
+  description: string
+  is_system: boolean
+  permission_count: number
+}
+
+export interface OrganizationMembership {
+  id: number
+  user: number
+  user_name: string
+  organization: number
+  organization_name: string
+  role: number
+  role_name: string
+  is_primary: boolean
+  is_active: boolean
+  joined_at: string
+}
