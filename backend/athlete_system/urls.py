@@ -12,6 +12,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('api/academy/', include('academy.urls')),
+    path('api/training/', include('training.urls')),
     re_path(r'^assets/(?P<path>.*)$', serve_frontend_asset),
     re_path(r'^images/(?P<path>.*)$', serve_frontend_image),
     re_path(r'^(?!api/|admin/|static/|media/|images/).*$', serve_spa),
