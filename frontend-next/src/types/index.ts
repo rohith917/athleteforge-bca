@@ -564,6 +564,10 @@ export interface ProgramExerciseItem {
   notes: string
   order: number
   is_completed: boolean | null
+  image_url: string
+  video_url: string
+  has_3d_demo: boolean
+  model_3d_ref: string
 }
 
 export interface ProgramBlockItem {

@@ -95,6 +95,11 @@ class ProgramExercise(models.Model):
     notes = models.TextField(blank=True, default='')
     order = models.PositiveIntegerField(default=0)
 
+    image_url = models.URLField(blank=True, default='', help_text='Link to a demonstration photo.')
+    video_url = models.URLField(blank=True, default='', help_text='Link to a demonstration video (e.g. YouTube).')
+    has_3d_demo = models.BooleanField(default=False, help_text='Flags a 3D model/animation is attached (asset pipeline is a later phase, same as academy.Lesson.has_3d_demo).')
+    model_3d_ref = models.CharField(max_length=200, blank=True, default='')
+
     class Meta:
         db_table = 'training_program_exercises'
         ordering = ['order', 'id']

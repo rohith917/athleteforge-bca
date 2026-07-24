@@ -531,8 +531,10 @@ export const trainingAPI = {
   deleteBlock: (id: number) => api.delete(`/training/blocks/${id}/`),
   reorderBlocks: (order: number[]) => api.post('/training/blocks/reorder/', { order }),
 
-  createExercise: (data: { block: number; name: string; sets?: number; reps?: string; load?: string; rest_seconds?: number; tempo?: string; notes?: string }) =>
-    api.post<ProgramExerciseItem>('/training/exercises/', data),
+  createExercise: (data: {
+    block: number; name: string; sets?: number; reps?: string; load?: string; rest_seconds?: number
+    tempo?: string; notes?: string; image_url?: string; video_url?: string
+  }) => api.post<ProgramExerciseItem>('/training/exercises/', data),
   updateExercise: (id: number, data: Partial<ProgramExerciseItem>) =>
     api.patch<ProgramExerciseItem>(`/training/exercises/${id}/`, data),
   deleteExercise: (id: number) => api.delete(`/training/exercises/${id}/`),

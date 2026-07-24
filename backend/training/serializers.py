@@ -14,6 +14,7 @@ class ProgramExerciseSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'block', 'name', 'sets', 'reps', 'load', 'rest_seconds',
             'tempo', 'notes', 'order', 'is_completed',
+            'image_url', 'video_url', 'has_3d_demo', 'model_3d_ref',
         ]
         extra_kwargs = {'block': {'required': False}}
 
