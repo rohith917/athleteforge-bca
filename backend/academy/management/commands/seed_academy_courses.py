@@ -44,6 +44,11 @@ class Command(BaseCommand):
             ('leadership-communication-fundamentals', self._seed_leadership_course),
             ('functional-training-fundamentals', self._seed_functional_training_course),
             ('basketball-physical-demands', self._seed_basketball_physical_demands_course),
+            ('human-anatomy-for-athletes-fundamentals', self._seed_anatomy_course),
+            ('exercise-physiology-fundamentals', self._seed_physiology_course),
+            ('sports-biomechanics-fundamentals', self._seed_biomechanics_course),
+            ('hydration-fundamentals', self._seed_hydration_course),
+            ('cricket-physical-demands', self._seed_cricket_physical_demands_course),
         ]
 
         created = 0
@@ -1345,6 +1350,248 @@ class Command(BaseCommand):
                 safety_considerations='Any persistent ankle or knee pain during jumping/landing activities should be assessed before continuing high-volume jump training.',
                 summary='The ankles and knees are common basketball injury areas due to repeated jumping, landing, and cutting — proactive landing-mechanics and strength work help address both.',
                 references='General basketball injury-epidemiology principles used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_anatomy_course(self, author):
+        category = CourseCategory.objects.get(slug='human-anatomy-for-athletes', sport=None)
+        course = Course.objects.create(
+            title='Human Anatomy for Athletes: Fundamentals',
+            subtitle='The basics of muscles, joints, and movement every coach should know',
+            description='A plain-language introduction to skeletal muscle basics and major joint types, as a foundation for understanding training and injury.',
+            category=category, level='beginner', status='published', estimated_hours=0.6, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Anatomy Basics', order=1)
+
+        lessons = [
+            dict(
+                title='How Skeletal Muscle Produces Movement',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain, in plain terms, how a skeletal muscle causes a joint to move.',
+                content='Skeletal muscles attach to bones across joints and create movement by contracting.',
+                scientific_explanation='A skeletal muscle typically has an origin (a more fixed attachment point) and an insertion (a point that moves) on either side of a joint. When the muscle contracts, it pulls its insertion toward its origin, causing the joint to move. Most movements involve an "agonist" muscle doing the main work and an "antagonist" on the opposite side relaxing to allow it.',
+                practical_application='Understanding a muscle\'s origin/insertion helps predict what movement an exercise trains — e.g. the biceps crossing the elbow explains why it flexes the elbow.',
+                key_coaching_points='Relating exercises back to "which joint moves, and which muscle causes it" builds a coach\'s and athlete\'s understanding of technique cues.',
+                common_mistakes='Treating anatomy as purely academic rather than connecting it to why a technique cue works.',
+                safety_considerations='None specific — this is foundational knowledge.',
+                summary='Muscles move joints by contracting and pulling their insertion point toward their origin point, with agonist/antagonist pairs coordinating most movements.',
+                references='General human anatomy and kinesiology fundamentals.',
+                faqs=[],
+            ),
+            dict(
+                title='Major Joint Types and Their Movement',
+                lesson_type='text', order=2, estimated_minutes=8,
+                learning_objectives='Distinguish a few major joint types by the movement they allow.',
+                content='Different joint shapes allow different types and amounts of movement.',
+                scientific_explanation='Ball-and-socket joints (like the shoulder and hip) allow movement in many directions, including rotation, giving great range but relying heavily on surrounding muscles for stability. Hinge joints (like the knee and elbow) mainly allow bending and straightening in one plane, giving more inherent stability but less range.',
+                practical_application='Expect and train more rotational mobility work around ball-and-socket joints (shoulder, hip), and focus more on strength/control through the main bending plane for hinge joints (knee, elbow).',
+                key_coaching_points='Match mobility expectations to the joint type — don\'t expect knee rotation the way you\'d expect hip rotation.',
+                common_mistakes='Applying the same mobility expectations to every joint regardless of its actual structure.',
+                safety_considerations='Forcing a hinge joint (like the knee) into rotational stress it isn\'t designed for is a common injury mechanism.',
+                summary='Ball-and-socket joints (shoulder, hip) allow multi-directional movement including rotation; hinge joints (knee, elbow) mainly bend and straighten in one plane — training and mobility expectations should match the joint type.',
+                references='General human anatomy and kinesiology fundamentals.',
+                faqs=[],
+                quiz=dict(
+                    title='Anatomy Fundamentals Check',
+                    passing_score_percent=70,
+                    questions=[
+                        dict(
+                            question_text='What is the "insertion" of a muscle?',
+                            explanation='The insertion is the attachment point that moves when the muscle contracts, pulled toward the origin.',
+                            choices=[('The fixed attachment point', False), ('The attachment point that moves when the muscle contracts', True), ('The middle of the muscle belly', False)],
+                        ),
+                        dict(
+                            question_text='Which joint type allows movement in many directions, including rotation?',
+                            explanation='Ball-and-socket joints (shoulder, hip) allow multi-directional movement including rotation.',
+                            choices=[('Hinge joint', False), ('Ball-and-socket joint', True), ('Neither allows rotation', False)],
+                        ),
+                    ],
+                ),
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_physiology_course(self, author):
+        category = CourseCategory.objects.get(slug='exercise-physiology', sport=None)
+        course = Course.objects.create(
+            title='Exercise Physiology: Fundamentals',
+            subtitle='How the body produces energy for exercise',
+            description='Introduces the body\'s three energy systems and how training targets each one.',
+            category=category, level='beginner', status='published', estimated_hours=0.6, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Energy Systems Basics', order=1)
+
+        lessons = [
+            dict(
+                title='The Three Energy Systems',
+                lesson_type='text', order=1, estimated_minutes=9,
+                learning_objectives='Name and describe the body\'s three main energy systems.',
+                content='The body has three main systems for producing the energy (ATP) muscles need to contract, each dominant over a different duration and intensity.',
+                scientific_explanation=(
+                    'The phosphocreatine system provides energy very quickly but only for a few seconds, dominant '
+                    'in maximal efforts like a single sprint or heavy lift. The glycolytic system takes over for '
+                    'efforts lasting roughly seconds to a couple of minutes, breaking down carbohydrate without '
+                    'needing much oxygen, but producing fatigue-related byproducts. The aerobic system uses '
+                    'oxygen to sustain energy production over longer durations at lower intensities, and is the '
+                    'main contributor for efforts lasting several minutes or more.'
+                ),
+                practical_application='Match conditioning work to the energy system the sport actually stresses — e.g. repeated short sprints stress the phosphocreatine/glycolytic systems, while a long steady run stresses the aerobic system.',
+                key_coaching_points='Most sports use a blend of all three systems — identify the dominant one(s) for realistic conditioning design.',
+                common_mistakes='Training only one energy system (e.g. only long steady-state cardio) when the sport actually demands a blend.',
+                safety_considerations='None specific.',
+                summary='The phosphocreatine, glycolytic, and aerobic systems each dominate over different effort durations — conditioning should match the blend the sport actually demands.',
+                references='General exercise physiology energy-systems principles.',
+                faqs=[
+                    ('Do the three systems work in isolation?', 'No — they overlap and hand off to each other; the split is a helpful simplification, not a strict switch.'),
+                ],
+            ),
+            dict(
+                title='What Happens to Heart Rate and Breathing During Exercise',
+                lesson_type='text', order=2, estimated_minutes=8,
+                learning_objectives='Explain why heart rate and breathing rate increase during exercise.',
+                content='As exercise intensity increases, the cardiovascular and respiratory systems work harder to meet the muscles\' demand for oxygen and fuel.',
+                scientific_explanation='Working muscles need more oxygen and produce more carbon dioxide. Heart rate and stroke volume increase to pump more oxygenated blood to the muscles, and breathing rate/depth increase to bring in more oxygen and expel more carbon dioxide. These responses scale roughly with exercise intensity up to near-maximal effort.',
+                practical_application='Heart rate response can be used as one practical signal of relative exercise intensity, alongside perceived exertion.',
+                key_coaching_points='Heart rate is one useful signal among several (including RPE) — not the only measure of effort.',
+                common_mistakes='Relying on heart rate alone without considering perceived exertion or the type of effort (e.g. heavy strength work may not spike heart rate the same way sprinting does).',
+                safety_considerations='Unusually high heart rate for a given effort level, or symptoms like dizziness/chest pain, warrant stopping and seeking medical assessment.',
+                summary='Heart rate and breathing increase with exercise intensity to meet the muscles\' oxygen demand — useful as one intensity signal among several, not the only one.',
+                references='General cardiovascular and respiratory exercise-physiology principles.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_biomechanics_course(self, author):
+        category = CourseCategory.objects.get(slug='sports-biomechanics', sport=None)
+        course = Course.objects.create(
+            title='Sports Biomechanics: Fundamentals',
+            subtitle='How force, leverage, and technique interact in sporting movement',
+            description='Introduces basic biomechanical concepts — force, leverage, and center of mass — as they apply to sporting movement and technique.',
+            category=category, level='intermediate', status='published', estimated_hours=0.6, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Biomechanics Basics', order=1)
+
+        lessons = [
+            dict(
+                title='Force, Leverage, and Why Technique Matters',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why small technique changes can meaningfully affect force production.',
+                content='How force is applied and where levers act both affect how efficiently an athlete can move or lift.',
+                scientific_explanation='Joints act as levers, with muscles applying force at some distance from the joint (the "moment arm"). Small changes in body position can change these moment arms significantly, altering how much muscular force is required to produce the same movement — which is part of why technique changes can have an outsized effect on performance and injury risk.',
+                practical_application='When coaching technique, consider not just "does it look right" but "does this position give the athlete better leverage to produce force safely."',
+                key_coaching_points='A technique cue that changes body position is often really changing the leverage the athlete is working with.',
+                common_mistakes='Treating technique purely as aesthetic rather than understanding the mechanical reason behind a cue.',
+                safety_considerations='Poor leverage positions (e.g. a rounded back under load) can dramatically increase stress on joints/tissues even with the same external load.',
+                summary='Technique changes often work by altering the leverage (moment arms) an athlete is working with, which is part of why they can meaningfully affect force output and safety.',
+                references='General biomechanics principles (levers, moment arms) used in sports-science coach education.',
+                faqs=[],
+            ),
+            dict(
+                title='Center of Mass and Balance',
+                lesson_type='text', order=2, estimated_minutes=8,
+                learning_objectives='Explain the basic relationship between center of mass and balance/stability.',
+                content='An athlete\'s center of mass and how it relates to their base of support affects their balance and stability.',
+                scientific_explanation='Stability is generally greater when an athlete\'s center of mass stays over their base of support (e.g. the area between the feet). Widening the base of support, lowering the center of mass, or anticipating a shift in direction (as in an athletic ready position) all increase stability, which is part of why athletic stances are widened and lowered before explosive actions.',
+                practical_application='Coach a wide, lowered athletic stance before actions requiring quick reaction or stability (e.g. defensive positions, change-of-direction starts).',
+                key_coaching_points='A lower, wider stance generally trades some speed of initial movement for greater stability — the right balance depends on the specific task.',
+                common_mistakes='Standing tall and narrow right before needing to react quickly or absorb contact, reducing stability when it matters most.',
+                safety_considerations='None specific.',
+                summary='Keeping the center of mass over a wide, low base of support increases stability — a principle behind why athletic ready stances are widened and lowered.',
+                references='General biomechanics principles (center of mass, base of support) used in sports-science coach education.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_hydration_course(self, author):
+        category = CourseCategory.objects.get(slug='hydration', sport=None)
+        course = Course.objects.create(
+            title='Hydration Fundamentals',
+            subtitle='Why fluid balance matters for training and performance',
+            description='Introduces why hydration affects performance and basic practical fluid intake principles around training.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Hydration Basics', order=1)
+
+        lessons = [
+            dict(
+                title='Why Hydration Affects Performance',
+                lesson_type='text', order=1, estimated_minutes=7,
+                learning_objectives='Explain why even mild dehydration can affect exercise performance.',
+                content='Body water plays several roles relevant to exercise performance, including regulating temperature and supporting blood volume.',
+                scientific_explanation='Sweating cools the body during exercise but also causes fluid loss. Even mild dehydration (a small percentage of body weight lost as sweat) is commonly associated with reduced blood volume, higher relative cardiovascular strain, impaired temperature regulation, and perceived effort feeling higher for the same workload.',
+                practical_application='Encourage athletes to start training sessions already well-hydrated, rather than trying to catch up on fluids only during the session.',
+                key_coaching_points='Hydration status going INTO a session matters as much as fluid intake during it.',
+                common_mistakes='Only thinking about hydration during exercise, ignoring hydration status beforehand.',
+                safety_considerations='Significant dehydration combined with heat can contribute to serious heat-illness risk — this warrants genuine caution in hot conditions, not just a performance consideration.',
+                summary='Body water supports temperature regulation and blood volume during exercise — even mild dehydration is linked to reduced performance and higher perceived effort.',
+                references='General exercise hydration physiology principles.',
+                faqs=[],
+            ),
+            dict(
+                title='Practical Fluid Intake Around Training',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe simple, practical fluid intake guidance around a training session.',
+                content='Simple habits around fluid intake before, during, and after training support hydration status without needing precise calculations for most athletes.',
+                scientific_explanation='General guidance commonly used in practice: drink fluids in the hours before a session so urine is pale yellow (a rough practical indicator), sip fluids regularly during longer or hotter sessions, and replace fluids afterward — with sports drinks containing electrolytes potentially useful for longer or heavier-sweating sessions rather than typically necessary for short, low-intensity ones.',
+                practical_application='Use urine color as a simple, practical everyday hydration check, drink regularly (not just when very thirsty) during longer sessions, and rehydrate afterward.',
+                key_coaching_points='Simple habits (regular sipping, checking urine color) are more sustainable for most athletes than precise sweat-rate calculations.',
+                common_mistakes='Waiting until feeling very thirsty before drinking, by which point some dehydration has often already occurred.',
+                safety_considerations='Excessive water intake without any electrolyte replacement during very long, heavy-sweating efforts carries its own rare but serious risk (hyponatremia) — extreme cases warrant professional guidance, not general coaching advice.',
+                summary='Simple habits — drinking ahead of a session, sipping regularly during longer efforts, and rehydrating afterward — cover most athletes\' hydration needs without precise calculation.',
+                references='General practical hydration guidance used in sports nutrition coaching.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_cricket_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='cricket')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Cricket: Physical Demands',
+            subtitle='What competitive cricket asks of an athlete\'s body',
+            description='An introduction to the varied movement and energy-system demands across cricket\'s different roles and formats.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+
+        lessons = [
+            dict(
+                title='Movement and Energy System Demands',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe how cricket\'s physical demands vary by role and format.',
+                content='Cricket\'s demands differ substantially by role (batting, bowling, fielding) and format (short vs long duration).',
+                scientific_explanation=(
+                    'Fast bowling involves repeated, high-force, whole-body actions (the bowling action) with '
+                    'substantial recovery between deliveries, stressing rotational power and repeated-effort '
+                    'capacity. Batting demands short bursts of sprinting between wickets and rotational power for '
+                    'shot-making. Fielding demands reactive sprinting, diving, and throwing. Longer formats add '
+                    'a significant aerobic-endurance and sustained-concentration demand on top of these.'
+                ),
+                practical_application='Tailor conditioning to the athlete\'s primary role — fast bowlers need rotational power and repeated-effort capacity specifically, while all players benefit from reactive sprint and throwing-power work.',
+                key_coaching_points='Avoid training all players identically — a fast bowler and a specialist batter have meaningfully different primary conditioning needs.',
+                common_mistakes='Applying one generic team conditioning template regardless of playing role.',
+                safety_considerations='The fast bowling action places high, repeated rotational stress on the lower back and shoulder — bowling workload is a specific area requiring careful management.',
+                summary='Cricket\'s demands vary substantially by role — fast bowling, batting, and fielding each stress different qualities, and conditioning should reflect the individual athlete\'s role.',
+                references='General cricket physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Common Injury Areas in Cricket',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify commonly stressed areas in cricket and why.',
+                content='Cricket\'s injury profile varies by role, with fast bowling carrying particularly well-documented risks.',
+                scientific_explanation='Fast bowling\'s repeated, high-force rotational action is commonly associated with lower back stress (including stress injuries to the vertebrae in young, developing bowlers) and shoulder stress. Batters and fielders more commonly experience acute injuries from sprinting, diving, or being struck by the ball.',
+                practical_application='Monitor and manage fast bowlers\' workload (number of deliveries) particularly carefully, especially in young, still-developing athletes, alongside core and shoulder strength work.',
+                key_coaching_points='Bowling workload management is one of the most well-established injury-prevention practices specific to cricket.',
+                common_mistakes='Allowing young fast bowlers high delivery workloads without structured monitoring or progression.',
+                safety_considerations='Persistent lower back pain in a young fast bowler warrants prompt assessment — this is a well-documented, serious injury pattern in the sport.',
+                summary='Fast bowling carries well-documented lower back and shoulder injury risk from its repeated rotational demands — workload management is a key, well-established prevention practice in cricket specifically.',
+                references='General cricket injury-epidemiology principles used in sport-specific conditioning practice.',
                 faqs=[],
             ),
         ]
