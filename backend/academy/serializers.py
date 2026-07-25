@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Permission
 from rest_framework import serializers
 
 from .models import (
@@ -243,15 +244,50 @@ class OrganizationSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'slug', 'org_type', 'parent_organization', 'logo', 'is_active', 'created_at']
 
 
+RBAC_PERMISSION_APPS = ['academy', 'training', 'api']
+
+
+class PermissionSerializer(serializers.ModelSerializer):
+    app_label = serializers.CharField(source='content_type.app_label', read_only=True)
+    model = serializers.CharField(source='content_type.model', read_only=True)
+
+    class Meta:
+        model = Permission
+        fields = ['id', 'codename', 'name', 'app_label', 'model']
+
+
 class OrgRoleSerializer(serializers.ModelSerializer):
     permission_count = serializers.SerializerMethodField()
+    permissions_detail = PermissionSerializer(source='permissions', many=True, read_only=True)
+    permission_ids = serializers.PrimaryKeyRelatedField(
+        source='permissions', many=True, write_only=True, required=False,
+        queryset=Permission.objects.filter(content_type__app_label__in=RBAC_PERMISSION_APPS),
+    )
 
     class Meta:
         model = OrgRole
-        fields = ['id', 'organization', 'name', 'slug', 'description', 'is_system', 'permission_count']
+        fields = [
+            'id', 'organization', 'name', 'slug', 'description', 'is_system',
+            'permission_count', 'permissions_detail', 'permission_ids',
+        ]
+        extra_kwargs = {
+            'slug': {'required': False},
+            'is_system': {'read_only': True},
+        }
 
     def get_permission_count(self, obj):
         return obj.permissions.count()
+
+    def to_internal_value(self, data):
+        # The (organization, slug) UniqueConstraint makes DRF auto-attach a
+        # UniqueTogetherValidator that forces 'slug' to be required in the
+        # input regardless of extra_kwargs — fill it in from 'name' first.
+        if hasattr(data, 'copy'):
+            data = data.copy()
+        if not data.get('slug') and data.get('name'):
+            from django.utils.text import slugify
+            data['slug'] = slugify(data['name'])
+        return super().to_internal_value(data)
 
 
 class OrganizationMembershipSerializer(serializers.ModelSerializer):

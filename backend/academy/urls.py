@@ -18,5 +18,6 @@ router.register(r'memberships', views.OrganizationMembershipViewSet, basename='m
 
 urlpatterns = [
     path('learning-summary/', views.my_learning_summary, name='learning-summary'),
+    path('permissions/', views.available_permissions, name='available-permissions'),
     path('', include(router.urls)),
 ]

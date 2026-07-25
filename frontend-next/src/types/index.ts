@@ -520,6 +520,14 @@ export interface Organization {
   created_at: string
 }
 
+export interface AppPermission {
+  id: number
+  codename: string
+  name: string
+  app_label: string
+  model: string
+}
+
 export interface OrgRole {
   id: number
   organization: number | null
@@ -528,6 +536,7 @@ export interface OrgRole {
   description: string
   is_system: boolean
   permission_count: number
+  permissions_detail: AppPermission[]
 }
 
 export interface OrganizationMembership {

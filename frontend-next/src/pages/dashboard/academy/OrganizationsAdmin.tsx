@@ -1,9 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { Building2, Plus, ShieldCheck, Users2 } from 'lucide-react'
+import { Building2, ChevronDown, ChevronUp, Pencil, Plus, ShieldCheck, Trash2, Users2 } from 'lucide-react'
 import { academyAPI, adminAPI } from '@/services/api'
 import { parseListResponse } from '@/lib/apiHelpers'
 import { useToast } from '@/context/ToastContext'
-import type { Organization, OrgRole, OrganizationMembership, AdminUser, OrgType } from '@/types'
+import type { Organization, OrgRole, OrganizationMembership, AdminUser, OrgType, AppPermission } from '@/types'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -24,11 +24,13 @@ const ORG_TYPES: { value: OrgType; label: string }[] = [
 
 const emptyOrgForm = { name: '', org_type: 'academy' as OrgType }
 const emptyMemberForm = { user: '', role: '' }
+const emptyRoleForm = { name: '', description: '', permission_ids: [] as number[] }
 
 export default function OrganizationsAdmin() {
   const { showToast } = useToast()
   const [orgs, setOrgs] = useState<Organization[]>([])
   const [roles, setRoles] = useState<OrgRole[]>([])
+  const [permissions, setPermissions] = useState<AppPermission[]>([])
   const [users, setUsers] = useState<AdminUser[]>([])
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null)
   const [memberships, setMemberships] = useState<OrganizationMembership[]>([])
@@ -36,18 +38,23 @@ export default function OrganizationsAdmin() {
   const [showOrgForm, setShowOrgForm] = useState(false)
   const [orgForm, setOrgForm] = useState(emptyOrgForm)
   const [memberForm, setMemberForm] = useState(emptyMemberForm)
+  const [roleEditor, setRoleEditor] = useState<{ mode: 'create' | 'edit'; role?: OrgRole } | null>(null)
+  const [roleForm, setRoleForm] = useState(emptyRoleForm)
+  const [expandedModel, setExpandedModel] = useState<string | null>(null)
 
   const loadOrgs = async () => {
     try {
-      const [orgRes, roleRes, userRes] = await Promise.all([
+      const [orgRes, roleRes, userRes, permRes] = await Promise.all([
         academyAPI.getOrganizations(),
         academyAPI.getRoles(),
         adminAPI.getUsers(),
+        academyAPI.getPermissions(),
       ])
       const orgList = parseListResponse(orgRes.data)
       setOrgs(orgList)
       setRoles(parseListResponse(roleRes.data))
       setUsers(parseListResponse(userRes.data))
+      setPermissions(parseListResponse(permRes.data))
       if (orgList.length && !selectedOrg) setSelectedOrg(orgList[0])
     } catch {
       showToast('Failed to load organizations', 'error')
@@ -109,6 +116,85 @@ export default function OrganizationsAdmin() {
       showToast('Failed to remove member', 'error')
     }
   }
+
+  const openCreateRole = () => {
+    setRoleForm(emptyRoleForm)
+    setRoleEditor({ mode: 'create' })
+  }
+
+  const openEditRole = (role: OrgRole) => {
+    setRoleForm({
+      name: role.name,
+      description: role.description,
+      permission_ids: role.permissions_detail.map((p) => p.id),
+    })
+    setRoleEditor({ mode: 'edit', role })
+  }
+
+  const togglePermission = (id: number) => {
+    setRoleForm((prev) => ({
+      ...prev,
+      permission_ids: prev.permission_ids.includes(id)
+        ? prev.permission_ids.filter((p) => p !== id)
+        : [...prev.permission_ids, id],
+    }))
+  }
+
+  const toggleModelGroup = (ids: number[], allSelected: boolean) => {
+    setRoleForm((prev) => ({
+      ...prev,
+      permission_ids: allSelected
+        ? prev.permission_ids.filter((p) => !ids.includes(p))
+        : [...new Set([...prev.permission_ids, ...ids])],
+    }))
+  }
+
+  const handleSaveRole = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!roleForm.name.trim()) return
+    try {
+      if (roleEditor?.mode === 'edit' && roleEditor.role) {
+        const res = await academyAPI.updateRole(roleEditor.role.id, {
+          name: roleForm.name,
+          description: roleForm.description,
+          permission_ids: roleForm.permission_ids,
+        })
+        setRoles((prev) => prev.map((r) => (r.id === res.data.id ? res.data : r)))
+        showToast('Role updated', 'success')
+      } else {
+        if (!selectedOrg) return
+        const res = await academyAPI.createRole({
+          organization: selectedOrg.id,
+          name: roleForm.name,
+          description: roleForm.description,
+          permission_ids: roleForm.permission_ids,
+        })
+        setRoles((prev) => [...prev, res.data])
+        showToast('Custom role created', 'success')
+      }
+      setRoleEditor(null)
+    } catch {
+      showToast('Failed to save role — the name may already be in use for this organization', 'error')
+    }
+  }
+
+  const handleDeleteRole = async (role: OrgRole) => {
+    if (!window.confirm(`Delete the "${role.name}" role? Members holding it will need to be reassigned.`)) return
+    try {
+      await academyAPI.deleteRole(role.id)
+      setRoles((prev) => prev.filter((r) => r.id !== role.id))
+      showToast('Role deleted', 'success')
+    } catch {
+      showToast('Failed to delete role — it may still be assigned to members', 'error')
+    }
+  }
+
+  const permissionsByModel = permissions.reduce<Record<string, AppPermission[]>>((acc, p) => {
+    const key = `${p.app_label}.${p.model}`
+    acc[key] = acc[key] || []
+    acc[key].push(p)
+    return acc
+  }, {})
 
   if (loading) return <div className="flex justify-center py-20"><Spinner size={28} /></div>
 
@@ -211,9 +297,12 @@ export default function OrganizationsAdmin() {
             </Card>
 
             <Card>
-              <CardHeader><CardTitle>Available Roles</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Available Roles</CardTitle>
+                <Button size="sm" variant="outline" magnetic={false} onClick={openCreateRole}><Plus size={14} /> New Custom Role</Button>
+              </CardHeader>
               <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {[...systemRoles, ...orgRoles].map((role) => (
+                {systemRoles.map((role) => (
                   <div key={role.id} className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
                     <div className="flex items-center gap-2">
                       <ShieldCheck size={14} className="text-accent" />
@@ -222,8 +311,104 @@ export default function OrganizationsAdmin() {
                     <span className="font-body text-[11px] text-text-muted">{role.permission_count} perms</span>
                   </div>
                 ))}
+                {orgRoles.map((role) => (
+                  <div key={role.id} className="flex items-center justify-between rounded-xl border border-accent/30 bg-accent/5 px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck size={14} className="text-accent" />
+                      <span className="font-body text-sm text-text">{role.name}</span>
+                      <span className="font-body text-[11px] text-text-muted">· {role.permission_count} perms</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => openEditRole(role)} className="text-text-muted hover:text-accent-hover" title="Edit permissions">
+                        <Pencil size={13} />
+                      </button>
+                      <button onClick={() => handleDeleteRole(role)} className="text-text-muted hover:text-red-400" title="Delete role">
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {systemRoles.length === 0 && orgRoles.length === 0 && (
+                  <EmptyState icon={ShieldCheck} title="No roles yet" />
+                )}
               </CardContent>
             </Card>
+
+            {roleEditor && (
+              <Card className="p-6">
+                <h3 className="mb-1 font-display text-base font-bold text-text">
+                  {roleEditor.mode === 'edit' ? `Edit "${roleEditor.role?.name}"` : `New Custom Role for ${selectedOrg.name}`}
+                </h3>
+                <p className="mb-4 font-body text-xs text-text-muted">
+                  Custom roles are scoped to this organization and can be assigned to members alongside the platform's system roles.
+                </p>
+                <form onSubmit={handleSaveRole}>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Input id="role_name" label="Name *" value={roleForm.name} onChange={(e) => setRoleForm({ ...roleForm, name: e.target.value })} required />
+                    <Input id="role_description" label="Description" value={roleForm.description} onChange={(e) => setRoleForm({ ...roleForm, description: e.target.value })} />
+                  </div>
+
+                  <div className="mt-5">
+                    <p className="mb-2 font-body text-xs font-semibold uppercase tracking-widest text-text-muted">
+                      Permissions ({roleForm.permission_ids.length} selected)
+                    </p>
+                    <div className="max-h-96 space-y-1 overflow-y-auto rounded-xl border border-border p-2">
+                      {Object.entries(permissionsByModel).map(([key, perms]) => {
+                        const ids = perms.map((p) => p.id)
+                        const allSelected = ids.every((id) => roleForm.permission_ids.includes(id))
+                        const someSelected = ids.some((id) => roleForm.permission_ids.includes(id))
+                        const isOpen = expandedModel === key
+                        return (
+                          <div key={key} className="rounded-lg bg-white/[0.03]">
+                            <div className="flex items-center justify-between px-3 py-2">
+                              <button
+                                type="button"
+                                onClick={() => setExpandedModel(isOpen ? null : key)}
+                                className="flex flex-1 items-center gap-2 text-left font-body text-xs text-text-secondary"
+                              >
+                                {isOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                                <span className="font-semibold text-text">{key}</span>
+                                <span className="text-text-muted">({ids.filter((id) => roleForm.permission_ids.includes(id)).length}/{ids.length})</span>
+                              </button>
+                              <label className="flex items-center gap-1.5 font-body text-[11px] text-text-muted">
+                                <input
+                                  type="checkbox"
+                                  checked={allSelected}
+                                  ref={(el) => { if (el) el.indeterminate = someSelected && !allSelected }}
+                                  onChange={() => toggleModelGroup(ids, allSelected)}
+                                  className="accent-accent"
+                                />
+                                all
+                              </label>
+                            </div>
+                            {isOpen && (
+                              <div className="grid grid-cols-1 gap-1 px-3 pb-2 sm:grid-cols-2">
+                                {perms.map((p) => (
+                                  <label key={p.id} className="flex items-center gap-2 rounded-md px-2 py-1 font-body text-xs text-text-secondary hover:bg-white/5">
+                                    <input
+                                      type="checkbox"
+                                      checked={roleForm.permission_ids.includes(p.id)}
+                                      onChange={() => togglePermission(p.id)}
+                                      className="accent-accent"
+                                    />
+                                    {p.name}
+                                  </label>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="mt-5 flex gap-3">
+                    <Button type="submit" size="sm" magnetic={false}>{roleEditor.mode === 'edit' ? 'Save Changes' : 'Create Role'}</Button>
+                    <Button type="button" variant="outline" size="sm" magnetic={false} onClick={() => setRoleEditor(null)}>Cancel</Button>
+                  </div>
+                </form>
+              </Card>
+            )}
           </div>
         )}
       </div>

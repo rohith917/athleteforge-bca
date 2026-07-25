@@ -93,6 +93,11 @@ class OrgRole(models.Model):
         scope = 'system' if self.is_system else (self.organization.name if self.organization else 'unscoped')
         return f'{self.name} ({scope})'
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
 
 class OrganizationMembership(models.Model):
     """Links a user to an organization with a specific role in that org.

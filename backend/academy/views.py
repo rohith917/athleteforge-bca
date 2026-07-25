@@ -10,6 +10,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 
+from django.contrib.auth.models import Permission
+
 from api.permissions import IsAdminOnly, IsCoachOrAdmin, is_staff_role
 
 from .models import (
@@ -22,6 +24,7 @@ from .serializers import (
     LessonDetailSerializer, EnrollmentSerializer, CertificateSerializer,
     UserBadgeSerializer, LearningStreakSerializer, ResearchSummarySerializer,
     OrganizationSerializer, OrgRoleSerializer, OrganizationMembershipSerializer,
+    PermissionSerializer, RBAC_PERMISSION_APPS,
 )
 
 
@@ -268,6 +271,19 @@ class OrgRoleViewSet(viewsets.ModelViewSet):
         if org:
             qs = qs.filter(organization_id=org)
         return qs
+
+
+@api_view(['GET'])
+@drf_permission_classes([IsAdminOnly])
+def available_permissions(request):
+    """Assignable permissions for custom-role editing, scoped to this platform's own apps."""
+    qs = (
+        Permission.objects
+        .filter(content_type__app_label__in=RBAC_PERMISSION_APPS)
+        .select_related('content_type')
+        .order_by('content_type__app_label', 'content_type__model', 'codename')
+    )
+    return Response(PermissionSerializer(qs, many=True).data)
 
 
 class OrganizationMembershipViewSet(viewsets.ModelViewSet):

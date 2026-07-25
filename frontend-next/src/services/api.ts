@@ -12,7 +12,7 @@ import type {
   NotificationsResponse, AdminUser, AttendanceReport,
   Sport, CourseCategory, CourseListItem, CourseDetail, LessonDetail, Enrollment, Certificate,
   LearningSummary, QuizSubmitResult, ResearchSummaryItem,
-  Organization, OrgRole, OrganizationMembership,
+  Organization, OrgRole, OrganizationMembership, AppPermission,
   TrainingProgramListItem, TrainingProgramDetail, ProgramDayItem, ProgramBlockItem, ProgramExerciseItem, BlockType,
   WellnessCheckInItem, SessionRPEItem, GeneratorStatus, GenerateProgramPayload, GeneratedProgram,
 } from '@/types'
@@ -505,6 +505,10 @@ export const academyAPI = {
 
   getRoles: (params?: Record<string, unknown>) => api.get<OrgRole[]>('/academy/roles/', { params }),
   createRole: (data: Partial<OrgRole> & { permission_ids?: number[] }) => api.post<OrgRole>('/academy/roles/', data),
+  updateRole: (id: number, data: Partial<OrgRole> & { permission_ids?: number[] }) =>
+    api.patch<OrgRole>(`/academy/roles/${id}/`, data),
+  deleteRole: (id: number) => api.delete(`/academy/roles/${id}/`),
+  getPermissions: () => api.get<AppPermission[]>('/academy/permissions/'),
 
   getMemberships: (params?: Record<string, unknown>) => api.get<OrganizationMembership[]>('/academy/memberships/', { params }),
   createMembership: (data: { user: number; organization: number; role: number; is_primary?: boolean }) =>
