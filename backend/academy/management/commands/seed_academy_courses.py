@@ -59,6 +59,11 @@ class Command(BaseCommand):
             ('monitoring-training-load-fundamentals', self._seed_monitoring_load_course),
             ('agility-fundamentals', self._seed_agility_course),
             ('boxing-physical-demands', self._seed_boxing_physical_demands_course),
+            ('periodization-cycles-fundamentals', self._seed_periodization_cycles_course),
+            ('training-phases-fundamentals', self._seed_training_phases_course),
+            ('power-development-fundamentals', self._seed_power_development_course),
+            ('endurance-training-fundamentals', self._seed_endurance_training_course),
+            ('wrestling-physical-demands', self._seed_wrestling_physical_demands_course),
         ]
 
         created = 0
@@ -2046,6 +2051,217 @@ class Command(BaseCommand):
                 common_mistakes='Overemphasizing isolated arm/shoulder strength work at the expense of rotational core and leg power.',
                 safety_considerations='',
                 summary='Boxing\'s punching power is a whole-body, rotational quality driven from the hips through the torso — conditioning should reflect this rather than focusing narrowly on the arms.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_periodization_cycles_course(self, author):
+        category = CourseCategory.objects.get(slug='periodization-cycles', sport=None)
+        course = Course.objects.create(
+            title='Periodization Cycles: Fundamentals',
+            subtitle='Macrocycles, mesocycles, and microcycles explained simply',
+            description='An introduction to the nested time-cycles used to structure a season of training.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Cycle Basics', order=1)
+        lessons = [
+            dict(
+                title='The Three Nested Cycles',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Define macrocycle, mesocycle, and microcycle and how they relate.',
+                content='Periodization organizes training into nested time blocks of different lengths, each with its own purpose.',
+                scientific_explanation=(
+                    'A macrocycle typically spans a full season or year and defines the overall long-term goal. '
+                    'It is divided into mesocycles, usually several weeks to a few months long, each targeting a '
+                    'specific quality or phase (e.g., a "strength mesocycle"). Each mesocycle is further divided into '
+                    'microcycles, typically one week long, which is where day-to-day session planning actually happens.'
+                ),
+                practical_application='Plan top-down: define the season\'s macrocycle goal first, break it into mesocycle phases, then design each week (microcycle) to serve its mesocycle\'s specific purpose.',
+                key_coaching_points='Always be able to answer "what mesocycle phase are we in, and why" for any given week of training.',
+                common_mistakes='Planning only week-to-week without a clear longer-term mesocycle/macrocycle structure behind it.',
+                safety_considerations='',
+                summary='Macrocycles (season-long), mesocycles (weeks to months, phase-specific), and microcycles (weekly) nest together to give training long-term structure and purpose.',
+                references='General periodization theory used in training-program design.',
+                faqs=[],
+            ),
+            dict(
+                title='Choosing Mesocycle Phases',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='List common mesocycle phase types and their general purpose.',
+                content='Common mesocycle phases include general preparation, specific preparation, competition, and transition/off-season.',
+                scientific_explanation='General preparation builds broad work capacity and movement foundations; specific preparation sharpens qualities directly relevant to competition; the competition phase maintains fitness while prioritizing performance and freshness; the transition phase allows recovery and prevents burnout before the next macrocycle begins.',
+                practical_application='Match training emphasis to the current phase — high general volume early, more specific and intensity-focused work approaching competition, and deliberate lower-load recovery in the transition phase.',
+                key_coaching_points='The transition/off-season phase is a deliberate, planned part of periodization, not a lapse in program.',
+                common_mistakes='Treating the off-season as unplanned time off rather than a deliberate lower-load recovery phase.',
+                safety_considerations='',
+                summary='Common mesocycle phases (general prep, specific prep, competition, transition) each serve a distinct purpose across the season.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_training_phases_course(self, author):
+        category = CourseCategory.objects.get(slug='training-phases', sport=None)
+        course = Course.objects.create(
+            title='Training Phases: Fundamentals',
+            subtitle='Sequencing training qualities so each phase builds on the last',
+            description='An introduction to sequencing training emphasis (e.g., general strength before power) across a season.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Phase Sequencing Basics', order=1)
+        lessons = [
+            dict(
+                title='Why Sequence Matters',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why training qualities are typically sequenced rather than trained all at once.',
+                content='Rather than training every quality (strength, power, speed, endurance) with equal emphasis all season, most programs sequence emphasis in a deliberate order.',
+                scientific_explanation='A common sequencing logic builds general work capacity and basic strength first, since these qualities take longest to develop and provide a foundation, then progressively shifts emphasis toward more specific, higher-intensity qualities like power and speed as competition approaches, which develop and can be maintained more quickly once the foundation is in place.',
+                practical_application='Plan foundational strength/work-capacity emphasis earlier in a training block, shifting toward sport-specific power and speed emphasis as competition nears, rather than trying to maximize every quality simultaneously all season.',
+                key_coaching_points='Foundational qualities generally take longer to build and are worth prioritizing earlier.',
+                common_mistakes='Attempting to maximize every physical quality with equal emphasis at the same time all season.',
+                safety_considerations='',
+                summary='Sequencing training emphasis (foundation first, sport-specific sharpening closer to competition) is more effective than trying to develop every quality simultaneously.',
+                references='General training-sequencing principles used in program design.',
+                faqs=[],
+            ),
+            dict(
+                title='Maintaining Qualities Once Built',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why previously developed qualities need ongoing maintenance, not abandonment.',
+                content='Shifting emphasis to a new quality does not mean previously built qualities can be dropped entirely.',
+                scientific_explanation='Physical qualities like strength can generally be maintained with a smaller ongoing training dose than was needed to originally build them — a lower-volume "maintenance" stimulus during a later phase is usually sufficient to preserve earlier gains while emphasis shifts elsewhere.',
+                practical_application='Keep a reduced-volume maintenance dose of earlier-phase qualities (e.g., one strength session per week) even while emphasis has shifted to power or speed work.',
+                key_coaching_points='Maintenance requires meaningfully less volume than the original development phase did.',
+                common_mistakes='Dropping strength training completely once a power-emphasis phase begins, leading to loss of earlier gains.',
+                safety_considerations='',
+                summary='Once a quality is developed, a smaller ongoing maintenance dose preserves it while training emphasis shifts to the next phase\'s priority.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_power_development_course(self, author):
+        category = CourseCategory.objects.get(slug='power-development', sport=None)
+        course = Course.objects.create(
+            title='Power Development: Fundamentals',
+            subtitle='Why power is strength plus speed, and how to train it',
+            description='An introduction to muscular power as a distinct trainable quality from maximal strength alone.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Power Basics', order=1)
+        lessons = [
+            dict(
+                title='What Power Actually Means',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Define muscular power and distinguish it from maximal strength.',
+                content='Power is the rate of producing force — how quickly force can be applied, not just how much force can maximally be produced.',
+                scientific_explanation='Maximal strength (the most force a muscle can produce regardless of time) is a major contributor to power, but power specifically depends on producing a high proportion of that force quickly. Two athletes with identical maximal strength can have very different power output if one produces force more quickly than the other.',
+                practical_application='Build a foundation of general strength first, then add power-specific work (explosive lifts, jumps, throws) that trains the athlete to express strength quickly, since strength alone does not automatically transfer into power.',
+                key_coaching_points='Strength is a foundation for power, not a substitute for training power specifically.',
+                common_mistakes='Assuming a strength-focused program alone is sufficient to develop sport power without any explosive-specific training.',
+                safety_considerations='Explosive/power exercises carry meaningful technical demands and injury risk if performed with poor technique or excessive load before mastering the movement — coach technique carefully before adding heavy load or maximal intent.',
+                summary='Power is force produced quickly, not just maximal force — it requires strength as a foundation plus dedicated explosive-specific training on top.',
+                references='General power-development principles used in strength and conditioning.',
+                faqs=[],
+            ),
+            dict(
+                title='Common Power-Development Methods',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='List common methods used to train power.',
+                content='Common power-training methods include jumps and plyometrics, medicine ball throws, and Olympic-lift variations or their simplified derivatives.',
+                scientific_explanation='These methods share a common feature: they require the athlete to produce high force output over a short time, often training the stretch-shortening cycle (rapid eccentric-to-concentric transition) that is central to many sporting movements like jumping and sprinting.',
+                practical_application='Introduce power-method exercises progressively, prioritizing quality and full recovery between efforts over high volume or fatigue-driven repetition, since power training is about intent and quality of each rep.',
+                key_coaching_points='Power training should generally be performed when the athlete is fresh, not fatigued, since technique and intent both degrade with fatigue.',
+                common_mistakes='Programming power/explosive work at the end of a fatiguing session rather than earlier when the athlete is fresh.',
+                safety_considerations='',
+                summary='Jumps/plyometrics, medicine ball throws, and Olympic-lift-style movements are common power methods — quality and freshness matter more than volume.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_endurance_training_course(self, author):
+        category = CourseCategory.objects.get(slug='endurance-training', sport=None)
+        course = Course.objects.create(
+            title='Endurance Training: Fundamentals',
+            subtitle='Aerobic base building and why not all endurance training looks the same',
+            description='An introduction to the different intensity zones used in endurance training and why they matter.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Endurance Basics', order=1)
+        lessons = [
+            dict(
+                title='Why Most Endurance Training Should Be Easy',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain the general principle behind polarized/pyramidal endurance training distribution.',
+                content='Contrary to intuition, most successful endurance training programs spend the majority of training time at low, comfortable intensity.',
+                scientific_explanation='Research on training-intensity distribution in endurance athletes commonly describes a "polarized" or "pyramidal" pattern, where a large majority of training volume is performed at low intensity (easy, conversational effort), a small amount at high intensity, and comparatively little time in the awkward moderate-intensity middle zone that is hard to recover from but not hard enough to maximize adaptation.',
+                practical_application='Build the bulk of weekly endurance volume at an easy, sustainable pace, reserving harder intensity efforts for a smaller, deliberate portion of total training time.',
+                key_coaching_points='"Easy days should feel genuinely easy" is a common, evidence-informed coaching cue in endurance sports.',
+                common_mistakes='Habitually running easy days at a moderately hard pace ("gray zone" training) rather than genuinely easy.',
+                safety_considerations='',
+                summary='Most endurance training time is best spent at genuinely low intensity, with a smaller deliberate portion at high intensity — avoiding the unproductive moderate "gray zone" in between.',
+                references='General training-intensity-distribution research used in endurance coaching education.',
+                faqs=[],
+            ),
+            dict(
+                title='Endurance Needs Vary by Sport',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why endurance training should be tailored to a sport\'s actual demand pattern.',
+                content='A marathon runner and a field-sport athlete both need "endurance," but their actual demand patterns differ substantially.',
+                scientific_explanation='A marathon demands sustained, continuous aerobic output for hours. Field sports like football or basketball instead demand repeated bursts of high-intensity effort interspersed with lower-intensity recovery periods over an extended match — a very different physiological demand often trained through repeated-sprint or intermittent conditioning methods rather than steady continuous running.',
+                practical_application='Match endurance training method to the sport\'s actual demand pattern — continuous steady training for continuous-effort sports, and repeated-effort/intermittent conditioning for stop-start field and court sports.',
+                key_coaching_points='"Endurance" is not one single quality — match the training method to the sport\'s real effort pattern.',
+                common_mistakes='Prescribing long, steady continuous running as conditioning for a stop-start field-sport athlete whose sport rarely demands sustained continuous effort.',
+                safety_considerations='',
+                summary='Endurance demands differ meaningfully between continuous-effort and stop-start sports — training methods should match the sport\'s real demand pattern rather than a one-size-fits-all approach.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_wrestling_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='wrestling')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Wrestling: Physical Demands',
+            subtitle='What competitive wrestling asks of an athlete\'s body',
+            description='An introduction to the grappling-strength, repeated-effort, and weight-management demands that define wrestling conditioning.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+        lessons = [
+            dict(
+                title='Grappling Strength and Repeated-Effort Demands',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe the whole-body strength and repeated-effort demands specific to wrestling.',
+                content='Wrestling requires sustained whole-body grip, isometric, and rotational strength across repeated high-intensity exchanges within a match.',
+                scientific_explanation='Wrestling exchanges combine short, maximal-effort bursts (takedown attempts, escapes) with sustained isometric grappling strength (controlling an opponent), placing heavy demand on grip endurance, core/trunk strength, and repeated-effort capacity across match periods with limited recovery.',
+                practical_application='Include grip-strength and isometric core/trunk work alongside repeated-effort conditioning that mirrors match exchange-and-recovery patterns.',
+                key_coaching_points='Grip endurance is a commonly underemphasized but important wrestling-specific conditioning target.',
+                common_mistakes='Focusing conditioning purely on general strength while neglecting grip endurance and match-specific repeated-effort conditioning.',
+                safety_considerations='This course covers general physical conditioning only, not weight-management or medical practices, which require qualified specialist guidance given known health risks of rapid weight-cutting practices in combat sports.',
+                summary='Wrestling combines maximal-effort bursts with sustained isometric grappling strength — grip endurance and repeated-effort conditioning are sport-specific priorities.',
+                references='General wrestling physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Common Injury Areas in Wrestling',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify commonly stressed areas in wrestling and why.',
+                content='Wrestling\'s close-contact, grappling nature creates a distinct injury profile compared to non-contact sports.',
+                scientific_explanation='The shoulder joint is frequently stressed through forceful grappling and takedown positions, while the knee is exposed to rotational and shearing forces during takedowns and scrambles; skin infections are also a well-documented sport-specific concern given the close skin-to-skin and mat contact involved.',
+                practical_application='Prioritize shoulder and knee stability/strength work, and follow good hygiene practices (mat cleaning, prompt skin-check habits) as a standard, non-negotiable part of the sport\'s injury-prevention approach.',
+                key_coaching_points='Hygiene practices are a genuine, sport-specific injury-prevention topic in wrestling, not an afterthought.',
+                common_mistakes='Treating hygiene protocols as optional rather than a core part of wrestling-specific injury prevention.',
+                safety_considerations='Any skin lesion or infection should be assessed before allowing an athlete back on the mat, given contagion risk to training partners.',
+                summary='Wrestling\'s close-contact grappling nature stresses the shoulder and knee specifically and carries a well-documented skin-infection risk — hygiene practices are a genuine sport-specific injury-prevention topic.',
                 references='',
                 faqs=[],
             ),
