@@ -69,6 +69,11 @@ class Command(BaseCommand):
             ('coordination-reaction-fundamentals', self._seed_coordination_reaction_course),
             ('training-methods-fundamentals', self._seed_training_methods_course),
             ('athletics-physical-demands', self._seed_athletics_physical_demands_course),
+            ('energy-systems-fundamentals', self._seed_energy_systems_course),
+            ('recovery-methods-fundamentals', self._seed_recovery_methods_course),
+            ('ethics-in-sport-fundamentals', self._seed_ethics_in_sport_course),
+            ('badminton-physical-demands', self._seed_badminton_physical_demands_course),
+            ('cycling-physical-demands', self._seed_cycling_physical_demands_course),
         ]
 
         created = 0
@@ -2473,6 +2478,220 @@ class Command(BaseCommand):
                 common_mistakes='Using one generic injury-prevention checklist across all athletics event groups.',
                 safety_considerations='Persistent hamstring tightness in a sprinter or persistent shin/foot pain in a distance runner are both common early-warning patterns worth assessing promptly.',
                 summary='Each athletics event group carries a distinct, well-documented injury pattern — screening and prevention should be tailored to the athlete\'s specific event group.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_energy_systems_course(self, author):
+        category = CourseCategory.objects.get(slug='energy-systems', sport=None)
+        course = Course.objects.create(
+            title='Energy Systems: Fundamentals',
+            subtitle='How the body actually produces energy for exercise',
+            description='An introduction to the three main energy systems the body uses during exercise and how sport demands map onto them.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Energy System Basics', order=1)
+        lessons = [
+            dict(
+                title='The Three Energy Systems',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Name the three main energy systems and the effort duration each dominates.',
+                content='The body draws on three interacting energy systems, with the dominant one shifting depending on effort duration and intensity.',
+                scientific_explanation=(
+                    'The phosphagen (ATP-PCr) system dominates very short, maximal efforts (roughly up to 10 '
+                    'seconds), such as a single sprint or jump. The glycolytic system dominates efforts from '
+                    'roughly 10 seconds to 2 minutes, producing energy quickly but generating fatigue-related '
+                    'byproducts. The aerobic (oxidative) system dominates longer, lower-intensity efforts, producing '
+                    'energy more slowly but far more sustainably. All three systems are active to some degree at all '
+                    'times — it is a matter of which one dominates, not exclusive on/off switching.'
+                ),
+                practical_application='Identify which energy system(s) dominate the athlete\'s sport-specific effort patterns and design conditioning that specifically targets those systems.',
+                key_coaching_points='All three systems contribute simultaneously — think "which dominates," not "which one turns on."',
+                common_mistakes='Treating energy systems as switches that turn fully on or off rather than a continuum of contribution.',
+                safety_considerations='',
+                summary='The phosphagen, glycolytic, and aerobic systems dominate short, medium, and long efforts respectively, with all three contributing simultaneously to some degree.',
+                references='General exercise-physiology energy-system principles used in conditioning education.',
+                faqs=[],
+            ),
+            dict(
+                title='Matching Conditioning to Energy Demand',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain how to match conditioning work-to-rest ratios to a target energy system.',
+                content='Conditioning drills can be designed to specifically stress a target energy system by controlling effort duration and rest between efforts.',
+                scientific_explanation='Very short, maximal efforts with long recovery emphasize the phosphagen system; medium-duration efforts with moderate recovery stress the glycolytic system; longer, continuous, lower-intensity efforts emphasize the aerobic system. Work-to-rest ratio is a key lever coaches use to target a specific energy system in conditioning design.',
+                practical_application='Choose work duration and rest interval deliberately based on which energy system the session is meant to target, rather than using one generic interval structure for all conditioning.',
+                key_coaching_points='Work-to-rest ratio is the main lever for targeting a specific energy system in conditioning drills.',
+                common_mistakes='Using the same generic work/rest interval structure regardless of which energy system the session is meant to target.',
+                safety_considerations='',
+                summary='Work duration and rest interval length are the key levers for deliberately targeting a specific energy system in conditioning design.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_recovery_methods_course(self, author):
+        category = CourseCategory.objects.get(slug='recovery-methods', sport=None)
+        course = Course.objects.create(
+            title='Recovery Methods: Fundamentals',
+            subtitle='Which recovery methods have solid support, and which are mostly hype',
+            description='A practical, honest look at common recovery methods (sleep, nutrition, active recovery, and popular modalities).',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Recovery Method Basics', order=1)
+        lessons = [
+            dict(
+                title='The Foundational Recovery Methods',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Identify the recovery methods with the strongest general support.',
+                content='Before considering specialized recovery gadgets or modalities, the foundational recovery methods deserve priority: sleep, nutrition/hydration, and appropriately planned rest.',
+                scientific_explanation='Sleep supports the majority of the body\'s physical recovery processes; adequate energy and protein intake supports tissue repair and glycogen replenishment; and planned rest/deload periods within a program allow accumulated fatigue to dissipate. These foundational factors generally have the strongest, most consistent support in the recovery literature compared to specialized modalities.',
+                practical_application='Prioritize sleep quality/quantity, adequate nutrition, and planned rest days before investing time or money in specialized recovery modalities.',
+                key_coaching_points='Get the foundations (sleep, nutrition, planned rest) right before adding specialized recovery tools.',
+                common_mistakes='Investing heavily in specialized recovery gadgets while neglecting basic sleep and nutrition habits.',
+                safety_considerations='',
+                summary='Sleep, nutrition/hydration, and planned rest are the foundational recovery methods with the strongest general support — prioritize these before specialized modalities.',
+                references='General recovery-science principles used in athlete-recovery education.',
+                faqs=[],
+            ),
+            dict(
+                title='A Realistic Look at Popular Recovery Modalities',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe common recovery modalities and the honest state of evidence for each.',
+                content='Popular recovery modalities include active recovery, cold-water immersion, massage, and compression garments — each has some support, but effects tend to be modest and context-dependent.',
+                scientific_explanation='Active recovery (light movement) is generally supported for subjective recovery feeling and mild circulation benefits; cold-water immersion research shows mixed results and may in some contexts blunt certain training adaptations if used too frequently after strength training; massage and compression garments are generally associated with modest subjective recovery benefits (reduced perceived soreness) with less consistent evidence for objective performance recovery.',
+                practical_application='Treat these modalities as reasonable, low-risk additions for athletes who find them helpful, but do not expect them to substitute for the foundational methods, and be cautious about overusing cold-water immersion immediately after strength-focused sessions.',
+                key_coaching_points='Specialized recovery modalities are reasonable additions, not substitutes for sleep, nutrition, and planned rest.',
+                common_mistakes='Treating a specialized recovery modality as a substitute for adequate sleep or nutrition.',
+                safety_considerations='',
+                summary='Popular recovery modalities (active recovery, cold-water immersion, massage, compression) offer modest, context-dependent benefits — useful additions, but not substitutes for the foundational recovery methods.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_ethics_in_sport_course(self, author):
+        category = CourseCategory.objects.get(slug='ethics-in-sport', sport=None)
+        course = Course.objects.create(
+            title='Ethics in Sport: Fundamentals',
+            subtitle='Why fair play and athlete welfare are part of good coaching, not separate from it',
+            description='An introduction to core ethical principles in coaching: fair play, athlete welfare, and appropriate coach-athlete boundaries.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Ethics Basics', order=1)
+        lessons = [
+            dict(
+                title='Fair Play and Athlete Welfare',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why prioritizing athlete welfare over short-term results is a core coaching ethic.',
+                content='Good coaching places athlete welfare — physical and psychological — ahead of short-term competitive results.',
+                scientific_explanation='Coaching-ethics frameworks generally emphasize that decisions pressuring an athlete\'s health for short-term performance (playing through injury, extreme weight-cutting, excessive training loads) create real long-term harm and conflict with an athlete\'s fundamental wellbeing, which should take priority over any single result.',
+                practical_application='When faced with a decision that trades athlete health against short-term competitive outcome, default to protecting the athlete\'s welfare, and communicate this priority clearly to athletes and parents.',
+                key_coaching_points='No single competition result justifies compromising an athlete\'s health.',
+                common_mistakes='Prioritizing a single competition outcome over an athlete\'s reported pain, fatigue, or wellbeing.',
+                safety_considerations='',
+                summary='Athlete welfare should take priority over short-term competitive results — this is a foundational, not optional, coaching ethic.',
+                references='General sports coaching-ethics principles used in coach education.',
+                faqs=[],
+            ),
+            dict(
+                title='Appropriate Coach-Athlete Boundaries',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe why clear professional boundaries matter in the coach-athlete relationship.',
+                content='The coach-athlete relationship involves a real power imbalance, making clear, professional boundaries important, particularly when working with minors.',
+                scientific_explanation='Safeguarding frameworks in sport generally emphasize that coaches hold a position of trust and influence over athletes, especially minors, which creates a duty to maintain appropriate professional boundaries, transparent communication practices, and safe environments.',
+                practical_application='Maintain clear, professional boundaries in all coach-athlete interactions, follow the organization\'s safeguarding policies, and report any safeguarding concerns through proper channels rather than handling them informally.',
+                key_coaching_points='Safeguarding and appropriate boundaries are a baseline professional responsibility, not an optional extra.',
+                common_mistakes='Treating safeguarding/boundary policies as bureaucratic formality rather than a core coaching responsibility.',
+                safety_considerations='Any safeguarding concern should be reported through the organization\'s official channels immediately — this is not a judgment call to make alone.',
+                summary='The coach-athlete power imbalance makes clear professional boundaries and safeguarding practice a core, non-negotiable coaching responsibility, especially with minors.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_badminton_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='badminton')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Badminton: Physical Demands',
+            subtitle='What competitive badminton asks of an athlete\'s body',
+            description='An introduction to the explosive, repeated multi-directional demands that define badminton conditioning.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+        lessons = [
+            dict(
+                title='Explosive Multi-Directional Movement Demands',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe the repeated multi-directional movement demands specific to badminton.',
+                content='Badminton involves extremely high numbers of short, explosive multi-directional movements (lunges, jumps, rapid direction changes) within a rally, repeated over long matches.',
+                scientific_explanation='Rallies typically last only a few seconds each but occur very frequently within a match, demanding repeated maximal-effort lunging and jumping actions in all directions (forward, backward, lateral) with brief recovery, placing high demand on repeated-effort capacity, lower-body eccentric strength, and multi-directional agility.',
+                practical_application='Build conditioning around repeated multi-directional lunge and jump patterns with realistic rally-length work/rest ratios, alongside lower-body eccentric strength for lunge deceleration.',
+                key_coaching_points='Lunge-specific eccentric strength is a badminton-specific conditioning priority given how frequently lunges occur.',
+                common_mistakes='Conditioning primarily through straight-line running drills that do not reflect badminton\'s multi-directional lunge-based movement.',
+                safety_considerations='Deep lunging places high load through the knee and hip — technique and eccentric strength preparation matter for injury prevention.',
+                summary='Badminton\'s repeated, explosive multi-directional lunging and jumping demands make repeated-effort capacity and lunge-specific eccentric strength key conditioning priorities.',
+                references='General badminton physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Shoulder and Overhead Demands',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify the overhead-arm demands specific to badminton and their injury implications.',
+                content='Badminton\'s overhead smash and clear shots involve repeated, forceful overhead arm actions across a match.',
+                scientific_explanation='Repeated forceful overhead racquet actions place cumulative load through the shoulder complex, similar in principle to other overhead racquet and throwing sports, making shoulder-specific strength and mobility work a relevant conditioning priority alongside lower-body work.',
+                practical_application='Include shoulder-focused strength and mobility work alongside the sport\'s dominant lower-body conditioning emphasis, rather than neglecting the upper body.',
+                key_coaching_points='Overhead-sport shoulder care principles apply to badminton, not just throwing and racquet sports typically associated with them.',
+                common_mistakes='Focusing conditioning entirely on legs/agility while neglecting shoulder-specific preparation.',
+                safety_considerations='Persistent shoulder pain following repeated overhead smashes is a common early-warning pattern worth assessing promptly.',
+                summary='Badminton combines its dominant lower-body multi-directional demands with real overhead-shoulder load from smashes and clears — both deserve conditioning attention.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_cycling_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='cycling')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Cycling: Physical Demands',
+            subtitle='What competitive cycling asks of an athlete\'s body',
+            description='An introduction to the aerobic-dominant, discipline-specific demands across cycling\'s different competitive formats.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+        lessons = [
+            dict(
+                title='Endurance and Power Demands Across Disciplines',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe how physical demands vary across road, track sprint, and endurance cycling disciplines.',
+                content='Cycling covers very different competitive formats, from short, explosive track sprints to multi-hour road endurance events, each with a distinct demand profile.',
+                scientific_explanation='Track sprint cycling demands very high, short-duration maximal power output, drawing heavily on the phosphagen and glycolytic energy systems. Road endurance cycling demands sustained aerobic output over hours, with periodic high-intensity efforts (climbs, sprints, attacks) layered on top of a large aerobic base. Both share cycling\'s largely non-weight-bearing, seated, repetitive pedaling movement pattern.',
+                practical_application='Identify the athlete\'s primary discipline (sprint vs endurance) and weight conditioning emphasis accordingly — maximal power development for sprint disciplines, aerobic base plus interval work for endurance disciplines.',
+                key_coaching_points='"Cycling" spans a very wide range of demand profiles — always identify the specific discipline first.',
+                common_mistakes='Applying one generic aerobic-endurance template to a track sprint cyclist whose event demands maximal short-duration power instead.',
+                safety_considerations='',
+                summary='Cycling spans very different demand profiles from explosive track sprints to multi-hour road endurance events — conditioning should match the athlete\'s specific discipline.',
+                references='General cycling physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Common Overuse Areas in Cycling',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify commonly stressed areas in cycling given its repetitive, non-weight-bearing movement pattern.',
+                content='Cycling\'s repetitive pedaling movement, sustained over long durations, creates a distinct overuse-dominant injury profile compared to impact sports.',
+                scientific_explanation='The knee is a commonly cited overuse site in cycling due to the very high repetition count of the pedaling motion, often linked to bike-fit issues (saddle height, cleat position); the lower back and neck can also be stressed by sustained aerodynamic riding positions held for long durations.',
+                practical_application='Ensure proper bike fit as a first-line injury-prevention step, and build supporting strength work (core, hip) to help tolerate sustained riding positions, alongside gradual volume progression.',
+                key_coaching_points='Bike fit is one of the most impactful, cycling-specific injury-prevention interventions available.',
+                common_mistakes='Increasing riding volume rapidly without addressing bike fit or supporting strength work.',
+                safety_considerations='Persistent knee pain in a cyclist often traces back to a correctable bike-fit issue and is worth investigating rather than only reducing volume.',
+                summary='Cycling\'s repetitive, sustained pedaling motion creates a largely overuse-dominant injury profile — proper bike fit and supporting strength work are key, sport-specific prevention priorities.',
                 references='',
                 faqs=[],
             ),
