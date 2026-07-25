@@ -54,6 +54,11 @@ class Command(BaseCommand):
             ('movement-screening-fundamentals', self._seed_movement_screening_course),
             ('stretching-fundamentals', self._seed_stretching_course),
             ('volleyball-physical-demands', self._seed_volleyball_physical_demands_course),
+            ('return-to-sport-fundamentals', self._seed_return_to_sport_course),
+            ('performance-testing-assessment-fundamentals', self._seed_performance_testing_course),
+            ('monitoring-training-load-fundamentals', self._seed_monitoring_load_course),
+            ('agility-fundamentals', self._seed_agility_course),
+            ('boxing-physical-demands', self._seed_boxing_physical_demands_course),
         ]
 
         created = 0
@@ -1825,6 +1830,222 @@ class Command(BaseCommand):
                 common_mistakes='Focusing conditioning almost entirely on jumping/legs while neglecting shoulder-specific preparation.',
                 safety_considerations='Shoulder pain during or after serving/attacking actions is a common early warning sign worth addressing before it progresses.',
                 summary='Volleyball combines high jump volume with repeated overhead-arm actions and reactive movement — conditioning should address legs, shoulders, and agility together.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_return_to_sport_course(self, author):
+        category = CourseCategory.objects.get(slug='return-to-sport-concepts', sport=None)
+        course = Course.objects.create(
+            title='Return-to-Sport: Fundamentals',
+            subtitle='Why "pain-free" is not the same as "ready to return"',
+            description='An introduction to the criteria-based thinking coaches and rehab teams use to decide when an injured athlete is ready to return to full training and competition.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Return-to-Sport Basics', order=1)
+        lessons = [
+            dict(
+                title='Why Return-to-Sport Is a Process, Not a Date',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why a criteria-based approach is preferred over a fixed-date return.',
+                content='Returning an athlete to sport based purely on a calendar date ("six weeks post-injury") ignores real individual variation in healing and readiness.',
+                scientific_explanation=(
+                    'Tissue healing timelines vary between individuals and injury severities, and pain resolution '
+                    'does not necessarily mean full strength, control, and confidence have returned. Criteria-based '
+                    'return-to-sport frameworks instead use measurable milestones (strength symmetry, hop-test '
+                    'performance, sport-specific movement quality) to judge readiness on the individual, not the calendar.'
+                ),
+                practical_application='Work with a physiotherapist or medical professional to define objective, measurable milestones the athlete must meet before progressing return-to-sport stages, rather than relying on a fixed date.',
+                key_coaching_points='"It doesn\'t hurt anymore" is necessary but not sufficient evidence of readiness.',
+                common_mistakes='Clearing an athlete to return purely because a commonly cited timeframe has passed.',
+                safety_considerations='Returning to full competition before meeting objective readiness criteria is associated with elevated re-injury risk — this decision should involve qualified medical/rehab professionals, not coaching judgement alone.',
+                summary='Return-to-sport decisions should be criteria-based and individualized, not driven purely by a calendar date since pain-free does not automatically mean fully ready.',
+                references='General return-to-sport framework principles used in athletic rehabilitation.',
+                faqs=[],
+            ),
+            dict(
+                title='The Staged Return-to-Play Idea',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe the general concept of graduated return-to-play stages.',
+                content='Most return-to-sport frameworks use graduated stages, progressively reintroducing load, contact, and sport-specific complexity.',
+                scientific_explanation='A typical progression moves from basic pain-free movement, to controlled loaded exercise, to sport-specific non-contact drills, to full-contact/competition simulation, with agreed criteria to progress at each stage rather than a fixed number of days per stage.',
+                practical_application='Support the athlete through each stage patiently, resisting pressure to skip stages even when the athlete feels ready, and defer stage-progression decisions to the rehab/medical team where one is involved.',
+                key_coaching_points='Skipping stages under competitive pressure is one of the most common preventable causes of re-injury.',
+                common_mistakes='Fast-tracking a valued athlete through stages ahead of a big competition.',
+                safety_considerations='Any regression in symptoms during a stage (renewed pain, swelling, instability) should pause progression and prompt reassessment.',
+                summary='Graduated, criteria-gated stages — not a race against the calendar — define a sound return-to-sport progression.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_performance_testing_course(self, author):
+        category = CourseCategory.objects.get(slug='performance-testing-assessment', sport=None)
+        course = Course.objects.create(
+            title='Performance Testing & Assessment: Fundamentals',
+            subtitle='Choosing tests that actually tell you something useful',
+            description='A practical introduction to selecting, running, and interpreting basic athletic performance tests.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Testing Basics', order=1)
+        lessons = [
+            dict(
+                title='What Makes a Test Worth Running',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Identify what makes a performance test useful for a given sport and athlete.',
+                content='Not every popular test is relevant to every sport — a good test should reflect a quality that actually matters for the athlete\'s performance.',
+                scientific_explanation='Useful tests are generally reliable (produce consistent results on repeat testing under the same conditions) and relevant (measure a quality connected to the sport\'s real demands). A vertical jump test is highly relevant for a volleyball player\'s power, less directly relevant for a marathon runner\'s aerobic capacity.',
+                practical_application='Choose a small set of tests tied directly to the specific demands of the athlete\'s sport and role, and run them under consistent conditions (same warm-up, time of day, equipment) each time for valid comparison.',
+                key_coaching_points='Consistency of testing conditions matters as much as the test choice itself.',
+                common_mistakes='Running an unrelated "standard" test battery regardless of the athlete\'s actual sport demands.',
+                safety_considerations='Maximal-effort tests carry similar injury considerations to maximal training efforts and should be preceded by an adequate warm-up.',
+                summary='A good performance test is reliable, relevant to the athlete\'s actual sport demands, and run under consistent conditions each time.',
+                references='General performance-testing principles used in athlete assessment.',
+                faqs=[],
+            ),
+            dict(
+                title='Using Test Results Over Time',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain how to interpret changes in performance test results over time.',
+                content='A single test result matters less than the trend across repeated testing over a season.',
+                scientific_explanation='Normal day-to-day variation ("noise") exists in any physical test, so a single small change may not be meaningful — tracking results over multiple testing sessions helps separate a genuine trend from ordinary variation.',
+                practical_application='Retest at consistent intervals (e.g., every 4-6 weeks) and look at the trend line across several sessions rather than reacting strongly to any single result.',
+                key_coaching_points='One data point is an observation; several data points over time are a trend.',
+                common_mistakes='Making major program changes based on a single test session without considering normal variability.',
+                safety_considerations='',
+                summary='Track performance tests over multiple sessions and interpret the trend, not any single result in isolation.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_monitoring_load_course(self, author):
+        category = CourseCategory.objects.get(slug='monitoring-training-load', sport=None)
+        course = Course.objects.create(
+            title='Monitoring Training Load: Fundamentals',
+            subtitle='Why tracking how hard athletes are actually working matters',
+            description='An introduction to training load monitoring concepts, including session-RPE, and why sudden spikes in load are a known risk factor.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Load Monitoring Basics', order=1)
+        lessons = [
+            dict(
+                title='What "Training Load" Means',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Define training load and describe the session-RPE method of estimating it.',
+                content='Training load is a way of quantifying how much physical stress a training session or period placed on an athlete.',
+                scientific_explanation=(
+                    'A widely used simple method (session-RPE, from Foster et al.) multiplies a session\'s '
+                    'duration in minutes by the athlete\'s self-rated perceived exertion (typically on a 1-10 scale) '
+                    'to produce a single training load number, which can then be summed across a week or month to '
+                    'track total accumulated load over time.'
+                ),
+                practical_application='Have athletes report session RPE shortly after each session and log duration, then track the resulting weekly total load alongside performance and wellness trends.',
+                key_coaching_points='Session-RPE is simple to collect and requires no special equipment, which is part of why it is widely used.',
+                common_mistakes='Collecting RPE data but never actually reviewing the resulting trends to inform program decisions.',
+                safety_considerations='',
+                summary='Training load quantifies session stress, and session-RPE (duration x perceived exertion) is a simple, widely used way to estimate and track it over time.',
+                references='Foster et al. session-RPE methodology, as generally described in sports-science education.',
+                faqs=[],
+            ),
+            dict(
+                title='Why Sudden Load Spikes Are a Concern',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why rapid increases in training load are associated with elevated injury risk.',
+                content='A sharp, sudden increase in training load relative to what an athlete has recently been accustomed to is a well-documented injury risk factor.',
+                scientific_explanation='Research on the relationship between acute and chronic training load broadly supports that large, rapid spikes in load relative to an athlete\'s recent training history are associated with elevated injury risk, more so than high absolute load reached gradually.',
+                practical_application='Increase training load progressively and monitor weekly totals for sudden spikes, being especially cautious after a break (illness, holiday, injury) when an athlete\'s recent tolerance has dropped.',
+                key_coaching_points='A sudden jump in load is often riskier than a gradually reached high load.',
+                common_mistakes='Returning an athlete to full training volume immediately after a break without a gradual ramp-up.',
+                safety_considerations='Be particularly cautious ramping load back up after any period of reduced training (illness, injury, off-season).',
+                summary='Rapid spikes in training load relative to recent history are a well-documented injury risk factor — progressive increases and caution after breaks are key practical takeaways.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_agility_course(self, author):
+        category = CourseCategory.objects.get(slug='agility', sport=None)
+        course = Course.objects.create(
+            title='Agility: Fundamentals',
+            subtitle='Why agility is more than just running change-of-direction drills',
+            description='An introduction to agility as a reactive, decision-based skill, not just pre-planned change-of-direction speed.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Agility Basics', order=1)
+        lessons = [
+            dict(
+                title='Agility vs Change-of-Direction Speed',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Distinguish true agility from pre-planned change-of-direction drills.',
+                content='"Agility" is often used loosely to describe cone or ladder drills, but true sporting agility includes a reactive, decision-making component.',
+                scientific_explanation='Change-of-direction speed refers to the physical ability to decelerate, redirect, and re-accelerate along a pre-planned path. Agility, as used more precisely in sports science, adds a perceptual and decision-making component — reacting to an opponent, ball, or teammate rather than a known pattern.',
+                practical_application='Include both pre-planned change-of-direction drills (to build the physical qualities) and reactive drills responding to a stimulus (a partner, a ball, a signal) to develop true game-relevant agility.',
+                key_coaching_points='Cone drills alone build physical qualities but do not fully train the decision-making side of agility.',
+                common_mistakes='Assuming pre-planned cone/ladder drills alone are sufficient to develop game agility.',
+                safety_considerations='Rapid deceleration and direction change places high stress on the knee and ankle — ensure adequate strength preparation before high-intensity reactive agility work.',
+                summary='True agility combines physical change-of-direction ability with reactive decision-making — train both, not just pre-planned patterns.',
+                references='General agility-development principles used in athletic conditioning.',
+                faqs=[],
+            ),
+            dict(
+                title='Building an Agility Progression',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Outline a simple progression from basic to reactive agility work.',
+                content='A sensible agility progression starts simple and pre-planned, then gradually adds reactive, sport-realistic complexity.',
+                scientific_explanation='Progressing from closed (pre-planned, predictable) drills to open (reactive, unpredictable) drills allows athletes to first groove efficient movement mechanics before adding the cognitive load of real-time decision-making, which is closer to actual competition demand.',
+                practical_application='Start young or less experienced athletes with simple pre-planned direction-change drills to build mechanics, then progressively add a reactive stimulus (partner mirror drills, reaction to a ball) as competency improves.',
+                key_coaching_points='Progress from closed, predictable drills toward open, reactive ones as competency builds.',
+                common_mistakes='Introducing complex reactive drills before basic movement mechanics are sound, leading to poor technique under pressure.',
+                safety_considerations='',
+                summary='Progress agility training from simple, pre-planned drills toward reactive, sport-realistic ones as the athlete\'s movement competency develops.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_boxing_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='boxing')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Boxing: Physical Demands',
+            subtitle='What competitive boxing asks of an athlete\'s body',
+            description='An introduction to the mixed energy-system and repeated high-force demands that define boxing conditioning.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+        lessons = [
+            dict(
+                title='Mixed Energy System Demands in Boxing',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe why boxing draws on multiple energy systems within a single bout.',
+                content='A boxing round mixes short, high-intensity exchanges with lower-intensity movement and clinching, repeated across multiple rounds.',
+                scientific_explanation='The high-intensity punching exchanges rely heavily on rapid, short-duration energy production, while sustained rounds and the need to recover between exchanges and rounds draw significantly on aerobic capacity as well — making boxing a genuinely mixed-energy-system sport rather than purely one or the other.',
+                practical_application='Train both repeated high-intensity output (interval-style conditioning matching round/rest structure) and a solid aerobic base to support recovery between exchanges and rounds.',
+                key_coaching_points='Round-and-rest interval conditioning that mirrors actual bout structure is a practical, sport-specific conditioning method.',
+                common_mistakes='Training only steady aerobic conditioning or only maximal-intensity work, rather than both.',
+                safety_considerations='This course covers general physical conditioning only — it does not address the specific medical/safety protocols required around head-impact sports, which require specialized medical oversight.',
+                summary='Boxing genuinely mixes high-intensity anaerobic exchanges with an aerobic demand across rounds — conditioning should reflect both systems, matched to actual round/rest structure.',
+                references='General boxing physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Repeated-Effort and Rotational Demands',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify the repeated-effort and rotational-power demands specific to boxing.',
+                content='Punching power comes substantially from hip and torso rotation transferred through the arm, repeated many times across a bout.',
+                scientific_explanation='Effective punching technique relies on force generated from the legs and hips, transferred through a rotating torso — meaning rotational core strength and lower-body power are central conditioning priorities, not just upper-body/arm strength alone.',
+                practical_application='Prioritize rotational core strength and lower-body power development alongside upper-body conditioning, rather than training punching power as a purely arm-strength quality.',
+                key_coaching_points='Punching power is a whole-body, hip-driven quality, not an isolated arm movement.',
+                common_mistakes='Overemphasizing isolated arm/shoulder strength work at the expense of rotational core and leg power.',
+                safety_considerations='',
+                summary='Boxing\'s punching power is a whole-body, rotational quality driven from the hips through the torso — conditioning should reflect this rather than focusing narrowly on the arms.',
                 references='',
                 faqs=[],
             ),
