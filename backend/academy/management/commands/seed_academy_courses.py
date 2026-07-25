@@ -39,6 +39,11 @@ class Command(BaseCommand):
             ('program-design-fundamentals', self._seed_program_design_course),
             ('anti-doping-education-basics', self._seed_anti_doping_course),
             ('swimming-physical-demands', self._seed_swimming_physical_demands_course),
+            ('competition-preparation-fundamentals', self._seed_competition_prep_course),
+            ('coach-education-fundamentals', self._seed_coach_education_course),
+            ('leadership-communication-fundamentals', self._seed_leadership_course),
+            ('functional-training-fundamentals', self._seed_functional_training_course),
+            ('basketball-physical-demands', self._seed_basketball_physical_demands_course),
         ]
 
         created = 0
@@ -1098,6 +1103,248 @@ class Command(BaseCommand):
                 safety_considerations='Persistent shoulder pain during or after swimming warrants assessment rather than simply reducing volume temporarily and hoping it resolves.',
                 summary='The shoulder (from repetitive overhead stroke volume) is the standout injury area in swimming, with knee and lower-back stress also common depending on stroke — proactive dryland work helps address this.',
                 references='General competitive-swimming injury-epidemiology principles used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_competition_prep_course(self, author):
+        category = CourseCategory.objects.get(slug='competition-preparation', sport=None)
+        course = Course.objects.create(
+            title='Competition Preparation Fundamentals',
+            subtitle='Tapering, routines, and managing the days before competing',
+            description='Introduces the taper period, pre-competition routines, and simple day-before/day-of preparation principles.',
+            category=category, level='intermediate', status='published', estimated_hours=0.6, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Preparing to Compete', order=1)
+
+        lessons = [
+            dict(
+                title='The Taper: Reducing Load Before Competition',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain what a taper is and why training volume is reduced before competition.',
+                content='A taper is a planned reduction in training volume in the days/weeks before a competition, while keeping some intensity.',
+                scientific_explanation='Accumulated training fatigue can mask an athlete\'s true fitness. Reducing volume while maintaining some high-intensity work allows fatigue to dissipate while fitness adaptations are retained, so the athlete competes closer to their real capability rather than in a fatigued state.',
+                practical_application='Reduce overall training volume (fewer sets/reps or shorter sessions) in the final 1-2 weeks before a key competition, while keeping some short, sharp, high-intensity work to stay primed.',
+                key_coaching_points='Cut volume, not all intensity — a taper that removes everything can leave an athlete feeling flat.',
+                common_mistakes='Continuing full training volume right up to competition day, or tapering so much the athlete loses their edge.',
+                safety_considerations='None specific — this is a load-management strategy, not a safety intervention.',
+                summary='A taper reduces training volume before competition so accumulated fatigue fades while fitness is retained.',
+                references='General tapering principles used in competition-preparation coaching.',
+                faqs=[],
+            ),
+            dict(
+                title='Pre-Competition Routines and Day-Of Preparation',
+                lesson_type='text', order=2, estimated_minutes=8,
+                learning_objectives='Describe simple, practical day-before and day-of competition preparation steps.',
+                content='Simple, consistent routines around competition day reduce uncertainty and support performance.',
+                scientific_explanation='Familiar routines (as covered in Sports Psychology Fundamentals) reduce competitive anxiety by giving the athlete something predictable to focus on. Physically, adequate sleep and normal, familiar meals in the day before competition support having the athlete arrive rested and fueled, rather than experimenting with anything new.',
+                practical_application='Plan travel, sleep, and meal timing in advance; rehearse the competition-day warm-up in training beforehand so nothing on the day is unfamiliar.',
+                key_coaching_points='Never try a new routine, meal, or piece of equipment for the first time on competition day.',
+                common_mistakes='Trying new food, equipment, or warm-up routines for the first time right before competing.',
+                safety_considerations='None specific.',
+                summary='Familiar, well-rehearsed routines around sleep, food, travel, and warm-up reduce uncertainty and support performing at one\'s actual capability on competition day.',
+                references='General competition-preparation and pre-performance-routine principles.',
+                faqs=[
+                    ('Should athletes change anything about their training in the final 48 hours?', 'Generally no — the final 1-2 days should be familiar and light, not a time to introduce anything new.'),
+                ],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_coach_education_course(self, author):
+        category = CourseCategory.objects.get(slug='coach-education', sport=None)
+        course = Course.objects.create(
+            title='Coach Education Fundamentals',
+            subtitle='Core principles of effective, athlete-centered coaching',
+            description='Introduces athlete-centered coaching, effective feedback, and building a positive training environment.',
+            category=category, level='beginner', status='published', estimated_hours=0.6, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Coaching Basics', order=1)
+
+        lessons = [
+            dict(
+                title='Athlete-Centered Coaching',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain what it means to coach in an athlete-centered way.',
+                content='Athlete-centered coaching adapts the approach to the individual athlete rather than applying one fixed method to everyone.',
+                scientific_explanation='Athletes vary in training age, learning style, motivation, and life circumstances. Coaching that considers these differences — while still holding clear standards — tends to build more durable engagement and technical understanding than a one-size-fits-all approach.',
+                practical_application='Get to know each athlete\'s goals and circumstances; adjust communication style and session design accordingly, without lowering standards.',
+                key_coaching_points='Athlete-centered does not mean permissive — it means adapting the approach while keeping expectations clear.',
+                common_mistakes='Assuming what worked for one athlete will automatically work identically for every athlete.',
+                safety_considerations='None specific.',
+                summary='Athlete-centered coaching adapts communication and approach to the individual while maintaining clear, consistent standards.',
+                references='General coaching-philosophy principles used in coach education.',
+                faqs=[],
+            ),
+            dict(
+                title='Giving Effective Feedback',
+                lesson_type='text', order=2, estimated_minutes=8,
+                learning_objectives='Describe characteristics of feedback that actually helps athletes improve.',
+                content='Not all feedback is equally useful — how and when it\'s given matters.',
+                scientific_explanation='Feedback that is specific, timely, and focused on one or two key points is generally easier for an athlete to act on than vague or overwhelming feedback covering everything at once. Positive framing ("do this") is often easier to execute under pressure than purely negative framing ("don\'t do that").',
+                practical_application='Give feedback close to when the action happened, focus on one or two specific, actionable points, and frame cues in terms of what to do rather than only what to avoid.',
+                key_coaching_points='One or two clear cues beat five simultaneous corrections.',
+                common_mistakes='Piling on many corrections at once, or giving feedback so long after the action that the athlete has lost the context.',
+                safety_considerations='None specific.',
+                summary='Specific, timely, positively-framed feedback focused on one or two points is generally more actionable than vague or overloaded feedback.',
+                references='General coaching-feedback principles used in coach education.',
+                faqs=[],
+                quiz=dict(
+                    title='Coach Education Basics Check',
+                    passing_score_percent=70,
+                    questions=[
+                        dict(
+                            question_text='What does "athlete-centered coaching" mean?',
+                            explanation='It means adapting the approach to the individual athlete, not lowering standards.',
+                            choices=[
+                                ('Letting athletes do whatever they want', False),
+                                ('Adapting the approach to the individual while keeping clear standards', True),
+                                ('Using the exact same method for every athlete', False),
+                            ],
+                        ),
+                        dict(
+                            question_text='What generally makes feedback easier for an athlete to act on?',
+                            explanation='Specific, timely feedback focused on one or two points is easier to act on than vague or overloaded feedback.',
+                            choices=[
+                                ('Giving as many corrections as possible at once', False),
+                                ('Specific, timely feedback on one or two key points', True),
+                                ('Waiting until much later to mention anything', False),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_leadership_course(self, author):
+        category = CourseCategory.objects.get(slug='leadership-communication', sport=None)
+        course = Course.objects.create(
+            title='Leadership & Communication Fundamentals',
+            subtitle='Building trust and communicating clearly with athletes and teams',
+            description='Introduces basic leadership and communication principles relevant to coaching a team or individual athletes.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Leadership Basics', order=1)
+
+        lessons = [
+            dict(
+                title='Building Trust with Athletes',
+                lesson_type='text', order=1, estimated_minutes=7,
+                learning_objectives='Identify basic behaviors that build or erode trust between a coach and athletes.',
+                content='Trust is built through consistency between what a coach says and does, over time.',
+                scientific_explanation='Consistency (following through on what is said), fairness (applying standards evenly), and genuine care for athletes as people beyond their performance are commonly cited foundations of coach-athlete trust in sports psychology and leadership literature.',
+                practical_application='Follow through on commitments made to athletes, apply rules and standards consistently across the group, and show interest in athletes beyond just their performance metrics.',
+                key_coaching_points='Consistency over time matters more than any single gesture.',
+                common_mistakes='Applying rules or consequences inconsistently between different athletes.',
+                safety_considerations='None specific.',
+                summary='Trust is built through consistent follow-through, fairness, and genuine care shown over time, not through any single action.',
+                references='General coach-athlete relationship and leadership principles.',
+                faqs=[],
+            ),
+            dict(
+                title='Clear Communication with a Group',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe basics of communicating clearly to a group of athletes.',
+                content='Communicating to a team differs somewhat from one-on-one feedback — clarity and consistency matter even more.',
+                scientific_explanation='In group settings, instructions are easily lost or misinterpreted if not concise and confirmed. Checking understanding (e.g. asking an athlete to repeat back a key instruction) and using consistent terminology session to session reduces confusion.',
+                practical_application='Keep group instructions short and concrete; use the same terms for the same drills/concepts every session rather than varying language.',
+                key_coaching_points='Consistent terminology across sessions reduces confusion more than any single well-worded instruction.',
+                common_mistakes='Using different terms for the same drill or concept across different sessions.',
+                safety_considerations='None specific.',
+                summary='Clear, concise, and consistent terminology reduces confusion when communicating with a group.',
+                references='General team-communication principles used in coach education.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_functional_training_course(self, author):
+        category = CourseCategory.objects.get(slug='functional-training', sport=None)
+        course = Course.objects.create(
+            title='Functional Training Fundamentals',
+            subtitle='Training movement patterns that transfer to real activity',
+            description='Introduces the idea of functional training and how to select exercises that transfer to an athlete\'s sport or daily movement.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Functional Training Basics', order=1)
+
+        lessons = [
+            dict(
+                title='What Makes Training "Functional"?',
+                lesson_type='text', order=1, estimated_minutes=7,
+                learning_objectives='Explain the core idea behind functional training.',
+                content='"Functional" training emphasizes movement patterns and qualities that transfer to real activities, rather than training a muscle in isolation for its own sake.',
+                scientific_explanation='Many real-world and sporting movements involve multiple joints and muscle groups working together (e.g. a squat pattern, a rotational throw), often while also requiring balance and core stability. Training that reflects these multi-joint, whole-body patterns is more likely to transfer to actual performance than training that only isolates single muscles.',
+                practical_application='Favor multi-joint, whole-body movement patterns (squat, hinge, push, pull, carry, rotate) as the foundation, using isolation exercises to address specific weaknesses rather than as the main focus.',
+                key_coaching_points='Ask "does this movement pattern resemble something the athlete actually needs to do?" when selecting exercises.',
+                common_mistakes='Building a program entirely from isolation exercises with no whole-body movement patterns.',
+                safety_considerations='Multi-joint movements require good technique — prioritize movement quality before adding significant load.',
+                summary='Functional training emphasizes multi-joint, whole-body movement patterns that transfer to real activity, rather than isolated single-muscle work as the main focus.',
+                references='General functional-training principles used in strength & conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='The Fundamental Movement Patterns',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='List the commonly-referenced fundamental movement patterns used to organize functional training.',
+                content='Most functional training programs can be organized around a small set of fundamental movement patterns.',
+                scientific_explanation='A commonly used organizing framework includes: squat, hinge (e.g. deadlift pattern), push (horizontal/vertical), pull (horizontal/vertical), carry (loaded walking), and rotate/anti-rotate (core control against rotational force). Covering all of these across a training week helps ensure balanced development rather than overemphasizing one pattern.',
+                practical_application='Check a training week against these categories — if pull or rotational/anti-rotational work is consistently missing, the program has a gap worth addressing.',
+                key_coaching_points='Use the movement-pattern checklist as a program-design sanity check, not a rigid rule.',
+                common_mistakes='Overemphasizing push and squat patterns while neglecting pull and rotational/anti-rotational work.',
+                safety_considerations='An imbalance favoring pushing over pulling movements is a commonly cited contributor to shoulder posture and injury issues over time.',
+                summary='Organizing training around squat, hinge, push, pull, carry, and rotate/anti-rotate patterns helps ensure balanced, well-rounded development.',
+                references='General fundamental-movement-pattern frameworks used in strength & conditioning practice.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_basketball_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='basketball')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Basketball: Physical Demands',
+            subtitle='What competitive basketball asks of an athlete\'s body',
+            description='An introduction to the movement and energy-system demands of competitive basketball.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+
+        lessons = [
+            dict(
+                title='Movement and Energy System Demands',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe the physical qualities competitive basketball demands.',
+                content='Basketball combines frequent jumping, sprinting, and rapid changes of direction across a physically demanding game.',
+                scientific_explanation=(
+                    'Players perform repeated jumps (rebounding, shooting contests), short sprints, and frequent '
+                    'changes of direction, interspersed with brief recovery moments, across four quarters. This '
+                    'profile demands lower-body power (for jumping), repeated-sprint ability, and change-of-'
+                    'direction quality, layered on a substantial aerobic base to sustain the whole game.'
+                ),
+                practical_application='Combine jump-training (plyometrics), repeated-sprint conditioning, and change-of-direction technique work, on top of a solid aerobic base — not just isolated vertical-jump training.',
+                key_coaching_points='Landing mechanics after jumps deserve as much coaching attention as the jump itself.',
+                common_mistakes='Focusing training heavily on vertical jump height while neglecting landing mechanics and change-of-direction quality.',
+                safety_considerations='Repeated jumping and landing places high load on the knees and ankles — landing technique coaching is a genuine injury-prevention measure, not just a performance one.',
+                summary='Basketball demands lower-body power, repeated-sprint ability, and change-of-direction quality on top of an aerobic base — training should reflect all of these, including landing mechanics.',
+                references='General basketball physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Common Injury Areas in Basketball',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify commonly stressed areas in basketball and why.',
+                content='Basketball\'s jumping- and cutting-based movement pattern creates a recognizable injury profile.',
+                scientific_explanation='The ankles are frequently stressed from jump-landing and player contact underfoot; the knees are stressed from repeated jumping/landing and cutting; fingers/hands are exposed to contact with the ball and other players. Landing mechanics and lower-limb strength are commonly discussed contributing factors to the knee and ankle patterns specifically.',
+                practical_application='Include ankle stability and landing-mechanics work, along with lower-limb strength training, as a standard part of a basketball conditioning program.',
+                key_coaching_points='Coach a soft, controlled landing (bent knees, quiet landing) as a default technical standard, not an afterthought.',
+                common_mistakes='Treating ankle/knee conditioning as reactive (only after an injury) rather than a proactive, ongoing part of training.',
+                safety_considerations='Any persistent ankle or knee pain during jumping/landing activities should be assessed before continuing high-volume jump training.',
+                summary='The ankles and knees are common basketball injury areas due to repeated jumping, landing, and cutting — proactive landing-mechanics and strength work help address both.',
+                references='General basketball injury-epidemiology principles used in sport-specific conditioning practice.',
                 faqs=[],
             ),
         ]
