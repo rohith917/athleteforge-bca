@@ -49,6 +49,11 @@ class Command(BaseCommand):
             ('sports-biomechanics-fundamentals', self._seed_biomechanics_course),
             ('hydration-fundamentals', self._seed_hydration_course),
             ('cricket-physical-demands', self._seed_cricket_physical_demands_course),
+            ('sports-science-foundations-101', self._seed_sports_science_foundations_course),
+            ('sleep-optimization-fundamentals', self._seed_sleep_course),
+            ('movement-screening-fundamentals', self._seed_movement_screening_course),
+            ('stretching-fundamentals', self._seed_stretching_course),
+            ('volleyball-physical-demands', self._seed_volleyball_physical_demands_course),
         ]
 
         created = 0
@@ -1592,6 +1597,235 @@ class Command(BaseCommand):
                 safety_considerations='Persistent lower back pain in a young fast bowler warrants prompt assessment — this is a well-documented, serious injury pattern in the sport.',
                 summary='Fast bowling carries well-documented lower back and shoulder injury risk from its repeated rotational demands — workload management is a key, well-established prevention practice in cricket specifically.',
                 references='General cricket injury-epidemiology principles used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_sports_science_foundations_course(self, author):
+        category = CourseCategory.objects.get(slug='sports-science-foundations', sport=None)
+        course = Course.objects.create(
+            title='Sports Science Foundations 101',
+            subtitle='The big-picture map of how sports science actually supports performance',
+            description='An orientation course for coaches and athletes new to sports science: what the field covers, how its disciplines fit together, and how to use this Academy.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Orientation', order=1)
+        lessons = [
+            dict(
+                title='What Sports Science Covers',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='List the main disciplines within sports science and what each contributes.',
+                content='Sports science is an umbrella term covering several distinct but connected disciplines that together support athlete performance and health.',
+                scientific_explanation=(
+                    'Common disciplines include physiology (how the body produces energy and adapts to training), '
+                    'biomechanics (how the body moves and generates force), psychology (mental skills and behaviour), '
+                    'nutrition (fuelling and recovery), and medicine/physiotherapy (injury prevention and rehabilitation). '
+                    'Coaching sits alongside these, translating findings from each discipline into practical training decisions.'
+                ),
+                practical_application='Use this map to know which discipline a question belongs to, and which specialist (physiotherapist, nutritionist, psychologist) to involve when a question goes beyond general coaching knowledge.',
+                key_coaching_points='No single discipline has the full picture — good decisions usually draw on more than one.',
+                common_mistakes='Treating sports science as a single monolithic topic rather than a set of connected specialisms.',
+                safety_considerations='Questions involving injury, medical symptoms, or clinical diagnosis belong with qualified medical professionals, not general coaching judgement.',
+                summary='Sports science spans physiology, biomechanics, psychology, nutrition, and medicine — each contributes a different lens on performance and health.',
+                references='General sports-science curriculum structure used in coach education.',
+                faqs=[
+                    ('Do I need to be an expert in all of these areas?', 'No — the goal is enough working knowledge to make sound day-to-day decisions and to know when to bring in a specialist.'),
+                ],
+            ),
+            dict(
+                title='How to Use This Academy',
+                lesson_type='text', order=2, estimated_minutes=6,
+                learning_objectives='Describe how courses, lessons, and certificates fit together in this platform.',
+                content='This Academy is organized into courses, each made of modules and lessons, with optional quizzes and a certificate on completion.',
+                scientific_explanation='Learning research generally supports breaking material into short, focused units (as used here) over long unstructured sessions, and using retrieval practice (quizzes) to strengthen retention rather than passive reading alone.',
+                practical_application='Work through lessons in order within a course, attempt quizzes honestly before checking explanations, and revisit completed courses periodically rather than treating them as one-time reading.',
+                key_coaching_points='Consistency over time matters more than completing many courses quickly.',
+                common_mistakes='Skipping quizzes or rushing through lessons without engaging with the practical application sections.',
+                safety_considerations='',
+                summary='This Academy uses short focused lessons and quizzes by design — engage with both, in order, for the best learning outcome.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_sleep_course(self, author):
+        category = CourseCategory.objects.get(slug='sleep-optimization', sport=None)
+        course = Course.objects.create(
+            title='Sleep Optimization: Fundamentals',
+            subtitle='Why sleep is one of the most powerful, lowest-cost performance tools available',
+            description='A practical introduction to why athletes need more sleep than the general population and how to protect it.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Sleep Basics for Athletes', order=1)
+        lessons = [
+            dict(
+                title='Why Sleep Matters for Performance',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain the main ways sleep supports athletic performance and recovery.',
+                content='Sleep is when much of the body\'s physical recovery and adaptation from training actually takes place.',
+                scientific_explanation=(
+                    'During deep sleep stages, the body releases growth hormone supporting tissue repair, while '
+                    'sleep more broadly supports muscle protein synthesis, glycogen replenishment, immune function, '
+                    'and central nervous system recovery. Sleep also plays a well-established role in memory '
+                    'consolidation, which supports skill learning.'
+                ),
+                practical_application='Treat sleep as a trainable, schedulable part of the program rather than an afterthought — protect a consistent sleep and wake time, especially around heavy training blocks.',
+                key_coaching_points='Athletes in heavy training blocks generally need more sleep than sedentary individuals, not less.',
+                common_mistakes='Prioritizing extra training time or early-morning sessions at the direct cost of sleep duration.',
+                safety_considerations='Chronic short sleep is associated with elevated injury risk in youth athletes in particular — persistent poor sleep is worth addressing directly, not ignoring.',
+                summary='Sleep supports physical recovery, immune function, and learning — it deserves the same deliberate scheduling as training itself.',
+                references='General sleep-science principles used in athlete-recovery education.',
+                faqs=[],
+            ),
+            dict(
+                title='Practical Sleep Hygiene for Athletes',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='List practical habits that support consistent, quality sleep.',
+                content='Simple, consistent habits ("sleep hygiene") have a meaningful effect on sleep quality and are within every athlete\'s control.',
+                scientific_explanation='A cool, dark, quiet sleep environment, a consistent sleep/wake schedule, and reduced screen/blue-light exposure before bed all support the body\'s natural circadian and melatonin-driven sleep signaling. Late caffeine intake and late intense training can both delay sleep onset.',
+                practical_application='Encourage a consistent bedtime and wake time (including on rest days), limiting caffeine in the afternoon/evening, and winding down screens before bed.',
+                key_coaching_points='Consistency of schedule matters as much as total duration.',
+                common_mistakes='Wildly inconsistent sleep/wake times between training days and rest days.',
+                safety_considerations='Persistent sleep difficulty despite good habits may warrant a conversation with a medical professional rather than being managed through coaching alone.',
+                summary='Consistent sleep/wake timing, a good sleep environment, and mindful caffeine/screen use are practical, low-cost levers every athlete can pull.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_movement_screening_course(self, author):
+        category = CourseCategory.objects.get(slug='movement-screening', sport=None)
+        course = Course.objects.create(
+            title='Movement Screening: Fundamentals',
+            subtitle='Using simple movement checks to spot limitations before they become injuries',
+            description='An introduction to why and how coaches use basic movement screening as part of athlete monitoring.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Screening Basics', order=1)
+        lessons = [
+            dict(
+                title='Why Screen Movement at All',
+                lesson_type='text', order=1, estimated_minutes=7,
+                learning_objectives='Explain the purpose of movement screening and its limitations.',
+                content='Movement screening looks at how an athlete moves through basic patterns (squatting, lunging, reaching) to spot obvious asymmetries or restrictions.',
+                scientific_explanation='Screens like these are intended to flag gross limitations in mobility, stability, or movement quality for further attention — the evidence for screens precisely predicting individual injury risk is mixed, so they are best used as one input among several rather than a standalone diagnostic tool.',
+                practical_application='Use screening results to guide individualized warm-up and mobility work, not as a pass/fail gate for participation.',
+                key_coaching_points='A screen is a starting conversation, not a diagnosis.',
+                common_mistakes='Over-interpreting a single screening session as a precise predictor of future injury.',
+                safety_considerations='Any pain reported during screening (rather than simple restriction or asymmetry) should be referred to a qualified medical professional.',
+                summary='Movement screening flags gross movement limitations to guide individualized work — it is a useful input, not a precise injury-prediction tool on its own.',
+                references='General movement-screening practice used in athletic preparation.',
+                faqs=[],
+            ),
+            dict(
+                title='Common Basic Screens Coaches Use',
+                lesson_type='text', order=2, estimated_minutes=8,
+                learning_objectives='Describe a few commonly used basic movement checks.',
+                content='Coaches commonly check overhead squat pattern, single-leg balance, and ankle/hip mobility as simple, low-equipment starting points.',
+                scientific_explanation='The overhead squat pattern reveals ankle, hip, and thoracic mobility restrictions together; single-leg balance highlights side-to-side stability differences; ankle dorsiflexion range affects squat and landing mechanics broadly across sports.',
+                practical_application='Run a short, consistent screening routine periodically (e.g., pre-season and at intervals through the season) and track changes over time for each athlete rather than comparing athletes to each other.',
+                key_coaching_points='Track each athlete against their own baseline over time.',
+                common_mistakes='Comparing one athlete\'s screen results directly against a teammate\'s as if there is one universal "correct" standard.',
+                safety_considerations='',
+                summary='A short, consistent set of basic checks (overhead squat, single-leg balance, ankle mobility) run periodically gives useful individual trend data over time.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_stretching_course(self, author):
+        category = CourseCategory.objects.get(slug='stretching', sport=None)
+        course = Course.objects.create(
+            title='Stretching Fundamentals',
+            subtitle='Static vs dynamic stretching, and when to use each',
+            description='A practical guide to the main types of stretching and how to place them correctly around training and competition.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Stretching Basics', order=1)
+        lessons = [
+            dict(
+                title='Static vs Dynamic Stretching',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Distinguish static and dynamic stretching and their typical uses.',
+                content='Static stretching holds a lengthened muscle position for a period of time; dynamic stretching moves a joint through range actively and repeatedly.',
+                scientific_explanation=(
+                    'Static stretching immediately before high-intensity or power-based activity has been associated '
+                    'in some research with short-term reductions in maximal force/power output, while dynamic '
+                    'stretching that raises temperature and actively moves joints through range tends to prepare the '
+                    'body for performance without this effect. Static stretching remains useful at other times, such '
+                    'as after training or in separate mobility sessions.'
+                ),
+                practical_application='Favor dynamic stretching within a pre-competition or pre-training warm-up, and reserve longer static stretching for after training or standalone mobility sessions.',
+                key_coaching_points='Timing matters as much as the stretch type itself.',
+                common_mistakes='Holding long static stretches immediately before a maximal-power event or session.',
+                safety_considerations='Stretching into sharp pain (rather than mild tension) is a sign to stop — pain signals potential tissue damage risk.',
+                summary='Dynamic stretching suits pre-performance warm-ups; static stretching suits post-training or separate mobility work — placement matters more than picking a single "best" type.',
+                references='General stretching-science principles used in warm-up design.',
+                faqs=[],
+            ),
+            dict(
+                title='Building a Simple Stretching Routine',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Outline how to structure a basic stretching routine for an athlete.',
+                content='A simple, sustainable stretching routine targets the muscle groups most relevant to the athlete\'s sport rather than trying to cover the whole body every session.',
+                scientific_explanation='Consistency over time produces more durable range-of-motion changes than infrequent, long sessions — regular shorter sessions targeting sport-relevant muscle groups (e.g., hip flexors and hamstrings for sprinters) are generally more practical and effective than occasional exhaustive full-body sessions.',
+                practical_application='Identify 3-5 muscle groups most relevant to the athlete\'s sport and have them stretch those consistently a few times per week, rather than attempting a long, infrequent full-body routine.',
+                key_coaching_points='Consistency beats occasional intensity for range-of-motion gains.',
+                common_mistakes='Doing one long, thorough stretching session occasionally instead of shorter, consistent sessions.',
+                safety_considerations='',
+                summary='A short, sport-relevant, consistent stretching routine beats an occasional exhaustive one for lasting range-of-motion improvement.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_volleyball_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='volleyball')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Volleyball: Physical Demands',
+            subtitle='What competitive volleyball asks of an athlete\'s body',
+            description='An introduction to the jumping, landing, and reactive movement demands that define volleyball conditioning.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+        lessons = [
+            dict(
+                title='Jump and Landing Demands',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe the repeated jumping and landing demands specific to volleyball.',
+                content='Volleyball involves very high numbers of jumps per match and per season across attacking, blocking, and serving actions.',
+                scientific_explanation=(
+                    'Repeated jump-landing cycles place high, repetitive load through the patellar tendon and '
+                    'surrounding knee structures, and volleyball players are consequently a commonly cited '
+                    'population for patellar tendon overuse issues ("jumper\'s knee") in sports-science literature. '
+                    'Blocking additionally demands rapid lateral movement and reactive timing alongside the jump itself.'
+                ),
+                practical_application='Build lower-body eccentric strength and landing mechanics work into conditioning, and monitor cumulative jump counts across practice and matches rather than only match-day jumps.',
+                key_coaching_points='Total jump volume across a week, not just match day, drives cumulative load.',
+                common_mistakes='Tracking match jump counts only and ignoring high jump volumes accumulated in practice.',
+                safety_considerations='Persistent anterior knee pain in a volleyball athlete is a common, well-documented pattern worth assessing early rather than "playing through".',
+                summary='Volleyball\'s repeated jump-landing demands make cumulative jump volume and landing mechanics key conditioning and monitoring priorities.',
+                references='General volleyball physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Reactive Agility and Shoulder Demands',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify the reactive movement and overhead-arm demands specific to volleyball.',
+                content='Beyond jumping, volleyball requires rapid reactive movement to the ball and repeated overhead arm actions in serving and attacking.',
+                scientific_explanation='Repeated, forceful overhead arm-swing actions (spiking, serving) place cumulative load through the shoulder complex, a commonly monitored area in volleyball conditioning, alongside the reactive lateral and forward movement demanded by digging and blocking.',
+                practical_application='Include shoulder-focused strength and mobility work alongside reactive agility drills that mimic real in-game movement patterns.',
+                key_coaching_points='Shoulder health work deserves the same deliberate attention as lower-body conditioning in this sport.',
+                common_mistakes='Focusing conditioning almost entirely on jumping/legs while neglecting shoulder-specific preparation.',
+                safety_considerations='Shoulder pain during or after serving/attacking actions is a common early warning sign worth addressing before it progresses.',
+                summary='Volleyball combines high jump volume with repeated overhead-arm actions and reactive movement — conditioning should address legs, shoulders, and agility together.',
+                references='',
                 faqs=[],
             ),
         ]
