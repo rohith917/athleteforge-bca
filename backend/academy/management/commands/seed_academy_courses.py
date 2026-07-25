@@ -64,6 +64,11 @@ class Command(BaseCommand):
             ('power-development-fundamentals', self._seed_power_development_course),
             ('endurance-training-fundamentals', self._seed_endurance_training_course),
             ('wrestling-physical-demands', self._seed_wrestling_physical_demands_course),
+            ('flexibility-fundamentals', self._seed_flexibility_course),
+            ('stability-balance-fundamentals', self._seed_stability_balance_course),
+            ('coordination-reaction-fundamentals', self._seed_coordination_reaction_course),
+            ('training-methods-fundamentals', self._seed_training_methods_course),
+            ('athletics-physical-demands', self._seed_athletics_physical_demands_course),
         ]
 
         created = 0
@@ -2262,6 +2267,212 @@ class Command(BaseCommand):
                 common_mistakes='Treating hygiene protocols as optional rather than a core part of wrestling-specific injury prevention.',
                 safety_considerations='Any skin lesion or infection should be assessed before allowing an athlete back on the mat, given contagion risk to training partners.',
                 summary='Wrestling\'s close-contact grappling nature stresses the shoulder and knee specifically and carries a well-documented skin-infection risk — hygiene practices are a genuine sport-specific injury-prevention topic.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_flexibility_course(self, author):
+        category = CourseCategory.objects.get(slug='flexibility', sport=None)
+        course = Course.objects.create(
+            title='Flexibility: Fundamentals',
+            subtitle='Range of motion as a trainable, sport-relevant quality',
+            description='An introduction to flexibility as joint range of motion, how it is developed, and why more is not always better.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Flexibility Basics', order=1)
+        lessons = [
+            dict(
+                title='What Determines Flexibility',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe the main factors that influence a joint\'s range of motion.',
+                content='Flexibility (available range of motion at a joint) is influenced by muscle and connective tissue length, joint structure, and the nervous system\'s tolerance of a stretched position.',
+                scientific_explanation='Beyond the physical length of muscle-tendon structures, the nervous system regulates how far a muscle "allows" itself to stretch before triggering a protective reflex — meaning flexibility gains from training partly reflect improved stretch tolerance, not only physical tissue lengthening.',
+                practical_application='Expect flexibility improvements to come from consistent, repeated practice over weeks, and understand that some early gains reflect increased comfort/tolerance with the stretched position rather than only tissue change.',
+                key_coaching_points='Flexibility training requires consistency over time — one long session will not produce a lasting change.',
+                common_mistakes='Expecting a single stretching session to produce a lasting range-of-motion improvement.',
+                safety_considerations='Stretching into sharp pain risks tissue damage — mild tension, not pain, is the appropriate target sensation.',
+                summary='Flexibility depends on both physical tissue properties and nervous-system stretch tolerance — consistent practice over time, not single sessions, produces lasting change.',
+                references='General flexibility-science principles used in mobility training.',
+                faqs=[],
+            ),
+            dict(
+                title='Is More Flexibility Always Better?',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why sport-appropriate flexibility, not maximal flexibility, is the actual goal.',
+                content='Every sport has a range of motion that is genuinely useful for its movements — beyond that, extra range does not necessarily help and, at extremes, can reduce joint stability.',
+                scientific_explanation='Very high, unspecific joint laxity/hypermobility can, in some contexts, be associated with reduced joint stability, since a joint held together partly by soft-tissue tension may rely more on active muscular control if that tension is very loose. The appropriate target is sport-relevant range of motion, not maximal range for its own sake.',
+                practical_application='Target flexibility work at the ranges genuinely used in the athlete\'s sport rather than pursuing maximal flexibility as a goal in itself, and pair mobility work with adequate strength through that range.',
+                key_coaching_points='"Functional range for the sport" is the target, not "maximum possible range".',
+                common_mistakes='Pursuing extreme flexibility unrelated to the athlete\'s actual sport demands.',
+                safety_considerations='',
+                summary='Sport-relevant range of motion, paired with strength through that range, is the practical goal — not maximal flexibility for its own sake.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_stability_balance_course(self, author):
+        category = CourseCategory.objects.get(slug='stability-balance', sport=None)
+        course = Course.objects.create(
+            title='Stability & Balance: Fundamentals',
+            subtitle='The unglamorous quality behind nearly every athletic movement',
+            description='An introduction to stability and balance training and why it matters for both performance and injury prevention.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Stability Basics', order=1)
+        lessons = [
+            dict(
+                title='Why Stability Underlies Performance',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why a stable base supports effective force production and injury prevention.',
+                content='Stability refers to the body\'s ability to control joint position and resist unwanted movement, providing a solid base from which to produce force.',
+                scientific_explanation='Force production is generally more effective from a stable, controlled base — an unstable joint or trunk position can reduce how efficiently force transfers through the body during athletic movements, and instability at a joint is also a commonly cited contributor to injury risk during high-force or reactive movements.',
+                practical_application='Include core and single-leg stability work as a foundation supporting other athletic qualities, not as an isolated "extra" separate from strength and power training.',
+                key_coaching_points='Stability work supports every other physical quality — it is a foundation, not a standalone add-on.',
+                common_mistakes='Treating stability/balance work as optional "extra credit" rather than foundational.',
+                safety_considerations='',
+                summary='Stability provides the controlled base needed for efficient force production and reduced injury risk — it underlies rather than competes with strength and power training.',
+                references='General stability-training principles used in athletic conditioning.',
+                faqs=[],
+            ),
+            dict(
+                title='Progressing Balance and Stability Work',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe a simple progression for balance and stability training.',
+                content='Stability training should progress from simple, controlled positions to more dynamic, sport-realistic, less predictable ones.',
+                scientific_explanation='A typical progression moves from static double-leg balance, to static single-leg balance, to dynamic single-leg movements (hops, reaches), and finally to reactive/unstable-surface or externally-perturbed variations — each step increasing the demand on the neuromuscular control system.',
+                practical_application='Start athletes at the level appropriate to their current competency (often static single-leg balance) and progress toward dynamic and reactive variations only once earlier stages are controlled well.',
+                key_coaching_points='Master static single-leg control before adding dynamic or unstable-surface elements.',
+                common_mistakes='Jumping straight to unstable-surface or highly dynamic balance drills before basic single-leg control is established.',
+                safety_considerations='Progress difficulty gradually — a fall from an overly advanced balance challenge is itself an injury risk.',
+                summary='Progress stability training from static, controlled positions toward dynamic and reactive challenges as competency develops, rather than starting at an advanced level.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_coordination_reaction_course(self, author):
+        category = CourseCategory.objects.get(slug='coordination-reaction', sport=None)
+        course = Course.objects.create(
+            title='Coordination & Reaction: Fundamentals',
+            subtitle='Training the nervous system, not just the muscles',
+            description='An introduction to coordination and reaction-time training as trainable, sport-relevant qualities.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Coordination Basics', order=1)
+        lessons = [
+            dict(
+                title='What Coordination Training Actually Trains',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain coordination as a skill of the nervous system rather than purely a muscular quality.',
+                content='Coordination refers to the smooth, efficient sequencing of muscle actions to produce an intended movement — it is trained through repetition and practice, much like any motor skill.',
+                scientific_explanation='Motor learning research supports that coordination improves through repeated, varied practice of a movement pattern, gradually making the movement more automatic and efficient (requiring less conscious attention) — this is a nervous-system adaptation distinct from, though it interacts with, muscular strength.',
+                practical_application='Give young or developing athletes varied movement practice across multiple skills and contexts, rather than early over-specialization in a single narrow movement pattern.',
+                key_coaching_points='Broad movement variety in youth development supports later coordination and skill acquisition across sports.',
+                common_mistakes='Early over-specialization limiting a young athlete\'s exposure to varied fundamental movement patterns.',
+                safety_considerations='',
+                summary='Coordination is a trainable nervous-system skill developed through repeated, varied movement practice — broad movement exposure especially benefits developing athletes.',
+                references='General motor-learning principles used in athletic development.',
+                faqs=[],
+            ),
+            dict(
+                title='Reaction Time in Sport',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe how reaction-time training is typically approached in sport.',
+                content='Reaction time is how quickly an athlete responds to a stimulus (a ball, an opponent\'s movement, a signal) with an appropriate action.',
+                scientific_explanation='Reaction training in sport is most effective when it uses realistic, sport-specific stimuli (an actual ball flight, an opponent\'s movement pattern) rather than generic, unrelated reaction drills, since the perceptual skill of recognizing a sport-specific cue is a meaningful part of real game reaction time.',
+                practical_application='Design reaction drills around stimuli the athlete will genuinely face in competition, rather than generic light/sound reaction games disconnected from the sport itself.',
+                key_coaching_points='Sport-specific stimuli in reaction drills transfer better to actual competition than generic reaction games.',
+                common_mistakes='Relying primarily on generic reaction-light apps or games disconnected from the athlete\'s actual sport cues.',
+                safety_considerations='',
+                summary='Reaction-time training transfers best when built around the specific stimuli an athlete actually faces in their sport, not generic, unrelated reaction drills.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_training_methods_course(self, author):
+        category = CourseCategory.objects.get(slug='training-methods', sport=None)
+        course = Course.objects.create(
+            title='Training Methods: Fundamentals',
+            subtitle='A tour of the main methods coaches choose between',
+            description='An introduction to common training methods (continuous, interval, circuit, resistance) and how coaches choose between them.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Method Basics', order=1)
+        lessons = [
+            dict(
+                title='Common Training Methods',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='List several common training methods and what each is generally used for.',
+                content='Coaches draw on a toolbox of established training methods, each suited to developing particular qualities.',
+                scientific_explanation='Continuous methods (steady, unbroken effort) commonly build aerobic base; interval methods (structured work/rest bouts) target a range of qualities from aerobic to anaerobic depending on the work/rest ratio used; circuit methods combine several exercises in sequence for combined conditioning and strength effects; resistance training methods target strength and power through external loading.',
+                practical_application='Select the training method based on the specific quality being targeted for that session or phase, rather than defaulting to one familiar method for every purpose.',
+                key_coaching_points='Match method to purpose — no single method serves every training goal.',
+                common_mistakes='Using the same familiar training method for every session regardless of the specific quality being targeted.',
+                safety_considerations='',
+                summary='Continuous, interval, circuit, and resistance methods each serve different training purposes — the method chosen should match the specific quality being targeted.',
+                references='General training-methods overview used in coach education.',
+                faqs=[],
+            ),
+            dict(
+                title='Choosing a Method for the Session Goal',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Practice matching a training method to a stated session goal.',
+                content='Every session should start from a clear goal, with the method chosen to serve that goal rather than the reverse.',
+                scientific_explanation='Working backward from the specific adaptation being targeted (e.g., "build aerobic base" vs "develop maximal strength" vs "improve repeated-sprint ability") toward the training method best suited to that adaptation produces more coherent programming than starting from a favorite method and applying it broadly.',
+                practical_application='Before selecting drills or exercises, state the session\'s primary goal explicitly, then choose the training method that best matches that specific goal.',
+                key_coaching_points='Start every session plan from "what quality am I targeting today," not from "what drills do I usually run."',
+                common_mistakes='Planning sessions around familiar drills first, without a clearly stated target adaptation.',
+                safety_considerations='',
+                summary='Clearly state the session\'s target adaptation first, then choose the training method that best serves that specific goal.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_athletics_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='athletics')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Athletics: Physical Demands',
+            subtitle='Why "athletics" is really many different sports in one',
+            description='An introduction to the very different physical demand profiles across athletics (track and field) disciplines.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+        lessons = [
+            dict(
+                title='Sprints, Distance, Jumps, and Throws Are Different Sports',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe why athletics disciplines have very different physical demand profiles.',
+                content='"Athletics" covers sprinting, distance running, jumps, and throws — disciplines with almost opposite physical demand profiles despite sharing one governing sport.',
+                scientific_explanation='Sprinting demands very high, short-duration force and rate of force development; distance running demands sustained aerobic capacity and running economy over long durations; jumps demand explosive, technically precise single-effort power; throws demand maximal rotational power and technical timing in a single explosive action. Training approaches for a sprinter and a distance runner can be nearly opposite in emphasis.',
+                practical_application='Design conditioning specific to the athlete\'s actual event group rather than a generic "athletics" template — a sprinter\'s program should look very different from a distance runner\'s.',
+                key_coaching_points='"Athletics" is not one demand profile — always identify the specific event group first.',
+                common_mistakes='Applying one generic conditioning template across sprinters, distance runners, jumpers, and throwers alike.',
+                safety_considerations='',
+                summary='Athletics spans sprints, distance, jumps, and throws — each has a genuinely distinct physical demand profile requiring event-specific conditioning.',
+                references='General athletics (track and field) physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Common Injury Patterns by Event Group',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify commonly stressed areas across different athletics event groups.',
+                content='Injury patterns differ meaningfully by event group within athletics, reflecting each group\'s distinct demands.',
+                scientific_explanation='Sprinters commonly experience hamstring strain injuries from high-speed running; distance runners commonly experience overuse injuries (e.g., shin, knee, or foot) from high cumulative running volume; throwers commonly experience shoulder and elbow stress from repeated maximal-effort rotational actions; jumpers commonly experience patellar tendon and ankle stress from repeated high-impact takeoffs and landings.',
+                practical_application='Tailor injury-prevention screening and conditioning to the specific injury patterns known for the athlete\'s event group, rather than a single generic athletics injury-prevention checklist.',
+                key_coaching_points='Know the specific injury pattern associated with your athlete\'s event group and screen for it specifically.',
+                common_mistakes='Using one generic injury-prevention checklist across all athletics event groups.',
+                safety_considerations='Persistent hamstring tightness in a sprinter or persistent shin/foot pain in a distance runner are both common early-warning patterns worth assessing promptly.',
+                summary='Each athletics event group carries a distinct, well-documented injury pattern — screening and prevention should be tailored to the athlete\'s specific event group.',
                 references='',
                 faqs=[],
             ),
