@@ -74,6 +74,11 @@ class Command(BaseCommand):
             ('ethics-in-sport-fundamentals', self._seed_ethics_in_sport_course),
             ('badminton-physical-demands', self._seed_badminton_physical_demands_course),
             ('cycling-physical-demands', self._seed_cycling_physical_demands_course),
+            ('gymnastics-physical-demands', self._seed_gymnastics_physical_demands_course),
+            ('judo-physical-demands', self._seed_judo_physical_demands_course),
+            ('karate-physical-demands', self._seed_karate_physical_demands_course),
+            ('powerlifting-physical-demands', self._seed_powerlifting_physical_demands_course),
+            ('weightlifting-physical-demands', self._seed_weightlifting_physical_demands_course),
         ]
 
         created = 0
@@ -2692,6 +2697,216 @@ class Command(BaseCommand):
                 common_mistakes='Increasing riding volume rapidly without addressing bike fit or supporting strength work.',
                 safety_considerations='Persistent knee pain in a cyclist often traces back to a correctable bike-fit issue and is worth investigating rather than only reducing volume.',
                 summary='Cycling\'s repetitive, sustained pedaling motion creates a largely overuse-dominant injury profile — proper bike fit and supporting strength work are key, sport-specific prevention priorities.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_gymnastics_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='gymnastics')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Gymnastics: Physical Demands',
+            subtitle='What competitive gymnastics asks of an athlete\'s body',
+            description='An introduction to the extreme strength-to-bodyweight, flexibility, and landing demands that define gymnastics conditioning.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+        lessons = [
+            dict(
+                title='Strength-to-Bodyweight and Flexibility Demands',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe why gymnastics uniquely combines extreme relative strength and extreme flexibility demands.',
+                content='Gymnastics uniquely demands both very high strength relative to bodyweight (holding and controlling one\'s own body in demanding positions) and extensive flexibility across nearly every joint.',
+                scientific_explanation='Skills like rings holds or handstands require producing very high force relative to the athlete\'s own bodyweight, often in fully extended, mechanically disadvantaged positions, while skills across all apparatus require extensive shoulder, hip, and spinal flexibility beyond what most other sports demand — making gymnastics one of the more physically multi-dimensional sports to condition for.',
+                practical_application='Build bodyweight-relative strength (rings, bar, and handstand-specific strength work) alongside dedicated, progressive flexibility work across the shoulders, hips, and spine specifically.',
+                key_coaching_points='Gymnastics conditioning must address both ends of the spectrum — maximal relative strength and extensive flexibility — not just one.',
+                common_mistakes='Prioritizing flexibility development while neglecting the substantial bodyweight-relative strength gymnastics equally demands, or vice versa.',
+                safety_considerations='Given the very high skill and fall-related injury risk in gymnastics, this course covers only general physical conditioning concepts — actual skill coaching and progression require qualified, sport-specific gymnastics coaching expertise.',
+                summary='Gymnastics uniquely combines extreme bodyweight-relative strength demands with extensive flexibility requirements — conditioning must address both together.',
+                references='General gymnastics physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Landing Mechanics and Wrist/Ankle Demands',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify commonly stressed areas in gymnastics related to landings and weight-bearing on the hands.',
+                content='Gymnastics involves frequent high-impact landings and repeated weight-bearing through the wrists (on bars, vault, and floor), creating a distinct injury profile.',
+                scientific_explanation='Repeated landings from height place high impact load through the ankles, knees, and lower back, making landing mechanics (absorbing force through a controlled, multi-joint bend) a key technical and conditioning focus; repeated weight-bearing through an extended wrist during floor and apparatus work is also a well-documented, sport-specific overuse concern in young gymnasts in particular.',
+                practical_application='Coach controlled landing mechanics explicitly as a foundational skill, and monitor developing gymnasts\' wrist loading given the sport\'s well-documented association with wrist overuse concerns in this population.',
+                key_coaching_points='Landing mechanics should be coached as deliberately as any other gymnastics skill, not assumed to develop automatically.',
+                common_mistakes='Assuming safe landing mechanics develop automatically without deliberate, explicit coaching.',
+                safety_considerations='Persistent wrist pain in a young gymnast is a well-documented, sport-specific concern worth assessing promptly given repeated high-impact weight-bearing on a still-developing joint.',
+                summary='Gymnastics\' repeated high-impact landings and hand weight-bearing make landing mechanics coaching and wrist-overuse monitoring key, sport-specific priorities.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_judo_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='judo')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Judo: Physical Demands',
+            subtitle='What competitive judo asks of an athlete\'s body',
+            description='An introduction to the grip-strength, explosive-throw, and repeated-effort demands that define judo conditioning.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+        lessons = [
+            dict(
+                title='Grip Strength and Explosive Throwing Demands',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe the grip-endurance and explosive-power demands specific to judo.',
+                content='Judo\'s grip-fighting (kumi-kata) and throwing techniques demand sustained grip endurance combined with short, explosive whole-body power.',
+                scientific_explanation='Sustained gripping of an opponent\'s judogi throughout a match places heavy demand on forearm and grip endurance, while executing a throw requires a short, maximal, whole-body coordinated power output combining the legs, hips, and upper body in sequence — making judo a sport that combines sustained isometric grip demand with intermittent maximal-power bursts.',
+                practical_application='Include dedicated grip-endurance training (grip holds, judogi-specific grip work) alongside explosive, whole-body power training that mirrors the throwing action\'s hip-driven mechanics.',
+                key_coaching_points='Grip endurance is a well-recognized, judo-specific conditioning priority distinct from general hand strength.',
+                common_mistakes='Training general strength without dedicated grip-endurance and judogi-specific grip work.',
+                safety_considerations='This course covers general physical conditioning only, not throwing technique or safe falling (ukemi) instruction, which require qualified, sport-specific judo coaching.',
+                summary='Judo combines sustained grip-endurance demand with intermittent explosive, hip-driven throwing power — both deserve dedicated conditioning attention.',
+                references='General judo physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Common Injury Areas in Judo',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify commonly stressed areas in judo and why.',
+                content='Judo\'s grappling, throwing, and ground-fighting demands create a distinct injury profile centered on the shoulder, knee, and neck.',
+                scientific_explanation='The shoulder is frequently stressed during both offensive throwing attempts and defensive resistance to being thrown; the knee experiences rotational and shearing forces during throws and ground transitions; the neck and cervical spine can be stressed during certain throws and ground-control positions, making safe falling technique (ukemi) a genuinely important injury-prevention skill specific to judo.',
+                practical_application='Prioritize shoulder and knee stability work, and treat safe falling technique (ukemi) as a foundational, non-negotiable early-learning priority for injury prevention, not an optional extra.',
+                key_coaching_points='Safe falling technique (ukemi) is one of the most important injury-prevention skills specific to judo and combat sports involving throws.',
+                common_mistakes='Rushing athletes into live throwing practice before safe falling technique is well established.',
+                safety_considerations='Ukemi (safe falling) instruction should precede live throwing practice for any new judo athlete.',
+                summary='Judo\'s throwing and grappling demands stress the shoulder, knee, and neck specifically — safe falling technique (ukemi) is a foundational, sport-specific injury-prevention priority.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_karate_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='karate')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Karate: Physical Demands',
+            subtitle='What competitive karate asks of an athlete\'s body',
+            description='An introduction to the explosive, reactive, and technically precise demands across karate\'s kumite and kata disciplines.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+        lessons = [
+            dict(
+                title='Kumite vs Kata: Two Different Demand Profiles',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain how physical demands differ between karate\'s sparring (kumite) and forms (kata) disciplines.',
+                content='Karate competition includes both kumite (sparring) and kata (prescribed solo forms), which place meaningfully different demands on the athlete.',
+                scientific_explanation='Kumite demands repeated, explosive, reactive striking and footwork exchanges against an opponent, drawing on rapid rate-of-force-development and reactive agility. Kata demands sustained, whole-body explosive power and precision performed solo with no opponent feedback, placing greater emphasis on technical consistency, balance, and controlled maximal-intent movement without a live reactive component.',
+                practical_application='Tailor conditioning to the athlete\'s primary discipline — kumite athletes benefit more from reactive agility and repeated-effort conditioning, while kata athletes benefit more from movement precision, balance, and explosive-power consistency work.',
+                key_coaching_points='Kumite and kata are different enough in demand that "karate conditioning" should specify which discipline it targets.',
+                common_mistakes='Applying one identical conditioning template to both kumite and kata athletes despite their different demand profiles.',
+                safety_considerations='This course covers general physical conditioning only, not striking technique or sparring safety protocols, which require qualified, sport-specific karate coaching.',
+                summary='Kumite and kata place meaningfully different demands on an athlete — reactive, repeated-effort conditioning for kumite, and precision/balance/explosive-consistency work for kata.',
+                references='General karate physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Common Injury Areas in Karate',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify commonly stressed areas in karate and why.',
+                content='Karate\'s striking and rapid-stance demands create injury patterns centered on the lower limb and, in kumite specifically, contact-related injury risk.',
+                scientific_explanation='Rapid, forceful stance transitions and kicking place repeated stress through the hip, knee, and ankle; in kumite, contact (even controlled/light-contact rulesets) introduces some acute injury risk from strikes, while kata\'s non-contact nature carries comparatively lower acute injury risk but still meaningful overuse demand from repeated maximal-intent technique practice.',
+                practical_application='Include hip, knee, and ankle stability and strength work as a conditioning priority across both disciplines, with additional contact-management awareness specifically for kumite athletes.',
+                key_coaching_points='Lower-limb stability work benefits both kumite and kata athletes given the shared rapid stance-transition demand.',
+                common_mistakes='Neglecting lower-limb stability work under the assumption that karate is primarily an upper-body striking sport.',
+                safety_considerations='Kumite-specific contact safety protocols should follow the organization\'s official rules and qualified instructor guidance.',
+                summary='Karate\'s rapid stance transitions stress the hip, knee, and ankle across both disciplines, with kumite adding contact-related acute injury considerations specifically.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_powerlifting_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='powerlifting')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Powerlifting: Physical Demands',
+            subtitle='What competitive powerlifting asks of an athlete\'s body',
+            description='An introduction to the maximal-strength, technical-precision demands of the squat, bench press, and deadlift.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+        lessons = [
+            dict(
+                title='Maximal Strength as the Core Demand',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why powerlifting demands are fundamentally different from most other sports\' conditioning needs.',
+                content='Powerlifting competition is decided by a single maximal-effort lift attempt in each of three lifts (squat, bench press, deadlift), making maximal strength the sport\'s defining physical quality.',
+                scientific_explanation='Unlike most sports which require a broad mix of qualities (speed, endurance, agility) alongside strength, competitive powerlifting success is determined almost entirely by maximal force production in three specific, technically defined movement patterns — meaning training specificity toward these exact patterns, at high loads, is central to the sport in a way that differs from most other athletic conditioning contexts.',
+                practical_application='Prioritize technical mastery and progressive maximal-strength development in the squat, bench press, and deadlift specifically, using accessory work to address individual weak points in those exact lifts.',
+                key_coaching_points='Technical consistency under maximal load matters as much as raw strength in a sport judged on single-attempt lifts.',
+                common_mistakes='Programming powerlifting athletes with broad general-fitness conditioning that dilutes focus away from the three competition lifts\' specific strength and technical demands.',
+                safety_considerations='Maximal-effort lifting carries real injury risk without sound technique and appropriate progressive loading — technical coaching should precede high-load training, and a spotter or safety equipment should be used for near-maximal attempts.',
+                summary='Powerlifting\'s single-attempt, three-lift format makes maximal strength and technical precision in the squat, bench press, and deadlift specifically the sport\'s defining and near-exclusive physical demand.',
+                references='General powerlifting physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Recovery and Injury Considerations at Maximal Loads',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify recovery and injury-prevention considerations specific to training at very high loads.',
+                content='Training consistently near maximal loads places substantial demand on recovery and requires careful injury-prevention attention to the lower back, shoulders, and connective tissue.',
+                scientific_explanation='Repeated near-maximal loading, particularly in the deadlift and squat, places significant demand on spinal and connective-tissue structures, making planned load variation (periodization) and adequate recovery between maximal sessions important for both continued progress and injury prevention, rather than training at maximal intensity every session.',
+                practical_application='Periodize training intensity deliberately rather than attempting maximal-effort lifts every session, and prioritize technical form under fatigue as carefully as under fresh conditions.',
+                key_coaching_points='Maximal-intensity training every session is generally counterproductive for both progress and injury prevention — planned variation matters.',
+                common_mistakes='Attempting maximal or near-maximal lifts in every training session without planned intensity variation.',
+                safety_considerations='Persistent lower back pain in a powerlifter warrants prompt assessment given the sport\'s inherently high spinal loading demands.',
+                summary='Training near maximal loads consistently requires deliberate intensity periodization and recovery planning to sustain both progress and injury prevention over time.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_weightlifting_physical_demands_course(self, author):
+        sport = Sport.objects.get(slug='weightlifting')
+        category = CourseCategory.objects.get(sport=sport, slug='physical-demands')
+        course = Course.objects.create(
+            title='Weightlifting: Physical Demands',
+            subtitle='What competitive Olympic weightlifting asks of an athlete\'s body',
+            description='An introduction to the explosive power, mobility, and technical-precision demands of the snatch and clean & jerk.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Understanding the Demands', order=1)
+        lessons = [
+            dict(
+                title='Explosive Power and Technical Precision',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why Olympic weightlifting is considered one of the most technically demanding strength sports.',
+                content='Weightlifting\'s two competition lifts (the snatch, and the clean & jerk) require producing very high power output through a precise, multi-phase technical sequence under load.',
+                scientific_explanation='Both lifts require the athlete to accelerate a loaded barbell explosively from the floor and then rapidly reposition the body underneath it — a movement combining very high rate-of-force-development with precise timing, coordination, and mobility, making these lifts widely regarded in strength and conditioning literature as some of the most technically complex full-body power expressions in sport.',
+                practical_application='Prioritize technical coaching and movement quality alongside progressive loading, since poor technique under increasing load is a primary injury risk pathway specific to these lifts.',
+                key_coaching_points='Technical mastery should precede meaningful load progression — this is not a sport where "just add weight" is a safe default approach.',
+                common_mistakes='Progressing load faster than technical competency in the snatch or clean & jerk\'s complex movement sequence.',
+                safety_considerations='Given the high technical complexity and injury risk of these lifts if performed with poor technique, technical instruction from a qualified weightlifting coach should precede meaningful load progression.',
+                summary='Olympic weightlifting demands very high power output through a precise, complex technical sequence — technical mastery must precede load progression given the associated injury risk of poor technique under load.',
+                references='General Olympic weightlifting physical-demands literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Mobility Requirements Behind the Lifts',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Identify the specific mobility requirements that support safe, effective weightlifting technique.',
+                content='Both competition lifts require substantial ankle, hip, thoracic spine, and shoulder mobility to reach the required receiving positions safely.',
+                scientific_explanation='The deep overhead squat receiving position in the snatch, and the front-rack receiving position in the clean, both require ranges of ankle dorsiflexion, hip flexion, thoracic extension, and shoulder mobility beyond what many athletes possess without dedicated mobility work — restricted mobility in any of these areas commonly forces compensatory technique flaws that increase injury risk.',
+                practical_application='Assess and address ankle, hip, thoracic, and shoulder mobility early, since limitations here commonly show up as technique breakdowns in the receiving positions regardless of how much strength or power the athlete has.',
+                key_coaching_points='A mobility limitation often masquerades as a "strength" or "technique" problem — check mobility first when a receiving position breaks down.',
+                common_mistakes='Diagnosing a technique breakdown in the receiving position as purely a strength or coordination issue without first checking underlying mobility restrictions.',
+                safety_considerations='',
+                summary='Weightlifting\'s receiving positions demand substantial ankle, hip, thoracic, and shoulder mobility — restrictions here are a common, underappreciated root cause of technique breakdowns and injury risk.',
                 references='',
                 faqs=[],
             ),
