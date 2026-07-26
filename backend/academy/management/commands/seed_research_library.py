@@ -100,6 +100,77 @@ ENTRIES = [
             'sessions if maximizing long-term strength/muscle adaptation is the priority.'
         ),
     ),
+    dict(
+        title='Does Strength Training Alone Improve Flexibility?',
+        topic_slug='flexibility',
+        summary=(
+            'A common assumption is that strength training "tightens" muscles and reduces flexibility, but '
+            'the general evidence does not support this — strength training performed through a full range '
+            'of motion is generally associated with maintaining or even modestly improving flexibility, not '
+            'reducing it. This differs from strength training performed only through a partial range of '
+            'motion, which would not be expected to carry the same flexibility benefit. Strength training '
+            'is not a replacement for dedicated flexibility work aimed at ranges beyond what training '
+            'movements use, but the "strength training makes you inflexible" assumption is generally not '
+            'well supported when full range of motion is used.'
+        ),
+        practical_takeaways=(
+            'Prioritize full range of motion in strength exercises rather than partial reps, which supports '
+            'flexibility maintenance as a side benefit. Add dedicated mobility/flexibility work specifically '
+            'for ranges beyond what training movements use.'
+        ),
+    ),
+    dict(
+        title='Does Caffeine Actually Improve Athletic Performance?',
+        topic_slug='sports-nutrition',
+        summary=(
+            'Caffeine is one of the more consistently supported performance aids in sports nutrition '
+            'research, generally associated with modest improvements in endurance performance and perceived '
+            'effort at moderate doses. Individual response varies considerably (partly due to genetic '
+            'differences in caffeine metabolism), and higher doses do not necessarily produce proportionally '
+            'greater benefit while increasing side-effect risk (jitteriness, sleep disruption if taken late). '
+            'Regular heavy caffeine users may also experience a smaller relative benefit than infrequent '
+            'users.'
+        ),
+        practical_takeaways=(
+            'If used, trial caffeine timing and dose in training before competition, not for the first time '
+            'on competition day. Be mindful of the effect on sleep if training or competing later in the day.'
+        ),
+    ),
+    dict(
+        title='Is There a Strict "Anabolic Window" for Post-Workout Protein?',
+        topic_slug='sports-nutrition',
+        summary=(
+            'The idea of a narrow post-workout window (often cited as ~30-60 minutes) during which protein '
+            'must be consumed to gain the training benefit has been substantially challenged by more recent '
+            'research. Total daily protein intake and its distribution across the day appear considerably '
+            'more important than hitting a precise short post-workout window, especially for athletes who '
+            'have eaten a normal meal within a few hours before training. The "window" concept still has '
+            'some relevance in specific contexts (e.g., training fasted, or very tight same-day double '
+            'sessions), but is not the strict rule it is sometimes presented as.'
+        ),
+        practical_takeaways=(
+            'Focus primarily on adequate total daily protein intake spread reasonably evenly across meals, '
+            'rather than treating a specific post-workout minute count as make-or-break.'
+        ),
+    ),
+    dict(
+        title='Does Listening to Music Improve Athletic Performance?',
+        topic_slug='sports-psychology',
+        summary=(
+            'Music is generally associated with modest performance and effort-perception benefits in '
+            'training, particularly for steady, submaximal endurance efforts — likely through reduced '
+            'perceived effort and improved mood/motivation rather than a direct physiological performance '
+            'boost. Effects appear smaller or negligible for very high-intensity, maximal efforts, where '
+            'the physiological demand may outweigh music\'s psychological effect. Rules in many competitive '
+            'settings also restrict music use during actual competition, making this primarily a training-tool '
+            'consideration.'
+        ),
+        practical_takeaways=(
+            'Music may be a reasonable tool to support motivation and reduce perceived effort during '
+            'moderate-intensity training, but check competition rules before assuming it can be used on '
+            'competition day.'
+        ),
+    ),
 ]
 
 
