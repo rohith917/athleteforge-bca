@@ -36,6 +36,7 @@ import TrainingPrograms from '@/pages/dashboard/training/TrainingPrograms'
 import ProgramBuilder from '@/pages/dashboard/training/ProgramBuilder'
 import AthleteMonitoring from '@/pages/dashboard/training/AthleteMonitoring'
 import GenerateProgram from '@/pages/dashboard/training/GenerateProgram'
+import CertificateView from '@/pages/CertificateView'
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -61,6 +62,7 @@ export default function App() {
         <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
         <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/certificates/:id" element={<PrivateRoute><CertificateView /></PrivateRoute>} />
 
         <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
           <Route index element={<DashboardHome />} />

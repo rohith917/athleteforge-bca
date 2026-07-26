@@ -281,11 +281,16 @@ class EnrollmentSerializer(serializers.ModelSerializer):
 
 class CertificateSerializer(serializers.ModelSerializer):
     course_title = serializers.CharField(source='course.title', read_only=True)
+    course_level = serializers.CharField(source='course.level', read_only=True)
+    course_hours = serializers.DecimalField(source='course.estimated_hours', max_digits=5, decimal_places=1, read_only=True)
     user_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Certificate
-        fields = ['id', 'certificate_number', 'course', 'course_title', 'user_name', 'issued_at']
+        fields = [
+            'id', 'certificate_number', 'course', 'course_title', 'course_level',
+            'course_hours', 'user_name', 'issued_at',
+        ]
 
     def get_user_name(self, obj):
         return f'{obj.user.first_name} {obj.user.last_name}'.strip() or obj.user.username

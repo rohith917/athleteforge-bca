@@ -471,6 +471,8 @@ export interface Certificate {
   certificate_number: string
   course: number
   course_title: string
+  course_level: CourseLevel
+  course_hours: string
   user_name: string
   issued_at: string
 }

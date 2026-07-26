@@ -497,6 +497,7 @@ export const academyAPI = {
     api.post<QuizSubmitResult>(`/academy/lessons/${slug}/submit_quiz/`, { answers }),
   getEnrollments: () => api.get<Enrollment[]>('/academy/enrollments/'),
   getCertificates: () => api.get<Certificate[]>('/academy/certificates/'),
+  getCertificate: (id: number) => api.get<Certificate>(`/academy/certificates/${id}/`),
   getBadges: () => api.get<UserBadgeItem[]>('/academy/badges/'),
   getLearningSummary: () => api.get<LearningSummary>('/academy/learning-summary/'),
   getResearch: (params?: Record<string, unknown>) => api.get<ResearchSummaryItem[]>('/academy/research/', { params }),

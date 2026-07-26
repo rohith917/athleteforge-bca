@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Award, Footprints, GraduationCap, Target, Flame, Trophy, Layers, Medal } from 'lucide-react'
 import { academyAPI } from '@/services/api'
 import { parseListResponse } from '@/lib/apiHelpers'
@@ -49,6 +50,14 @@ export default function MyCertificates() {
                       Issued {new Date(cert.issued_at).toLocaleDateString()}
                     </p>
                     <p className="mt-2 rounded-full bg-white/5 px-3 py-1 font-body text-[10px] text-text-muted">{cert.certificate_number}</p>
+                    <Link
+                      to={`/certificates/${cert.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 font-body text-xs font-semibold text-accent hover:text-accent-hover"
+                    >
+                      View & Print Certificate
+                    </Link>
                   </Card>
                 ))}
               </div>
