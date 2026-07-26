@@ -6,13 +6,13 @@ pip install -r requirements.txt
 
 if command -v npm >/dev/null 2>&1; then
   echo "Building React frontend (same-origin /api)..."
-  cd ../frontend-next
+  cd ../frontend
   npm ci 2>/dev/null || npm install
   VITE_API_URL=/api npm run build
   cd ../backend
   rm -rf frontend_dist
   mkdir -p frontend_dist
-  cp -r ../frontend-next/dist/* frontend_dist/
+  cp -r ../frontend/dist/* frontend_dist/
   echo "Frontend built and copied to backend/frontend_dist"
 elif [ -f frontend_dist/index.html ]; then
   echo "Using pre-built frontend_dist from repository"

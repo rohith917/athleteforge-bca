@@ -1,4 +1,4 @@
-import { useRef, createElement, type ReactNode, type ElementType } from 'react'
+import { useRef, type ReactNode, type ElementType } from 'react'
 import gsap from 'gsap'
 import { cn } from '@/lib/utils'
 
@@ -42,20 +42,17 @@ export function Magnetic({
     gsap.to(el, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.4)' })
   }
 
-  // Rendered via createElement rather than JSX: Tag is a generic ElementType,
-  // and TS's JSX checker can't resolve prop types for a dynamic tag, which
-  // otherwise surfaces as spurious "children expects type 'never'" errors.
-  return createElement(
-    Tag,
-    {
-      ref,
-      onMouseMove: handleMove,
-      onMouseLeave: handleLeave,
-      onClick,
-      'data-cursor-hover': cursorLabel ?? '',
-      className: cn('inline-block will-change-transform', className),
-      ...rest,
-    },
-    children,
+  return (
+    <Tag
+      ref={ref}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      onClick={onClick}
+      data-cursor-hover={cursorLabel ?? ''}
+      className={cn('inline-block will-change-transform', className)}
+      {...rest}
+    >
+      {children}
+    </Tag>
   )
 }
