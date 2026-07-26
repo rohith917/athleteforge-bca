@@ -31,6 +31,7 @@ import LessonPlayer from '@/pages/dashboard/academy/LessonPlayer'
 import MyCertificates from '@/pages/dashboard/academy/MyCertificates'
 import ResearchLibrary from '@/pages/dashboard/academy/ResearchLibrary'
 import OrganizationsAdmin from '@/pages/dashboard/academy/OrganizationsAdmin'
+import CourseBuilder from '@/pages/dashboard/academy/CourseBuilder'
 import TrainingPrograms from '@/pages/dashboard/training/TrainingPrograms'
 import ProgramBuilder from '@/pages/dashboard/training/ProgramBuilder'
 import AthleteMonitoring from '@/pages/dashboard/training/AthleteMonitoring'
@@ -84,6 +85,7 @@ export default function App() {
           <Route path="academy" element={<AcademyCatalog />} />
           <Route path="academy/certificates" element={<MyCertificates />} />
           <Route path="academy/research" element={<ResearchLibrary />} />
+          <Route path="academy/builder" element={<StaffRoute><CourseBuilder /></StaffRoute>} />
           <Route path="academy/:slug" element={<CourseDetail />} />
           <Route path="academy/:courseSlug/lessons/:lessonSlug" element={<LessonPlayer />} />
         </Route>

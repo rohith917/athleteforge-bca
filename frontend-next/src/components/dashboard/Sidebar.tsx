@@ -1,7 +1,7 @@
 import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Users, LineChart, HeartPulse, Trophy, ClipboardCheck,
-  Scale, FileText, User, ShieldCheck, Home, Medal, Megaphone, GraduationCap, Building2, Dumbbell, Smile,
+  Scale, FileText, User, ShieldCheck, Home, Medal, Megaphone, GraduationCap, Building2, Dumbbell, Smile, BookPlus,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
@@ -16,6 +16,7 @@ interface NavItem {
 const adminNav: NavItem[] = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Admin Panel', end: true },
   { path: '/dashboard/academy', icon: GraduationCap, label: 'Academy' },
+  { path: '/dashboard/academy/builder', icon: BookPlus, label: 'Course Builder' },
   { path: '/dashboard/admin/users', icon: ShieldCheck, label: 'User Management' },
   { path: '/dashboard/admin/organizations', icon: Building2, label: 'Organizations & Roles' },
   { path: '/dashboard/training', icon: Dumbbell, label: 'Training Programs' },
@@ -34,6 +35,7 @@ const adminNav: NavItem[] = [
 const coachNav: NavItem[] = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Coach Dashboard', end: true },
   { path: '/dashboard/academy', icon: GraduationCap, label: 'Academy' },
+  { path: '/dashboard/academy/builder', icon: BookPlus, label: 'Course Builder' },
   { path: '/dashboard/training', icon: Dumbbell, label: 'Training Programs' },
   { path: '/dashboard/monitoring', icon: Smile, label: 'Athlete Monitoring' },
   { path: '/dashboard/athletes', icon: Users, label: 'My Athletes' },

@@ -144,6 +144,87 @@ class CourseModuleSerializer(serializers.ModelSerializer):
         return LessonBriefSerializer(obj.lessons.all(), many=True, context=self.context).data
 
 
+class CourseModuleWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseModule
+        fields = ['id', 'course', 'title', 'description', 'order']
+
+
+class LessonWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = [
+            'id', 'module', 'title', 'lesson_type', 'order', 'estimated_minutes',
+            'learning_objectives', 'content', 'scientific_explanation', 'practical_application',
+            'key_coaching_points', 'common_mistakes', 'safety_considerations',
+            'progressions', 'regressions', 'summary', 'references',
+            'video_url', 'pdf_url', 'has_3d_demo', 'model_3d_ref', 'is_published',
+        ]
+
+
+class LessonFAQWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LessonFAQ
+        fields = ['id', 'lesson', 'question', 'answer', 'order']
+
+
+class QuizChoiceWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuizChoice
+        fields = ['id', 'choice_text', 'is_correct', 'order']
+
+
+class QuizQuestionWriteSerializer(serializers.ModelSerializer):
+    choices = QuizChoiceWriteSerializer(many=True)
+
+    class Meta:
+        model = QuizQuestion
+        fields = ['id', 'question_text', 'explanation', 'order', 'choices']
+
+
+class QuizWriteSerializer(serializers.ModelSerializer):
+    """
+    Coach-facing quiz authoring. Questions/choices are always replaced
+    wholesale on save (delete-and-recreate) rather than diffed — the
+    builder UI always submits the full quiz, matching the same
+    replace-not-merge semantics used for OrgRole permission editing.
+    """
+    questions = QuizQuestionWriteSerializer(many=True, required=False)
+
+    class Meta:
+        model = Quiz
+        fields = ['id', 'lesson', 'title', 'passing_score_percent', 'questions']
+
+    def create(self, validated_data):
+        questions_data = validated_data.pop('questions', [])
+        quiz = Quiz.objects.create(**validated_data)
+        self._sync_questions(quiz, questions_data)
+        return quiz
+
+    def update(self, instance, validated_data):
+        questions_data = validated_data.pop('questions', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        if questions_data is not None:
+            instance.questions.all().delete()
+            self._sync_questions(instance, questions_data)
+        return instance
+
+    def _sync_questions(self, quiz, questions_data):
+        for q_order, q in enumerate(questions_data):
+            choices_data = q.pop('choices', [])
+            question = QuizQuestion.objects.create(
+                quiz=quiz, order=q.get('order', q_order),
+                question_text=q['question_text'], explanation=q.get('explanation', ''),
+            )
+            for c_order, c in enumerate(choices_data):
+                QuizChoice.objects.create(
+                    question=question, choice_text=c['choice_text'],
+                    is_correct=c.get('is_correct', False), order=c.get('order', c_order),
+                )
+
+
 class CourseListSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     sport_name = serializers.CharField(source='category.sport.name', read_only=True)

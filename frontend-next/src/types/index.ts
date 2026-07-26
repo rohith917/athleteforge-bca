@@ -496,6 +496,80 @@ export interface QuizSubmitResult {
   attempt_id: number
 }
 
+// ==================== Course Builder (authoring) ====================
+
+export interface CourseModuleInput {
+  id?: number
+  course: number
+  title: string
+  description: string
+  order: number
+}
+
+export interface LessonInput {
+  id?: number
+  module: number
+  title: string
+  lesson_type: LessonType
+  order: number
+  estimated_minutes: number
+  learning_objectives: string
+  content: string
+  scientific_explanation: string
+  practical_application: string
+  key_coaching_points: string
+  common_mistakes: string
+  safety_considerations: string
+  progressions: string
+  regressions: string
+  summary: string
+  references: string
+  video_url: string
+  pdf_url: string
+  has_3d_demo: boolean
+  model_3d_ref: string
+  is_published: boolean
+}
+
+export interface LessonInputResult extends LessonInput {
+  id: number
+  slug: string
+}
+
+export interface QuizChoiceInput {
+  id?: number
+  choice_text: string
+  is_correct: boolean
+  order: number
+}
+
+export interface QuizQuestionInput {
+  id?: number
+  question_text: string
+  explanation: string
+  order: number
+  choices: QuizChoiceInput[]
+}
+
+export interface QuizInput {
+  id?: number
+  lesson: number
+  title: string
+  passing_score_percent: number
+  questions: QuizQuestionInput[]
+}
+
+export interface CourseInput {
+  id?: number
+  title: string
+  subtitle: string
+  description: string
+  category: number
+  level: CourseLevel
+  status: CourseStatus
+  estimated_hours: string
+}
+
 export interface ResearchSummaryItem {
   id: number
   title: string

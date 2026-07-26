@@ -15,12 +15,13 @@ from django.contrib.auth.models import Permission
 from api.permissions import IsAdminOnly, IsCoachOrAdmin, is_staff_role
 
 from .models import (
-    Sport, CourseCategory, Course, Lesson, Quiz, QuizAttempt,
+    Sport, CourseCategory, Course, CourseModule, Lesson, LessonFAQ, Quiz, QuizAttempt,
     Enrollment, LessonProgress, Certificate, UserBadge, LearningStreak,
     ResearchSummary, Organization, OrgRole, OrganizationMembership,
 )
 from .serializers import (
     SportSerializer, CourseCategorySerializer, CourseListSerializer, CourseDetailSerializer,
+    CourseModuleWriteSerializer, LessonWriteSerializer, LessonFAQWriteSerializer, QuizWriteSerializer,
     LessonDetailSerializer, EnrollmentSerializer, CertificateSerializer,
     UserBadgeSerializer, LearningStreakSerializer, ResearchSummarySerializer,
     OrganizationSerializer, OrgRoleSerializer, OrganizationMembershipSerializer,
@@ -33,12 +34,21 @@ class SportViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SportSerializer
     permission_classes = [AllowAny]
     lookup_field = 'slug'
+    pagination_class = None
 
 
 class CourseCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Unpaginated: this is bounded reference taxonomy (~180 top-level rows
+    across 16 sports + general topics), not a growing per-user dataset —
+    the default PAGE_SIZE=20 would otherwise silently truncate any
+    unfiltered listing (e.g. a flattened category picker) to its first page.
+    """
+
     queryset = CourseCategory.objects.filter(parent=None)
     serializer_class = CourseCategorySerializer
     permission_classes = [AllowAny]
+    pagination_class = None
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -51,14 +61,29 @@ class CourseCategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class CourseViewSet(viewsets.ModelViewSet):
-    """Public read access to published courses; authoring restricted to coach/admin."""
+    """
+    Public read access to published courses; authoring restricted to coach/admin.
+    Unpaginated for the same reason as CourseCategoryViewSet — the catalog
+    is bounded (dozens of courses, not thousands) and several consumers
+    (the catalog browser, the course builder) expect the full list.
+    """
 
     serializer_class = CourseListSerializer
     lookup_field = 'slug'
+    pagination_class = None
 
     def get_permissions(self):
+        # NOTE: this previously fell through to IsCoachOrAdmin for every
+        # action other than list/retrieve — including 'enroll', which
+        # silently blocked every student from ever enrolling in a course
+        # (403 on the enroll button, undetected until an actual student
+        # login was tested end-to-end). The @action decorator's own
+        # permission_classes=[IsAuthenticated] never took effect because
+        # this get_permissions() override always wins.
         if self.action in ('list', 'retrieve'):
             return [AllowAny()]
+        if self.action == 'enroll':
+            return [IsAuthenticated()]
         return [IsCoachOrAdmin()]
 
     def get_queryset(self):
@@ -80,7 +105,11 @@ class CourseViewSet(viewsets.ModelViewSet):
         return qs
 
     def get_serializer_class(self):
-        if self.action == 'retrieve':
+        # CourseListSerializer omits 'description' (added only in the Detail
+        # subclass) — using it for create/update would silently drop the
+        # description a coach types in the builder, so writes get the Detail
+        # serializer too, not just retrieve.
+        if self.action in ('retrieve', 'create', 'update', 'partial_update'):
             return CourseDetailSerializer
         return CourseListSerializer
 
@@ -99,15 +128,78 @@ class CourseViewSet(viewsets.ModelViewSet):
         )
 
 
-class LessonViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = LessonDetailSerializer
-    permission_classes = [IsAuthenticated]
-    lookup_field = 'slug'
+class CourseModuleViewSet(viewsets.ModelViewSet):
+    """Course-builder authoring: module CRUD, coach/admin only."""
+
+    queryset = CourseModule.objects.all()
+    serializer_class = CourseModuleWriteSerializer
+    permission_classes = [IsCoachOrAdmin]
 
     def get_queryset(self):
-        return Lesson.objects.select_related('module', 'module__course').filter(
-            is_published=True, module__course__status='published',
-        )
+        qs = super().get_queryset()
+        course = self.request.query_params.get('course')
+        if course:
+            qs = qs.filter(course_id=course)
+        return qs
+
+
+class LessonFAQViewSet(viewsets.ModelViewSet):
+    """Course-builder authoring: per-lesson FAQ CRUD, coach/admin only."""
+
+    queryset = LessonFAQ.objects.all()
+    serializer_class = LessonFAQWriteSerializer
+    permission_classes = [IsCoachOrAdmin]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        lesson = self.request.query_params.get('lesson')
+        if lesson:
+            qs = qs.filter(lesson_id=lesson)
+        return qs
+
+
+class QuizViewSet(viewsets.ModelViewSet):
+    """
+    Course-builder authoring: create/edit a lesson's quiz (questions +
+    choices) in one request. Coach/admin only — students never see
+    is_correct through here, that stays on the read-only QuizSerializer
+    nested in LessonDetailSerializer.
+    """
+
+    queryset = Quiz.objects.prefetch_related('questions__choices').all()
+    serializer_class = QuizWriteSerializer
+    permission_classes = [IsCoachOrAdmin]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        lesson = self.request.query_params.get('lesson')
+        if lesson:
+            qs = qs.filter(lesson_id=lesson)
+        return qs
+
+
+class LessonViewSet(viewsets.ModelViewSet):
+    """Public read of published lessons; authoring restricted to coach/admin."""
+
+    lookup_field = 'slug'
+
+    def get_permissions(self):
+        if self.action in ('create', 'update', 'partial_update', 'destroy'):
+            return [IsCoachOrAdmin()]
+        return [IsAuthenticated()]
+
+    def get_serializer_class(self):
+        if self.action in ('create', 'update', 'partial_update'):
+            return LessonWriteSerializer
+        return LessonDetailSerializer
+
+    def get_queryset(self):
+        qs = Lesson.objects.select_related('module', 'module__course')
+        if self.action in ('create', 'update', 'partial_update', 'destroy'):
+            return qs
+        if self.request.user.is_authenticated and is_staff_role(self.request.user):
+            return qs
+        return qs.filter(is_published=True, module__course__status='published')
 
     def get_serializer_context(self):
         ctx = super().get_serializer_context()

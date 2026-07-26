@@ -13,6 +13,7 @@ import type {
   Sport, CourseCategory, CourseListItem, CourseDetail, LessonDetail, Enrollment, Certificate,
   LearningSummary, QuizSubmitResult, ResearchSummaryItem,
   Organization, OrgRole, OrganizationMembership, AppPermission,
+  CourseInput, CourseModuleInput, LessonInput, LessonInputResult, QuizInput,
   TrainingProgramListItem, TrainingProgramDetail, ProgramDayItem, ProgramBlockItem, ProgramExerciseItem, BlockType,
   WellnessCheckInItem, SessionRPEItem, GeneratorStatus, GenerateProgramPayload, GeneratedProgram,
 } from '@/types'
@@ -498,6 +499,28 @@ export const academyAPI = {
   getCertificates: () => api.get<Certificate[]>('/academy/certificates/'),
   getLearningSummary: () => api.get<LearningSummary>('/academy/learning-summary/'),
   getResearch: (params?: Record<string, unknown>) => api.get<ResearchSummaryItem[]>('/academy/research/', { params }),
+
+  // Course Builder (coach/admin authoring)
+  createCourse: (data: Partial<CourseInput>) => api.post<CourseDetail>('/academy/courses/', data),
+  updateCourse: (slug: string, data: Partial<CourseInput>) => api.patch<CourseDetail>(`/academy/courses/${slug}/`, data),
+  deleteCourse: (slug: string) => api.delete(`/academy/courses/${slug}/`),
+
+  createModule: (data: CourseModuleInput) => api.post<CourseModuleInput & { id: number }>('/academy/course-modules/', data),
+  updateModule: (id: number, data: Partial<CourseModuleInput>) => api.patch<CourseModuleInput & { id: number }>(`/academy/course-modules/${id}/`, data),
+  deleteModule: (id: number) => api.delete(`/academy/course-modules/${id}/`),
+
+  createLesson: (data: Partial<LessonInput>) => api.post<LessonInputResult>('/academy/lessons/', data),
+  updateLesson: (slug: string, data: Partial<LessonInput>) => api.patch<LessonInputResult>(`/academy/lessons/${slug}/`, data),
+  deleteLesson: (slug: string) => api.delete(`/academy/lessons/${slug}/`),
+
+  createFAQ: (data: { lesson: number; question: string; answer: string; order: number }) =>
+    api.post(`/academy/lesson-faqs/`, data),
+  deleteFAQ: (id: number) => api.delete(`/academy/lesson-faqs/${id}/`),
+
+  getQuiz: (lessonId: number) => api.get<(QuizInput & { id: number })[]>('/academy/quizzes/', { params: { lesson: lessonId } }),
+  createQuiz: (data: QuizInput) => api.post<QuizInput & { id: number }>('/academy/quizzes/', data),
+  updateQuiz: (id: number, data: Partial<QuizInput>) => api.patch<QuizInput & { id: number }>(`/academy/quizzes/${id}/`, data),
+  deleteQuiz: (id: number) => api.delete(`/academy/quizzes/${id}/`),
 
   getOrganizations: () => api.get<Organization[]>('/academy/organizations/'),
   createOrganization: (data: Partial<Organization>) => api.post<Organization>('/academy/organizations/', data),
