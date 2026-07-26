@@ -84,6 +84,11 @@ class Command(BaseCommand):
             ('swimming-injury-prevention', self._seed_swimming_injury_prevention_course),
             ('taekwondo-injury-prevention', self._seed_taekwondo_injury_prevention_course),
             ('cricket-injury-prevention', self._seed_cricket_injury_prevention_course),
+            ('volleyball-recovery', self._seed_volleyball_recovery_course),
+            ('boxing-recovery', self._seed_boxing_recovery_course),
+            ('wrestling-recovery', self._seed_wrestling_recovery_course),
+            ('athletics-recovery', self._seed_athletics_recovery_course),
+            ('badminton-recovery', self._seed_badminton_recovery_course),
         ]
 
         created = 0
@@ -3122,6 +3127,216 @@ class Command(BaseCommand):
                 common_mistakes='Directing all shoulder-injury-prevention attention toward bowlers while overlooking cumulative fielding-throw demand on other players.',
                 safety_considerations='Persistent shoulder pain following repeated match-day throwing is worth assessing rather than assuming it will resolve on its own.',
                 summary='Repeated fielding throws create real cumulative shoulder demand across a match — shoulder conditioning is a relevant need for all regular fielders and throwers, not only specialist bowlers.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_volleyball_recovery_course(self, author):
+        sport = Sport.objects.get(slug='volleyball')
+        category = CourseCategory.objects.get(sport=sport, slug='recovery')
+        course = Course.objects.create(
+            title='Volleyball: Recovery',
+            subtitle='Managing recovery around the sport\'s jump-heavy schedule',
+            description='A practical guide to recovery priorities specific to volleyball\'s repeated jumping and tournament-heavy competition structure.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Recovery Priorities', order=1)
+        lessons = [
+            dict(
+                title='Recovering From High Jump Volumes',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why jump-volume tracking matters for recovery planning in volleyball.',
+                content='Volleyball\'s very high jump counts across a tournament weekend create substantial lower-body fatigue that needs deliberate recovery planning.',
+                scientific_explanation='Repeated jump-landing cycles create cumulative eccentric muscle damage and joint loading, particularly through the knee extensors and patellar tendon — tracking cumulative jump volume across a tournament or heavy competition period helps identify when extra lower-body recovery emphasis (reduced next-day jump volume, additional recovery modalities) is warranted.',
+                practical_application='Reduce jump-specific training volume in the days immediately following a high-jump-count tournament, and prioritize sleep and basic recovery practices during these periods rather than resuming full jump training immediately.',
+                key_coaching_points='A tournament weekend with many matches often warrants a deliberately lighter jump-volume week afterward.',
+                common_mistakes='Resuming full jump-training volume immediately after a high-jump-count competition weekend without a lighter recovery period.',
+                safety_considerations='Persistent knee pain following a high-jump-volume period is a common early-warning sign worth monitoring rather than pushing through.',
+                summary='Volleyball\'s high jump volumes call for deliberate post-competition recovery planning, particularly reduced jump volume and attention to knee/patellar tendon load in the days following a tournament.',
+                references='General volleyball recovery-planning principles used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Shoulder Recovery for Attackers and Servers',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe recovery considerations specific to the shoulder demands of attacking and serving.',
+                content='Repeated attacking and serving actions accumulate shoulder load across a match or tournament, warranting specific recovery attention alongside general fatigue management.',
+                scientific_explanation='The repeated overhead arm-swing actions in attacking and serving place cumulative demand on the shoulder complex, and adequate rest between high-volume hitting sessions supports recovery of these structures specifically, separate from general whole-body fatigue.',
+                practical_application='Track hitting/serving volume separately from general training load, and ensure adequate rest between high-volume hitting sessions rather than only monitoring overall fatigue.',
+                key_coaching_points='Shoulder-specific load (hitting/serving volume) deserves separate tracking from general training load.',
+                common_mistakes='Monitoring only general fatigue/soreness while ignoring cumulative shoulder-specific hitting volume.',
+                safety_considerations='Persistent shoulder discomfort following high-volume hitting sessions is worth addressing rather than assuming it is ordinary fatigue.',
+                summary='Attacking and serving create shoulder-specific cumulative load that deserves its own recovery tracking, separate from general whole-body fatigue management.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_boxing_recovery_course(self, author):
+        sport = Sport.objects.get(slug='boxing')
+        category = CourseCategory.objects.get(sport=sport, slug='recovery')
+        course = Course.objects.create(
+            title='Boxing: Recovery',
+            subtitle='Recovery priorities around high-intensity sparring and fight preparation',
+            description='A practical guide to recovery considerations specific to boxing\'s mixed-intensity training and sparring demands.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Recovery Priorities', order=1)
+        lessons = [
+            dict(
+                title='Recovering From High-Intensity Sparring',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why sparring sessions require distinct recovery planning from general conditioning work.',
+                content='Sparring combines high-intensity anaerobic exchanges with the general fatigue and (within safety rules) contact load of a live training partner, creating a recovery demand distinct from solo conditioning work.',
+                scientific_explanation='High-intensity intermittent efforts of the kind seen in sparring create significant metabolic and neuromuscular fatigue, and this session type is commonly programmed with more recovery time before the next high-intensity session compared to steady lower-intensity conditioning work.',
+                practical_application='Schedule adequate recovery time after high-intensity sparring sessions before the next similarly demanding session, and use lower-intensity technical or conditioning work to fill days immediately following hard sparring.',
+                key_coaching_points='Hard sparring sessions warrant more recovery time before the next hard session than lower-intensity technical work does.',
+                common_mistakes='Scheduling back-to-back high-intensity sparring sessions without adequate recovery time between them.',
+                safety_considerations='This course covers general conditioning-recovery concepts only, not the specific medical protocols required around head-impact sports, which require specialized oversight.',
+                summary='High-intensity sparring creates a distinct fatigue demand warranting more recovery time before the next hard session than lower-intensity work requires.',
+                references='General boxing training-recovery principles used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Weight Management and Recovery',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why weight-management practices intersect with recovery capacity in boxing.',
+                content='Boxing\'s weight-category structure means athletes sometimes manage body weight around competition, which can affect recovery capacity if not approached carefully.',
+                scientific_explanation='Aggressive short-term weight-cutting practices can impair recovery processes (including hydration status, glycogen replenishment, and sleep quality), which is why gradual, well-planned weight management well in advance of competition is generally recommended over rapid last-minute cuts.',
+                practical_application='Plan weight management gradually over an extended period rather than through rapid last-minute cuts, and prioritize rehydration and nutrition recovery in the period immediately after making weight.',
+                key_coaching_points='Gradual, early weight planning supports both performance and recovery better than rapid late cuts.',
+                common_mistakes='Relying on rapid, aggressive weight-cutting practices close to competition rather than gradual management well in advance.',
+                safety_considerations='Aggressive rapid weight-cutting carries real health risks and should involve qualified medical/nutrition professional guidance, not be managed by coaching judgement alone.',
+                summary='Gradual, well-planned weight management supports recovery better than rapid late cuts, which can meaningfully impair hydration, glycogen, and sleep-related recovery processes.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_wrestling_recovery_course(self, author):
+        sport = Sport.objects.get(slug='wrestling')
+        category = CourseCategory.objects.get(sport=sport, slug='recovery')
+        course = Course.objects.create(
+            title='Wrestling: Recovery',
+            subtitle='Recovery priorities around high-frequency, high-intensity training',
+            description='A practical guide to recovery considerations specific to wrestling\'s demanding training frequency and weight-category structure.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Recovery Priorities', order=1)
+        lessons = [
+            dict(
+                title='Recovering From High-Frequency Live Training',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why wrestling\'s typical training frequency creates specific recovery demands.',
+                content='Wrestling programs commonly involve frequent live/grappling training sessions, creating cumulative physical and neural fatigue that requires deliberate recovery planning across the week.',
+                scientific_explanation='Repeated high-intensity grappling exposes the body to combined strength, metabolic, and impact demands, and cumulative fatigue across a high-frequency training week is commonly managed through planned lower-intensity or technical-only days interspersed with live training days, rather than maximal-intensity live training every session.',
+                practical_application='Structure the training week with a deliberate mix of high-intensity live training days and lower-intensity technical or conditioning days, rather than maximal live training in every session.',
+                key_coaching_points='Not every training day should be maximal-intensity live training — planned variation supports recovery and reduces overtraining risk.',
+                common_mistakes='Running near-maximal-intensity live training in every session throughout the week without planned lower-intensity days.',
+                safety_considerations='',
+                summary='Wrestling\'s frequent live-training demands are best managed with a deliberate mix of high- and lower-intensity days across the week, not maximal intensity every session.',
+                references='General wrestling training-recovery principles used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Weight Management and Recovery',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why weight-management practices intersect with recovery capacity in wrestling.',
+                content='Like other weight-category combat sports, wrestling\'s weight-management practices can significantly affect recovery capacity if approached aggressively rather than gradually.',
+                scientific_explanation='Rapid short-term weight-cutting practices can impair hydration status, glycogen stores, and sleep quality — all of which are central to recovery — making gradual, well-planned weight management well in advance of competition the generally recommended approach over rapid last-minute cuts.',
+                practical_application='Plan weight management gradually well in advance of competition weigh-ins, and prioritize rehydration and nutrition recovery immediately after making weight, before the competitive demands of the event itself.',
+                key_coaching_points='Gradual, early weight planning supports both performance and recovery better than rapid late cuts.',
+                common_mistakes='Relying on rapid, aggressive weight-cutting close to competition rather than gradual management well in advance.',
+                safety_considerations='Aggressive rapid weight-cutting carries real health risks and should involve qualified medical/nutrition professional guidance, particularly for young or still-developing athletes.',
+                summary='Gradual, well-planned weight management supports recovery far better than rapid late cuts, which can meaningfully impair hydration, glycogen, and sleep-related recovery processes.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_athletics_recovery_course(self, author):
+        sport = Sport.objects.get(slug='athletics')
+        category = CourseCategory.objects.get(sport=sport, slug='recovery')
+        course = Course.objects.create(
+            title='Athletics: Recovery',
+            subtitle='Recovery priorities that differ by event group',
+            description='A practical guide to recovery considerations that differ substantially across athletics\' sprint, distance, jump, and throw event groups.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Recovery Priorities', order=1)
+        lessons = [
+            dict(
+                title='Recovery Differs by Event Group',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why recovery priorities differ substantially across athletics event groups.',
+                content='Athletics\' very different event groups (sprints, distance, jumps, throws) create very different fatigue profiles, meaning a single generic recovery approach doesn\'t suit every athlete equally.',
+                scientific_explanation='Sprinters and jumpers primarily accumulate neuromuscular and tendon fatigue from high-force, high-velocity efforts; distance runners primarily accumulate metabolic and cumulative-impact fatigue from high training volume; throwers accumulate load through repeated maximal-effort rotational actions — each pattern is best matched to a somewhat different recovery emphasis (e.g., neuromuscular-focused recovery for sprinters/jumpers vs. volume-management-focused recovery for distance runners).',
+                practical_application='Tailor recovery emphasis to the athlete\'s event group rather than applying one generic recovery protocol across sprinters, distance runners, jumpers, and throwers alike.',
+                key_coaching_points='"Recovery" isn\'t one-size-fits-all even within a single sport — event group meaningfully changes what recovery should emphasize.',
+                common_mistakes='Applying one identical recovery protocol to sprinters, distance runners, jumpers, and throwers regardless of their very different fatigue profiles.',
+                safety_considerations='',
+                summary='Athletics\' event groups create meaningfully different fatigue profiles — recovery emphasis should be tailored to the specific event group, not applied generically.',
+                references='General athletics recovery-planning principles used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Managing Tendon Load Recovery',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why tendon recovery timelines differ from muscle recovery timelines, and why this matters for sprinters and jumpers.',
+                content='Sprinters and jumpers rely heavily on tendon elasticity, and tendons generally recover and adapt more slowly than muscle tissue, an important distinction for recovery planning.',
+                scientific_explanation='Tendon tissue has lower blood supply and a slower metabolic turnover than muscle, meaning it adapts and recovers over a longer timeframe — high-intensity plyometric or maximal-sprint work performed too frequently without adequate spacing can outpace tendon recovery even when muscular soreness has resolved.',
+                practical_application='Space high-intensity plyometric and maximal-sprint sessions with adequate recovery time between them, recognizing that feeling muscularly recovered doesn\'t necessarily mean tendons have fully recovered too.',
+                key_coaching_points='Tendons recover more slowly than muscles — don\'t rely on muscle soreness alone as the sole indicator of readiness for the next high-intensity session.',
+                common_mistakes='Scheduling high-intensity plyometric or maximal-sprint sessions based only on muscular soreness resolving, without considering slower tendon recovery timelines.',
+                safety_considerations='Persistent tendon pain (as opposed to general muscle soreness) warrants particular caution and possible assessment before resuming high-intensity work.',
+                summary='Tendons recover more slowly than muscles — sprinters and jumpers need adequate spacing between high-intensity sessions beyond what muscle soreness alone would suggest.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_badminton_recovery_course(self, author):
+        sport = Sport.objects.get(slug='badminton')
+        category = CourseCategory.objects.get(sport=sport, slug='recovery')
+        course = Course.objects.create(
+            title='Badminton: Recovery',
+            subtitle='Recovery priorities around repeated lunging and overhead demands',
+            description='A practical guide to recovery considerations specific to badminton\'s repeated multi-directional lunging and overhead smash demands.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Recovery Priorities', order=1)
+        lessons = [
+            dict(
+                title='Lower-Body Recovery From Repeated Lunging',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why badminton\'s lunge-heavy movement pattern creates specific lower-body recovery demands.',
+                content='Badminton\'s extremely high frequency of lunging movements within a match creates substantial eccentric lower-body fatigue, particularly through the quadriceps and hip, requiring deliberate recovery attention.',
+                scientific_explanation='Repeated deceleration through lunging places high eccentric demand on the front leg, and cumulative eccentric loading across a tournament creates delayed-onset muscle soreness and joint stress requiring adequate recovery time, particularly around multi-match tournament days.',
+                practical_application='Plan reduced lower-body training load in the day(s) immediately following high-lunge-volume tournament play, and prioritize sleep and basic recovery practices during multi-match tournament periods.',
+                key_coaching_points='Multi-match tournament days warrant deliberately lighter lower-body training in the immediate recovery period afterward.',
+                common_mistakes='Resuming full lower-body training load immediately after a high-volume tournament without an adjusted recovery period.',
+                safety_considerations='Persistent knee or hip discomfort following high lunge-volume periods is worth monitoring rather than pushing through.',
+                summary='Badminton\'s lunge-heavy movement pattern creates substantial eccentric lower-body fatigue — deliberate recovery planning around tournament periods is an important, sport-specific priority.',
+                references='General badminton recovery-planning principles used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Shoulder Recovery From Repeated Smashing',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe recovery considerations specific to the shoulder demands of repeated overhead smashes.',
+                content='Repeated forceful overhead smash and clear shots accumulate shoulder load across a match or tournament, meriting dedicated recovery attention alongside general fatigue management.',
+                scientific_explanation='The repeated overhead racquet action in smashing and clearing places cumulative demand on the shoulder complex similar in principle to other overhead racquet sports, and adequate rest alongside shoulder-specific care supports recovery of these structures separate from general whole-body fatigue.',
+                practical_application='Track overhead-shot volume where practical, and include shoulder-specific mobility and recovery practices, particularly during multi-match tournament stretches.',
+                key_coaching_points='Shoulder-specific overhead-shot load deserves separate attention from general fatigue tracking.',
+                common_mistakes='Monitoring only general fatigue while ignoring cumulative overhead-smash-specific shoulder load.',
+                safety_considerations='Persistent shoulder discomfort following high-volume smashing is worth addressing rather than assuming it is ordinary fatigue.',
+                summary='Repeated overhead smashing creates shoulder-specific cumulative load that deserves dedicated recovery attention, separate from general whole-body fatigue management.',
                 references='',
                 faqs=[],
             ),
