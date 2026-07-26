@@ -397,3 +397,48 @@ class ContactInquiry(models.Model):
 
     def __str__(self):
         return f"{self.name} <{self.email}>"
+
+
+# ==================== Direct Messaging ====================
+
+class Conversation(models.Model):
+    """
+    A 1:1 conversation between two users (coach<->athlete being the
+    primary use case, but not restricted to that pairing). participant_a
+    is always the lower user id of the pair so (a, b) is a stable,
+    unique key regardless of who started the conversation — see
+    get_or_create_conversation() in views.py.
+    """
+
+    participant_a = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conversations_as_a')
+    participant_b = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conversations_as_b')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, help_text='Bumped on every new message, drives inbox ordering.')
+
+    class Meta:
+        db_table = 'conversations'
+        ordering = ['-updated_at']
+        constraints = [
+            models.UniqueConstraint(fields=['participant_a', 'participant_b'], name='unique_conversation_pair'),
+        ]
+
+    def __str__(self):
+        return f'{self.participant_a} <-> {self.participant_b}'
+
+    def other_participant(self, user):
+        return self.participant_b if self.participant_a_id == user.id else self.participant_a
+
+
+class Message(models.Model):
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
+    body = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'messages'
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f'{self.sender} @ {self.created_at:%Y-%m-%d %H:%M}'

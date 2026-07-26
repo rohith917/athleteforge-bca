@@ -26,11 +26,11 @@ from .free_ai import generate_free_ai_answer, get_ai_provider_status
 from .models import (
     Athlete, Performance, Injury, Competition,
     CompetitionResult, Attendance, WeightTracking, PasswordResetToken, UserProfile,
-    Goal, Announcement, Notification,
+    Goal, Announcement, Notification, Conversation, Message,
 )
 from .permissions import (
     is_staff_role, is_admin_role, get_athlete_for_user, filter_queryset_by_role,
-    filter_athletes_by_role, IsCoachOrAdmin, ReadOnlyForStudents, IsAdminOnly,
+    filter_athletes_by_role, IsCoachOrAdmin, ReadOnlyForStudents, IsAdminOnly, get_user_role,
 )
 from .serializers import (
     AthleteSerializer, AthleteListSerializer, PerformanceSerializer,
@@ -40,6 +40,7 @@ from .serializers import (
     ResetPasswordSerializer, AdminUserSerializer, AdminUserUpdateSerializer,
     AdminCreateUserSerializer, GoalSerializer, AnnouncementSerializer,
     NotificationSerializer, ContactInquirySerializer,
+    ConversationSerializer, MessageSerializer,
 )
 from .reports import (
     generate_athletes_pdf, generate_performance_pdf, generate_injuries_pdf,
@@ -682,6 +683,97 @@ class NotificationViewSet(viewsets.ViewSet):
     def mark_all_read(self, request):
         Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
         return Response({'message': 'All notifications marked read'})
+
+
+# ==================== Direct Messaging ====================
+
+def get_or_create_conversation(user1_id, user2_id):
+    """Normalizes the pair so (a, b) is a stable key regardless of who started it."""
+    a, b = sorted([user1_id, user2_id])
+    conversation, _ = Conversation.objects.get_or_create(participant_a_id=a, participant_b_id=b)
+    return conversation
+
+
+class ConversationViewSet(viewsets.ModelViewSet):
+    """A user's own conversations. Creation takes {user_id} and finds-or-creates the pair."""
+    serializer_class = ConversationSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'post', 'head', 'options']
+
+    def get_queryset(self):
+        user = self.request.user
+        return Conversation.objects.filter(
+            Q(participant_a=user) | Q(participant_b=user)
+        ).select_related('participant_a', 'participant_b')
+
+    def create(self, request, *args, **kwargs):
+        other_id = request.data.get('user_id')
+        if not other_id:
+            return Response({'error': 'user_id is required.'}, status=400)
+        if int(other_id) == request.user.id:
+            return Response({'error': 'Cannot start a conversation with yourself.'}, status=400)
+        other = User.objects.filter(id=other_id).first()
+        if not other:
+            return Response({'error': 'User not found.'}, status=404)
+        conversation = get_or_create_conversation(request.user.id, other.id)
+        serializer = self.get_serializer(conversation)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'])
+    def mark_read(self, request, pk=None):
+        conversation = self.get_object()
+        Message.objects.filter(conversation=conversation, is_read=False).exclude(sender=request.user).update(is_read=True)
+        return Response({'marked_read': True})
+
+
+class MessageViewSet(viewsets.ModelViewSet):
+    """Messages within the requesting user's own conversations. ?conversation=<id> to scope to one thread."""
+    serializer_class = MessageSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'post', 'head', 'options']
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = Message.objects.filter(
+            Q(conversation__participant_a=user) | Q(conversation__participant_b=user)
+        ).select_related('sender', 'conversation')
+        conversation_id = self.request.query_params.get('conversation')
+        if conversation_id:
+            qs = qs.filter(conversation_id=conversation_id)
+        return qs
+
+    def perform_create(self, serializer):
+        conversation = serializer.validated_data['conversation']
+        user = self.request.user
+        if user.id not in (conversation.participant_a_id, conversation.participant_b_id):
+            raise PermissionDenied('Not a participant in this conversation.')
+        serializer.save(sender=user)
+        conversation.save(update_fields=['updated_at'])
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def message_contacts(request):
+    """
+    Who the current user is allowed to start a conversation with.
+    Coaches/admins can message any student, coach, or admin; students can
+    message any coach or admin — no coach-assignment model exists yet, so
+    this is the sensible default rather than an arbitrary open contact list.
+    """
+    user = request.user
+    role = get_user_role(user)
+    if role == 'admin':
+        qs = User.objects.exclude(id=user.id)
+    elif role == 'coach':
+        qs = User.objects.filter(Q(is_superuser=True) | Q(profile__role__in=['coach', 'admin', 'student'])).exclude(id=user.id)
+    else:
+        qs = User.objects.filter(Q(is_superuser=True) | Q(profile__role__in=['coach', 'admin'])).exclude(id=user.id)
+
+    contacts = [
+        {'id': u.id, 'name': u.get_full_name() or u.username, 'role': get_user_role(u)}
+        for u in qs.select_related('profile').distinct().order_by('first_name', 'username')
+    ]
+    return Response(contacts)
 
 
 # ==================== Leaderboard ====================

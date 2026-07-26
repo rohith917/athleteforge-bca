@@ -9,7 +9,7 @@ import { resolveApiBase, getPublicBackendUrl } from '@/config/apiConfig'
 import type {
   AuthUser, Athlete, AthleteListItem, Performance, Injury, Competition, CompetitionResult,
   Attendance, WeightTracking, DashboardStats, LeaderboardResponse, Goal, Announcement,
-  NotificationsResponse, AdminUser, AttendanceReport,
+  NotificationsResponse, AdminUser, AttendanceReport, ConversationItem, MessageItem, MessageContact,
   Sport, CourseCategory, CourseListItem, CourseDetail, LessonDetail, Enrollment, Certificate, UserBadgeItem,
   LearningSummary, QuizSubmitResult, ResearchSummaryItem,
   Organization, OrgRole, OrganizationMembership, AppPermission,
@@ -458,6 +458,15 @@ export const notificationsAPI = {
   getAll: () => api.get<NotificationsResponse>('/notifications/'),
   markRead: (id: number) => api.patch(`/notifications/${id}/read/`),
   markAllRead: () => api.post('/notifications/mark_all_read/'),
+}
+
+export const messagesAPI = {
+  getConversations: () => api.get<ConversationItem[]>('/conversations/'),
+  createConversation: (userId: number) => api.post<ConversationItem>('/conversations/', { user_id: userId }),
+  markConversationRead: (id: number) => api.post(`/conversations/${id}/mark_read/`),
+  getMessages: (conversationId: number) => api.get<MessageItem[]>('/messages/', { params: { conversation: conversationId } }),
+  sendMessage: (conversationId: number, body: string) => api.post<MessageItem>('/messages/', { conversation: conversationId, body }),
+  getContacts: () => api.get<MessageContact[]>('/messages/contacts/'),
 }
 
 export const adminAPI = {

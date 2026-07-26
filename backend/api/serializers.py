@@ -7,7 +7,7 @@ from rest_framework import serializers
 from .models import (
     Athlete, Performance, Injury, Competition,
     CompetitionResult, Attendance, WeightTracking, UserProfile, PasswordResetToken,
-    Goal, Announcement, Notification, ContactInquiry,
+    Goal, Announcement, Notification, ContactInquiry, Conversation, Message,
 )
 from .permissions import get_user_role, get_athlete_for_user, is_admin_role
 from .goal_utils import compute_goal_progress
@@ -403,6 +403,56 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ['id', 'notif_type', 'severity', 'title', 'message', 'link', 'is_read', 'created_at']
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    """A single message within a conversation."""
+    sender_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Message
+        fields = ['id', 'conversation', 'sender', 'sender_name', 'body', 'is_read', 'created_at']
+        read_only_fields = ['sender', 'is_read']
+
+    def get_sender_name(self, obj):
+        return obj.sender.get_full_name() or obj.sender.username
+
+
+class ConversationSerializer(serializers.ModelSerializer):
+    """A 1:1 conversation from the current request user's point of view."""
+    other_user_id = serializers.SerializerMethodField()
+    other_user_name = serializers.SerializerMethodField()
+    other_user_role = serializers.SerializerMethodField()
+    last_message = serializers.SerializerMethodField()
+    unread_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Conversation
+        fields = [
+            'id', 'other_user_id', 'other_user_name', 'other_user_role',
+            'last_message', 'unread_count', 'updated_at',
+        ]
+
+    def _other(self, obj):
+        return obj.other_participant(self.context['request'].user)
+
+    def get_other_user_id(self, obj):
+        return self._other(obj).id
+
+    def get_other_user_name(self, obj):
+        other = self._other(obj)
+        return other.get_full_name() or other.username
+
+    def get_other_user_role(self, obj):
+        return get_user_role(self._other(obj))
+
+    def get_last_message(self, obj):
+        last = obj.messages.order_by('-created_at').first()
+        return MessageSerializer(last, context=self.context).data if last else None
+
+    def get_unread_count(self, obj):
+        user = self.context['request'].user
+        return obj.messages.filter(is_read=False).exclude(sender=user).count()
 
 
 class ContactInquirySerializer(serializers.ModelSerializer):

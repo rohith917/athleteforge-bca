@@ -2,6 +2,7 @@ import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Users, LineChart, HeartPulse, Trophy, ClipboardCheck,
   Scale, FileText, User, ShieldCheck, Home, Medal, Megaphone, GraduationCap, Building2, Dumbbell, Smile, BookPlus, Ruler,
+  MessageSquare,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
@@ -30,6 +31,7 @@ const adminNav: NavItem[] = [
   { path: '/dashboard/weight', icon: Scale, label: 'Weight' },
   { path: '/dashboard/leaderboard', icon: Medal, label: 'Leaderboard' },
   { path: '/dashboard/announcements', icon: Megaphone, label: 'Announcements' },
+  { path: '/dashboard/messages', icon: MessageSquare, label: 'Messages' },
   { path: '/dashboard/reports', icon: FileText, label: 'Reports' },
 ]
 
@@ -48,6 +50,7 @@ const coachNav: NavItem[] = [
   { path: '/dashboard/weight', icon: Scale, label: 'Weight Tracking' },
   { path: '/dashboard/leaderboard', icon: Medal, label: 'Leaderboard' },
   { path: '/dashboard/announcements', icon: Megaphone, label: 'Announcements' },
+  { path: '/dashboard/messages', icon: MessageSquare, label: 'Messages' },
   { path: '/dashboard/reports', icon: FileText, label: 'Reports' },
 ]
 
@@ -62,6 +65,7 @@ const studentNav: NavItem[] = [
   { path: '/dashboard/attendance', icon: ClipboardCheck, label: 'My Attendance' },
   { path: '/dashboard/leaderboard', icon: Medal, label: 'Leaderboard' },
   { path: '/dashboard/announcements', icon: Megaphone, label: 'Announcements' },
+  { path: '/dashboard/messages', icon: MessageSquare, label: 'Messages' },
 ]
 
 const ROLE_META = {

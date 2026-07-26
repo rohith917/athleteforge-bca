@@ -505,6 +505,32 @@ export interface LearningSummary {
   streak: LearningStreakData
 }
 
+export interface MessageItem {
+  id: number
+  conversation: number
+  sender: number
+  sender_name: string
+  body: string
+  is_read: boolean
+  created_at: string
+}
+
+export interface ConversationItem {
+  id: number
+  other_user_id: number
+  other_user_name: string
+  other_user_role: string
+  last_message: MessageItem | null
+  unread_count: number
+  updated_at: string
+}
+
+export interface MessageContact {
+  id: number
+  name: string
+  role: string
+}
+
 export type TestCategory =
   | 'speed' | 'power' | 'strength' | 'endurance' | 'agility' | 'flexibility' | 'body_composition'
 

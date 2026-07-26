@@ -23,6 +23,7 @@ import AttendancePage from '@/pages/dashboard/Attendance'
 import WeightTracking from '@/pages/dashboard/WeightTracking'
 import Leaderboard from '@/pages/dashboard/Leaderboard'
 import Announcements from '@/pages/dashboard/Announcements'
+import Messages from '@/pages/dashboard/Messages'
 import Reports from '@/pages/dashboard/Reports'
 import UserManagement from '@/pages/dashboard/UserManagement'
 import AcademyCatalog from '@/pages/dashboard/academy/AcademyCatalog'
@@ -78,6 +79,7 @@ export default function App() {
           <Route path="weight" element={<StaffRoute><WeightTracking /></StaffRoute>} />
           <Route path="leaderboard" element={<Leaderboard />} />
           <Route path="announcements" element={<Announcements />} />
+          <Route path="messages" element={<Messages />} />
           <Route path="reports" element={<CoachRoute><Reports /></CoachRoute>} />
           <Route path="admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
           <Route path="admin/organizations" element={<AdminRoute><OrganizationsAdmin /></AdminRoute>} />

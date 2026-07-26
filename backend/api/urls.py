@@ -16,6 +16,8 @@ router.register(r'weight-tracking', views.WeightTrackingViewSet)
 router.register(r'goals', views.GoalViewSet)
 router.register(r'announcements', views.AnnouncementViewSet, basename='announcements')
 router.register(r'notifications', views.NotificationViewSet, basename='notifications')
+router.register(r'conversations', views.ConversationViewSet, basename='conversations')
+router.register(r'messages', views.MessageViewSet, basename='messages')
 
 urlpatterns = [
     # Authentication
@@ -39,6 +41,9 @@ urlpatterns = [
     # Dashboard
     path('dashboard/stats/', views.dashboard_stats, name='dashboard-stats'),
     path('leaderboard/', views.leaderboard, name='leaderboard'),
+
+    # Messaging
+    path('messages/contacts/', views.message_contacts, name='message-contacts'),
 
     # Admin management
     path('admin/stats/', views.admin_dashboard_stats, name='admin-stats'),
