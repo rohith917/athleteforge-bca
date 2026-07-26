@@ -89,6 +89,12 @@ class Command(BaseCommand):
             ('wrestling-recovery', self._seed_wrestling_recovery_course),
             ('athletics-recovery', self._seed_athletics_recovery_course),
             ('badminton-recovery', self._seed_badminton_recovery_course),
+            ('cycling-training-methods', self._seed_cycling_training_methods_course),
+            ('gymnastics-training-methods', self._seed_gymnastics_training_methods_course),
+            ('judo-training-methods', self._seed_judo_training_methods_course),
+            ('karate-training-methods', self._seed_karate_training_methods_course),
+            ('powerlifting-training-methods', self._seed_powerlifting_training_methods_course),
+            ('weightlifting-training-methods', self._seed_weightlifting_training_methods_course),
         ]
 
         created = 0
@@ -3337,6 +3343,258 @@ class Command(BaseCommand):
                 common_mistakes='Monitoring only general fatigue while ignoring cumulative overhead-smash-specific shoulder load.',
                 safety_considerations='Persistent shoulder discomfort following high-volume smashing is worth addressing rather than assuming it is ordinary fatigue.',
                 summary='Repeated overhead smashing creates shoulder-specific cumulative load that deserves dedicated recovery attention, separate from general whole-body fatigue management.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_cycling_training_methods_course(self, author):
+        sport = Sport.objects.get(slug='cycling')
+        category = CourseCategory.objects.get(sport=sport, slug='training-methods')
+        course = Course.objects.create(
+            title='Cycling: Training Methods',
+            subtitle='Zone-based training and how disciplines shape the approach',
+            description='An introduction to the intensity-zone training methods most used in cycling and how they differ between sprint and endurance disciplines.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Training Method Basics', order=1)
+        lessons = [
+            dict(
+                title='Power-Based Training Zones',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain the general concept of power-based training zones in cycling.',
+                content='Cycling training is commonly structured around power output zones, since a power meter gives a direct, immediate measure of work being done, unlike pace-based measures affected by terrain and wind.',
+                scientific_explanation='Power zones are typically anchored to a rider\'s functional threshold power (FTP) — the highest power sustainable for about an hour — with lower zones targeting aerobic base development and higher zones targeting anaerobic capacity and neuromuscular power, allowing precise, terrain-independent intensity prescription.',
+                practical_application='Establish an approximate functional threshold power through a field test, then prescribe training zones relative to that value rather than relying on speed alone, which varies with terrain and wind.',
+                key_coaching_points='Power-based zones remove the terrain/wind variability that makes pace-based prescription unreliable in cycling.',
+                common_mistakes='Prescribing cycling intensity purely by speed without accounting for terrain, wind, or drafting effects.',
+                safety_considerations='',
+                summary='Power-based training zones, anchored to functional threshold power, allow precise and terrain-independent intensity prescription in cycling.',
+                references='General cycling training-methods literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Matching Methods to Discipline',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why training method emphasis differs between track sprint and road endurance cycling.',
+                content='Track sprint cyclists and road endurance cyclists draw on very different points along the power-duration spectrum, so their training method emphasis differs substantially.',
+                scientific_explanation='Sprint disciplines prioritize neuromuscular power and anaerobic capacity training (short, maximal efforts with full recovery), while endurance disciplines prioritize a large aerobic base built through extended lower-intensity riding, with structured high-intensity intervals layered on top in smaller proportion.',
+                practical_application='Identify the athlete\'s primary discipline first, then weight training time toward maximal-power work for sprinters or aerobic-base-plus-intervals for endurance riders, rather than using one generic cycling training template.',
+                key_coaching_points='Always identify the specific cycling discipline before prescribing a training method emphasis.',
+                common_mistakes='Applying one generic endurance-style training template to a track sprint cyclist whose event demands maximal power instead.',
+                safety_considerations='',
+                summary='Track sprint and road endurance cycling demand different training method emphases — always match the method to the athlete\'s specific discipline.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_gymnastics_training_methods_course(self, author):
+        sport = Sport.objects.get(slug='gymnastics')
+        category = CourseCategory.objects.get(sport=sport, slug='training-methods')
+        course = Course.objects.create(
+            title='Gymnastics: Training Methods',
+            subtitle='Progressive skill training and strength-to-bodyweight development',
+            description='An introduction to the progressive-skill and bodyweight-strength training methods central to gymnastics preparation.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Training Method Basics', order=1)
+        lessons = [
+            dict(
+                title='Progressive Skill Breakdown',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain the progressive-skill-breakdown method used to teach complex gymnastics skills safely.',
+                content='Complex gymnastics skills are typically taught by breaking them into simpler progressions, mastering each safely before combining them into the full skill.',
+                scientific_explanation='Motor-learning principles support building complex movements from simpler, mastered component parts, using spotting and training aids (mats, pits, straps) to allow safe repetition of a partial skill before removing that support — this progressive-breakdown approach is standard practice across gymnastics coaching.',
+                practical_application='Break a target skill into its component progressions, ensure each is mastered under safe conditions (spotting, soft landing surfaces) before progressing, and avoid rushing an athlete to the full skill before foundational progressions are solid.',
+                key_coaching_points='Never skip a progression step to save time — the progression sequence exists specifically for safety and skill quality.',
+                common_mistakes='Rushing an athlete to attempt a full skill before foundational progressions are consistently mastered.',
+                safety_considerations='Given gymnastics\' high fall-related injury risk, actual skill and progression coaching requires qualified, sport-specific gymnastics coaching expertise beyond this general overview.',
+                summary='Complex gymnastics skills are safely built through progressive breakdown into simpler, mastered component parts — never skip a progression step.',
+                references='General gymnastics coaching-methodology principles used in skill instruction.',
+                faqs=[],
+            ),
+            dict(
+                title='Bodyweight Strength Training Methods',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe common bodyweight-strength training methods used to prepare gymnasts for skill demands.',
+                content='Gymnastics relies heavily on strength relative to bodyweight, trained through methods like isometric holds, progressive calisthenics, and ring/bar-specific conditioning.',
+                scientific_explanation='Isometric holds (e.g., planche or handstand progressions) build the specific joint-angle strength gymnastics skills demand, while progressive calisthenics (adjusting lever length or assistance) allow strength development to be scaled precisely to an athlete\'s current capability.',
+                practical_application='Use isometric holds and scaled calisthenics progressions to build bodyweight strength specific to target skills, adjusting difficulty by changing lever length or assistance rather than jumping straight to full unassisted versions.',
+                key_coaching_points='Scale bodyweight exercises by adjusting lever length or assistance, not by attempting the full unassisted version before ready.',
+                common_mistakes='Attempting full unassisted advanced bodyweight holds before adequate progressive strength has been built.',
+                safety_considerations='',
+                summary='Gymnastics strength training relies on isometric holds and scalable calisthenics progressions matched precisely to the athlete\'s current capability.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_judo_training_methods_course(self, author):
+        sport = Sport.objects.get(slug='judo')
+        category = CourseCategory.objects.get(sport=sport, slug='training-methods')
+        course = Course.objects.create(
+            title='Judo: Training Methods',
+            subtitle='Randori, uchikomi, and grip-strength training methods',
+            description='An introduction to the core training methods used to develop judo-specific technique, power, and grip endurance.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Training Method Basics', order=1)
+        lessons = [
+            dict(
+                title='Uchikomi and Randori',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Distinguish uchikomi (repetition drilling) from randori (live practice) and their respective training purposes.',
+                content='Judo training commonly alternates between uchikomi (repeated entry drilling without completing the throw) and randori (live, resistant practice), each serving a different purpose.',
+                scientific_explanation='Uchikomi allows high-repetition practice of a throw\'s entry and setup without the physical toll of repeated full throws, building technical automaticity; randori then tests that technique against a genuinely resisting opponent, developing the timing and adaptability that drilling alone cannot provide.',
+                practical_application='Use uchikomi for high-volume technical refinement of a specific throw, and randori to test and adapt that technique under live, resistant conditions — both serve distinct, complementary purposes.',
+                key_coaching_points='Uchikomi builds technical automaticity; randori builds live application — neither substitutes for the other.',
+                common_mistakes='Relying on randori alone for technical development without dedicated uchikomi drilling time.',
+                safety_considerations='Safe falling technique (ukemi) should be well established before live randori practice, particularly for less experienced athletes.',
+                summary='Uchikomi (repetition drilling) and randori (live practice) serve complementary, distinct purposes in judo training — technical automaticity versus live application.',
+                references='General judo training-methodology principles used in sport-specific coaching.',
+                faqs=[],
+            ),
+            dict(
+                title='Grip-Strength and Power Training',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe training methods used to develop judo-specific grip endurance and throwing power.',
+                content='Judo-specific strength training emphasizes grip endurance and explosive, hip-driven power to support both grip-fighting and throwing technique.',
+                scientific_explanation='Sustained judogi grip-holds and towel/rope-based grip work target the forearm endurance demanded by prolonged grip-fighting, while explosive hip-hinge and rotational power exercises (e.g., kettlebell swings, medicine ball throws) mirror the hip-driven mechanics underlying most judo throws.',
+                practical_application='Include dedicated grip-endurance work (judogi grip holds, towel pull-ups) alongside explosive hip-hinge and rotational power training that mirrors the throwing action\'s mechanics.',
+                key_coaching_points='Grip endurance training should specifically involve judogi or similarly thick-grip implements, not just standard gym grip work.',
+                common_mistakes='Relying on generic gym grip-strength exercises that don\'t replicate the specific demand of gripping a judogi.',
+                safety_considerations='',
+                summary='Judo-specific strength training should target grip endurance with judogi-like implements and explosive hip-driven power mirroring the throwing action.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_karate_training_methods_course(self, author):
+        sport = Sport.objects.get(slug='karate')
+        category = CourseCategory.objects.get(sport=sport, slug='training-methods')
+        course = Course.objects.create(
+            title='Karate: Training Methods',
+            subtitle='Kihon, kata, and kumite as distinct but connected training methods',
+            description='An introduction to karate\'s three core training methods and how each contributes to overall development.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Training Method Basics', order=1)
+        lessons = [
+            dict(
+                title='Kihon: Fundamental Technique Repetition',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain the purpose of kihon (basic technique repetition) in karate training.',
+                content='Kihon is repeated practice of fundamental techniques (strikes, blocks, stances) in isolation, building the technical foundation everything else in karate builds upon.',
+                scientific_explanation='High-repetition practice of isolated fundamental movements supports motor-pattern automaticity — performing a technique correctly without conscious deliberate effort — which is considered foundational before that technique is combined into kata sequences or applied in live kumite exchanges.',
+                practical_application='Dedicate consistent training time to kihon repetition of fundamental techniques, particularly for less experienced athletes, before emphasizing kata and kumite application.',
+                key_coaching_points='Kihon is the technical foundation both kata and kumite are built upon — it deserves ongoing attention, not just early in an athlete\'s development.',
+                common_mistakes='De-emphasizing kihon repetition too early in favor of kata or kumite before fundamental technique is solid.',
+                safety_considerations='',
+                summary='Kihon (repeated fundamental technique practice) builds the technical automaticity that kata and kumite both depend on.',
+                references='General karate training-methodology principles used in sport-specific coaching.',
+                faqs=[],
+            ),
+            dict(
+                title='Kata and Kumite as Complementary Methods',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain how kata (prescribed forms) and kumite (sparring) serve complementary training purposes.',
+                content='Kata (solo prescribed forms) and kumite (sparring) train different but connected qualities — technical precision and power consistency versus live, reactive application.',
+                scientific_explanation='Kata practice allows an athlete to rehearse a defined sequence of techniques with full attention to precision, balance, and power expression without a live opponent\'s interference, while kumite develops the reactive timing, distancing, and decision-making that only live resistant practice can provide — both are generally considered necessary, complementary components of karate development.',
+                practical_application='Include dedicated kata practice for technical precision and power consistency, alongside kumite practice for reactive application, recognizing that heavy emphasis on only one leaves a gap in the other.',
+                key_coaching_points='Kata and kumite develop different qualities — neither replaces the training value of the other.',
+                common_mistakes='Focusing training almost entirely on kumite sparring while neglecting kata\'s technical-precision development, or vice versa.',
+                safety_considerations='Kumite-specific contact safety protocols should follow official rules and qualified instructor guidance.',
+                summary='Kata and kumite are complementary training methods, developing technical precision/power and reactive live application respectively — both deserve consistent training time.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_powerlifting_training_methods_course(self, author):
+        sport = Sport.objects.get(slug='powerlifting')
+        category = CourseCategory.objects.get(sport=sport, slug='training-methods')
+        course = Course.objects.create(
+            title='Powerlifting: Training Methods',
+            subtitle='Linear periodization and specificity in the three competition lifts',
+            description='An introduction to the core training methods used to build maximal strength in the squat, bench press, and deadlift.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Training Method Basics', order=1)
+        lessons = [
+            dict(
+                title='Linear Periodization for Strength',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain the linear periodization method commonly used in powerlifting preparation.',
+                content='Powerlifting preparation commonly uses linear periodization: progressively increasing load and decreasing repetitions over a training block as competition approaches.',
+                scientific_explanation='A typical linear block moves from higher-volume, moderate-intensity work early (building work capacity and technical consistency under load) toward lower-volume, higher-intensity work approaching competition (peaking maximal strength expression), with a planned taper immediately before competition to allow full recovery.',
+                practical_application='Structure a training block starting with higher-volume, moderate-load work, progressively shifting toward lower-volume, higher-load work as competition nears, with a final taper period for recovery before the meet.',
+                key_coaching_points='A planned taper before competition is essential to allow accumulated fatigue to dissipate before peak performance is needed.',
+                common_mistakes='Training at high volume and intensity right up until competition without a planned taper period.',
+                safety_considerations='Progressive loading toward near-maximal weights should be well-supervised, with sound technique established before load increases.',
+                summary='Linear periodization — progressing from higher-volume moderate-load work toward lower-volume higher-load work with a final taper — is the standard method for peaking strength toward a powerlifting competition.',
+                references='General powerlifting periodization principles used in sport-specific coaching.',
+                faqs=[],
+            ),
+            dict(
+                title='Specificity in the Three Competition Lifts',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why training specificity toward the exact competition lifts matters in powerlifting.',
+                content='Because powerlifting is judged on three specific, technically defined lifts, training specificity toward those exact movement patterns is especially important compared to more broadly conditioned sports.',
+                scientific_explanation='Strength gains show meaningful specificity to the exact movement pattern, joint angles, and technique trained — meaning general strength work alone transfers imperfectly to competition performance in the squat, bench press, and deadlift specifically, and the competition lifts themselves (or very close variations) should form the core of training.',
+                practical_application='Build training around the squat, bench press, and deadlift (or close variations) as the primary lifts, using accessory exercises to address specific weak points within those exact movement patterns rather than as a substitute for practicing the lifts themselves.',
+                key_coaching_points='Accessory exercises support the competition lifts — they don\'t replace the need to train the actual squat, bench, and deadlift patterns directly.',
+                common_mistakes='Substituting extensive accessory or general-strength work for adequate direct practice of the three competition lifts themselves.',
+                safety_considerations='',
+                summary='Powerlifting rewards training specificity toward the exact competition lifts — accessory work should support, not substitute for, direct practice of the squat, bench press, and deadlift.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_weightlifting_training_methods_course(self, author):
+        sport = Sport.objects.get(slug='weightlifting')
+        category = CourseCategory.objects.get(sport=sport, slug='training-methods')
+        course = Course.objects.create(
+            title='Weightlifting: Training Methods',
+            subtitle='Technical practice, positional drills, and progressive loading',
+            description='An introduction to the core training methods used to develop technical proficiency and power in the snatch and clean & jerk.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Training Method Basics', order=1)
+        lessons = [
+            dict(
+                title='Positional and Pulling Drills',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why positional drills and pulling variations are used to build technique in Olympic weightlifting.',
+                content='Rather than always performing the full snatch or clean & jerk, coaches commonly break the lifts into positional drills and partial pulling variations to isolate and correct specific technical phases.',
+                scientific_explanation='Positional drills (e.g., pausing at the knee or hip during the pull) let an athlete rehearse and receive feedback on a specific technical position without the complexity of the full lift, while pulling variations (e.g., snatch pulls without the catch) allow heavier loading of the pulling phase specifically — both isolate technical components that are hard to correct within the full, fast lift.',
+                practical_application='Use positional drills and partial pulling variations to isolate and correct specific technical faults, rather than only repeating the full lift and hoping technique improves through repetition alone.',
+                key_coaching_points='Isolate the specific technical phase that needs correction using a positional drill, rather than relying only on full-lift repetition.',
+                common_mistakes='Only ever practicing the full lift when a specific, identifiable technical phase actually needs isolated correction.',
+                safety_considerations='Technical coaching from a qualified weightlifting coach should guide which drills address a specific athlete\'s technical needs.',
+                summary='Positional drills and partial pulling variations let coaches isolate and correct specific technical phases of the snatch and clean & jerk that are hard to address within the full, fast lift.',
+                references='General Olympic weightlifting training-methodology principles used in sport-specific coaching.',
+                faqs=[],
+            ),
+            dict(
+                title='Progressive Loading After Technique Mastery',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why load progression should follow, not precede, technical mastery in weightlifting.',
+                content='Because the snatch and clean & jerk are highly technical, complex movements, load progression is generally sequenced to follow demonstrated technical competency rather than a fixed timeline.',
+                scientific_explanation='Adding load to a technically flawed lift tends to reinforce the flawed movement pattern under increasing stress, raising injury risk and making the fault progressively harder to correct — technical competency at a given load level is therefore typically confirmed before that load is increased.',
+                practical_application='Confirm consistent, correct technique at a given training load before progressing to the next load increment, rather than increasing load on a fixed schedule regardless of technical quality.',
+                key_coaching_points='Load progression should be gated by demonstrated technique quality, not by a fixed weekly schedule.',
+                common_mistakes='Increasing training load on a fixed schedule regardless of whether technique at the current load is actually consistent and correct.',
+                safety_considerations='Given the high technical complexity and injury risk of these lifts, load progression decisions should involve a qualified weightlifting coach.',
+                summary='Load progression in weightlifting should be gated by demonstrated technical competency at the current load, not a fixed schedule — technique quality comes first.',
                 references='',
                 faqs=[],
             ),
