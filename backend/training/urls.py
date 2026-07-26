@@ -10,6 +10,8 @@ router.register(r'blocks', views.ProgramBlockViewSet, basename='training-blocks'
 router.register(r'exercises', views.ProgramExerciseViewSet, basename='training-exercises')
 router.register(r'wellness', views.WellnessCheckInViewSet, basename='training-wellness')
 router.register(r'rpe', views.SessionRPEViewSet, basename='training-rpe')
+router.register(r'test-protocols', views.TestProtocolViewSet, basename='training-test-protocols')
+router.register(r'test-results', views.TestResultViewSet, basename='training-test-results')
 
 urlpatterns = [
     path('generator/status/', views.generator_status, name='generator-status'),

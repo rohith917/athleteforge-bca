@@ -16,6 +16,7 @@ import type {
   CourseInput, CourseModuleInput, LessonInput, LessonInputResult, QuizInput,
   TrainingProgramListItem, TrainingProgramDetail, ProgramDayItem, ProgramBlockItem, ProgramExerciseItem, BlockType,
   WellnessCheckInItem, SessionRPEItem, GeneratorStatus, GenerateProgramPayload, GeneratedProgram,
+  TestProtocol, TestResultItem,
 } from '@/types'
 
 const API_BASE = resolveApiBase()
@@ -582,6 +583,12 @@ export const trainingAPI = {
 
   getGeneratorStatus: () => api.get<GeneratorStatus>('/training/generator/status/'),
   generateProgram: (data: GenerateProgramPayload) => api.post<GeneratedProgram>('/training/programs/generate/', data),
+
+  getTestProtocols: () => api.get<TestProtocol[]>('/training/test-protocols/'),
+  getTestResults: (params?: Record<string, unknown>) => api.get<TestResultItem[]>('/training/test-results/', { params }),
+  createTestResult: (data: { athlete?: number; protocol: number; test_date: string; value: number | string; notes?: string }) =>
+    api.post<TestResultItem>('/training/test-results/', data),
+  deleteTestResult: (id: number) => api.delete(`/training/test-results/${id}/`),
 }
 
 export default api

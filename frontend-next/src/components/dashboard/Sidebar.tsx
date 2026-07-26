@@ -1,7 +1,7 @@
 import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Users, LineChart, HeartPulse, Trophy, ClipboardCheck,
-  Scale, FileText, User, ShieldCheck, Home, Medal, Megaphone, GraduationCap, Building2, Dumbbell, Smile, BookPlus,
+  Scale, FileText, User, ShieldCheck, Home, Medal, Megaphone, GraduationCap, Building2, Dumbbell, Smile, BookPlus, Ruler,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { cn } from '@/lib/utils'
@@ -21,6 +21,7 @@ const adminNav: NavItem[] = [
   { path: '/dashboard/admin/organizations', icon: Building2, label: 'Organizations & Roles' },
   { path: '/dashboard/training', icon: Dumbbell, label: 'Training Programs' },
   { path: '/dashboard/monitoring', icon: Smile, label: 'Athlete Monitoring' },
+  { path: '/dashboard/testing', icon: Ruler, label: 'Performance Testing' },
   { path: '/dashboard/athletes', icon: Users, label: 'Athletes' },
   { path: '/dashboard/performance', icon: LineChart, label: 'Performance' },
   { path: '/dashboard/injuries', icon: HeartPulse, label: 'Injuries' },
@@ -38,6 +39,7 @@ const coachNav: NavItem[] = [
   { path: '/dashboard/academy/builder', icon: BookPlus, label: 'Course Builder' },
   { path: '/dashboard/training', icon: Dumbbell, label: 'Training Programs' },
   { path: '/dashboard/monitoring', icon: Smile, label: 'Athlete Monitoring' },
+  { path: '/dashboard/testing', icon: Ruler, label: 'Performance Testing' },
   { path: '/dashboard/athletes', icon: Users, label: 'My Athletes' },
   { path: '/dashboard/performance', icon: LineChart, label: 'Performance' },
   { path: '/dashboard/injuries', icon: HeartPulse, label: 'Injury Tracking' },
@@ -54,6 +56,7 @@ const studentNav: NavItem[] = [
   { path: '/dashboard/academy', icon: GraduationCap, label: 'Academy' },
   { path: '/dashboard/training', icon: Dumbbell, label: 'My Training' },
   { path: '/dashboard/monitoring', icon: Smile, label: 'My Wellness' },
+  { path: '/dashboard/testing', icon: Ruler, label: 'My Test Results' },
   { path: '/dashboard/performance', icon: LineChart, label: 'My Performance' },
   { path: '/dashboard/injuries', icon: HeartPulse, label: 'My Injuries' },
   { path: '/dashboard/attendance', icon: ClipboardCheck, label: 'My Attendance' },

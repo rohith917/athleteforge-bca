@@ -12,12 +12,13 @@ from api.permissions import IsCoachOrAdmin, is_staff_role, get_athlete_for_user
 from .generator import GOAL_TEMPLATES, generate_training_program, get_generator_status
 from .models import (
     TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion,
-    WellnessCheckIn, SessionRPE,
+    WellnessCheckIn, SessionRPE, TestProtocol, TestResult,
 )
 from .serializers import (
     TrainingProgramListSerializer, TrainingProgramDetailSerializer,
     ProgramDaySerializer, ProgramBlockSerializer, ProgramExerciseSerializer,
     WellnessCheckInSerializer, SessionRPESerializer,
+    TestProtocolSerializer, TestResultSerializer,
 )
 
 
@@ -258,6 +259,43 @@ class SessionRPEViewSet(viewsets.ModelViewSet):
         else:
             athlete = get_athlete_for_user(user)
         serializer.save(athlete=athlete)
+
+
+class TestProtocolViewSet(viewsets.ReadOnlyModelViewSet):
+    """Standardized test definitions — read-only, bounded reference data."""
+
+    queryset = TestProtocol.objects.filter(is_active=True)
+    serializer_class = TestProtocolSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = None
+    lookup_field = 'slug'
+
+
+class TestResultViewSet(viewsets.ModelViewSet):
+    serializer_class = TestResultSerializer
+
+    def get_permissions(self):
+        if self.action in ('create', 'update', 'partial_update', 'destroy'):
+            return [IsCoachOrAdmin()]
+        return [IsAuthenticated()]
+
+    def get_queryset(self):
+        qs = TestResult.objects.select_related('athlete', 'protocol', 'recorded_by').all()
+        user = self.request.user
+        if not is_staff_role(user):
+            athlete = get_athlete_for_user(user)
+            qs = qs.filter(athlete=athlete) if athlete else qs.none()
+        athlete_id = self.request.query_params.get('athlete_id')
+        if athlete_id:
+            qs = qs.filter(athlete_id=athlete_id)
+        protocol_id = self.request.query_params.get('protocol_id')
+        if protocol_id:
+            qs = qs.filter(protocol_id=protocol_id)
+        return qs
+
+    def perform_create(self, serializer):
+        athlete = Athlete.objects.filter(id=self.request.data.get('athlete')).first()
+        serializer.save(athlete=athlete, recorded_by=self.request.user)
 
 
 @api_view(['GET'])

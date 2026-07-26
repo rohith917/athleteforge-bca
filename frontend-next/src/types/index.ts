@@ -505,6 +505,37 @@ export interface LearningSummary {
   streak: LearningStreakData
 }
 
+export type TestCategory =
+  | 'speed' | 'power' | 'strength' | 'endurance' | 'agility' | 'flexibility' | 'body_composition'
+
+export interface TestProtocol {
+  id: number
+  name: string
+  slug: string
+  category: TestCategory
+  category_display: string
+  description: string
+  unit: string
+  higher_is_better: boolean
+  is_active: boolean
+}
+
+export interface TestResultItem {
+  id: number
+  athlete: number
+  athlete_name: string
+  protocol: number
+  protocol_name: string
+  protocol_unit: string
+  protocol_category: TestCategory
+  test_date: string
+  value: string
+  recorded_by: number | null
+  recorded_by_name: string | null
+  notes: string
+  created_at: string
+}
+
 export interface QuizSubmitResult {
   score_percent: number
   passed: boolean

@@ -36,6 +36,7 @@ import TrainingPrograms from '@/pages/dashboard/training/TrainingPrograms'
 import ProgramBuilder from '@/pages/dashboard/training/ProgramBuilder'
 import AthleteMonitoring from '@/pages/dashboard/training/AthleteMonitoring'
 import GenerateProgram from '@/pages/dashboard/training/GenerateProgram'
+import PerformanceTesting from '@/pages/dashboard/training/PerformanceTesting'
 import CertificateView from '@/pages/CertificateView'
 
 export default function App() {
@@ -83,6 +84,7 @@ export default function App() {
           <Route path="training" element={<TrainingPrograms />} />
           <Route path="training/generate" element={<StaffRoute><GenerateProgram /></StaffRoute>} />
           <Route path="monitoring" element={<AthleteMonitoring />} />
+          <Route path="testing" element={<PerformanceTesting />} />
           <Route path="training/:id" element={<ProgramBuilder />} />
           <Route path="academy" element={<AcademyCatalog />} />
           <Route path="academy/certificates" element={<MyCertificates />} />

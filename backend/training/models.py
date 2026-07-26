@@ -10,6 +10,7 @@ already uses for ParentAthleteLink.
 """
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.text import slugify
 
 
 class TrainingProgram(models.Model):
@@ -199,3 +200,60 @@ class SessionRPE(models.Model):
     @property
     def training_load(self):
         return self.rpe * self.duration_minutes
+
+
+# ==================== Performance Testing ====================
+
+class TestProtocol(models.Model):
+    """
+    A standardized physical test definition — real, widely-used tests in
+    athletic assessment (40-yard dash, vertical jump, beep test, ...), not
+    invented ones. Coaches record TestResult entries against these.
+    """
+
+    CATEGORY_CHOICES = [
+        ('speed', 'Speed'), ('power', 'Power'), ('strength', 'Strength'),
+        ('endurance', 'Endurance'), ('agility', 'Agility'), ('flexibility', 'Flexibility'),
+        ('body_composition', 'Body Composition'),
+    ]
+
+    name = models.CharField(max_length=150)
+    slug = models.SlugField(max_length=170, unique=True, blank=True)
+    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
+    description = models.TextField(blank=True, default='')
+    unit = models.CharField(max_length=30, help_text='e.g. "seconds", "cm", "reps", "kg", "ml/kg/min"')
+    higher_is_better = models.BooleanField(
+        default=True, help_text='False for time-based tests (e.g. a sprint), where a lower value is the better result.',
+    )
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'training_test_protocols'
+        ordering = ['category', 'name']
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class TestResult(models.Model):
+    """One athlete's recorded result for a protocol on a given date."""
+
+    athlete = models.ForeignKey('api.Athlete', on_delete=models.CASCADE, related_name='test_results')
+    protocol = models.ForeignKey(TestProtocol, on_delete=models.CASCADE, related_name='results')
+    test_date = models.DateField()
+    value = models.DecimalField(max_digits=8, decimal_places=2)
+    recorded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='recorded_test_results')
+    notes = models.TextField(blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'training_test_results'
+        ordering = ['-test_date']
+
+    def __str__(self):
+        return f'{self.athlete.full_name} - {self.protocol.name}: {self.value} ({self.test_date})'

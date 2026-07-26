@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import (
     TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion,
-    WellnessCheckIn, SessionRPE,
+    WellnessCheckIn, SessionRPE, TestProtocol, TestResult,
 )
 
 
@@ -113,3 +113,36 @@ class SessionRPESerializer(serializers.ModelSerializer):
             'session_type', 'notes', 'training_load', 'created_at',
         ]
         read_only_fields = ['athlete']
+
+
+class TestProtocolSerializer(serializers.ModelSerializer):
+    category_display = serializers.CharField(source='get_category_display', read_only=True)
+
+    class Meta:
+        model = TestProtocol
+        fields = [
+            'id', 'name', 'slug', 'category', 'category_display', 'description',
+            'unit', 'higher_is_better', 'is_active',
+        ]
+
+
+class TestResultSerializer(serializers.ModelSerializer):
+    athlete_name = serializers.CharField(source='athlete.full_name', read_only=True)
+    protocol_name = serializers.CharField(source='protocol.name', read_only=True)
+    protocol_unit = serializers.CharField(source='protocol.unit', read_only=True)
+    protocol_category = serializers.CharField(source='protocol.category', read_only=True)
+    recorded_by_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TestResult
+        fields = [
+            'id', 'athlete', 'athlete_name', 'protocol', 'protocol_name', 'protocol_unit',
+            'protocol_category', 'test_date', 'value', 'recorded_by', 'recorded_by_name',
+            'notes', 'created_at',
+        ]
+        read_only_fields = ['athlete', 'recorded_by']
+
+    def get_recorded_by_name(self, obj):
+        if not obj.recorded_by:
+            return None
+        return f'{obj.recorded_by.first_name} {obj.recorded_by.last_name}'.strip() or obj.recorded_by.username
