@@ -16,7 +16,7 @@ from api.permissions import IsAdminOnly, IsCoachOrAdmin, is_staff_role
 
 from .models import (
     Sport, CourseCategory, Course, CourseModule, Lesson, LessonFAQ, Quiz, QuizAttempt,
-    Enrollment, LessonProgress, Certificate, UserBadge, LearningStreak,
+    Enrollment, LessonProgress, Certificate, Badge, UserBadge, LearningStreak,
     ResearchSummary, Organization, OrgRole, OrganizationMembership,
 )
 from .serializers import (
@@ -223,6 +223,7 @@ class LessonViewSet(viewsets.ModelViewSet):
             progress.completed_at = timezone.now()
             progress.save()
             _update_streak(request.user)
+            _maybe_award_first_lesson_badge(request.user)
             _maybe_complete_course(enrollment)
 
         return Response({
@@ -263,6 +264,9 @@ class LessonViewSet(viewsets.ModelViewSet):
             quiz=quiz, user=request.user, score_percent=score, passed=passed, answers=answers,
         )
 
+        if score == 100:
+            _award_badge(request.user, 'quiz-ace')
+
         if passed:
             enrollment = Enrollment.objects.filter(user=request.user, course=lesson.module.course).first()
             if enrollment:
@@ -272,6 +276,7 @@ class LessonViewSet(viewsets.ModelViewSet):
                     progress.completed_at = timezone.now()
                     progress.save()
                     _update_streak(request.user)
+                    _maybe_award_first_lesson_badge(request.user)
                     _maybe_complete_course(enrollment)
 
         return Response({
@@ -295,6 +300,22 @@ def _update_streak(user):
     streak.last_activity_date = today
     streak.save()
 
+    if streak.current_streak_days >= 7:
+        _award_badge(user, 'consistent')
+    if streak.current_streak_days >= 30:
+        _award_badge(user, 'dedicated')
+
+
+def _award_badge(user, slug):
+    badge = Badge.objects.filter(slug=slug).first()
+    if badge:
+        UserBadge.objects.get_or_create(user=user, badge=badge)
+
+
+def _maybe_award_first_lesson_badge(user):
+    if LessonProgress.objects.filter(enrollment__user=user, is_completed=True).count() == 1:
+        _award_badge(user, 'first-steps')
+
 
 @transaction.atomic
 def _maybe_complete_course(enrollment):
@@ -306,6 +327,12 @@ def _maybe_complete_course(enrollment):
         enrollment.completed_at = timezone.now()
         enrollment.save()
         Certificate.objects.get_or_create(user=enrollment.user, course=enrollment.course)
+
+        completed_count = Enrollment.objects.filter(user=enrollment.user, completed_at__isnull=False).count()
+        if completed_count == 1:
+            _award_badge(enrollment.user, 'course-complete')
+        if completed_count == 5:
+            _award_badge(enrollment.user, 'well-rounded')
 
 
 class EnrollmentViewSet(viewsets.ReadOnlyModelViewSet):

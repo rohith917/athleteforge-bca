@@ -10,7 +10,7 @@ import type {
   AuthUser, Athlete, AthleteListItem, Performance, Injury, Competition, CompetitionResult,
   Attendance, WeightTracking, DashboardStats, LeaderboardResponse, Goal, Announcement,
   NotificationsResponse, AdminUser, AttendanceReport,
-  Sport, CourseCategory, CourseListItem, CourseDetail, LessonDetail, Enrollment, Certificate,
+  Sport, CourseCategory, CourseListItem, CourseDetail, LessonDetail, Enrollment, Certificate, UserBadgeItem,
   LearningSummary, QuizSubmitResult, ResearchSummaryItem,
   Organization, OrgRole, OrganizationMembership, AppPermission,
   CourseInput, CourseModuleInput, LessonInput, LessonInputResult, QuizInput,
@@ -497,6 +497,7 @@ export const academyAPI = {
     api.post<QuizSubmitResult>(`/academy/lessons/${slug}/submit_quiz/`, { answers }),
   getEnrollments: () => api.get<Enrollment[]>('/academy/enrollments/'),
   getCertificates: () => api.get<Certificate[]>('/academy/certificates/'),
+  getBadges: () => api.get<UserBadgeItem[]>('/academy/badges/'),
   getLearningSummary: () => api.get<LearningSummary>('/academy/learning-summary/'),
   getResearch: (params?: Record<string, unknown>) => api.get<ResearchSummaryItem[]>('/academy/research/', { params }),
 

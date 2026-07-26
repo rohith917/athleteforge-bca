@@ -475,6 +475,20 @@ export interface Certificate {
   issued_at: string
 }
 
+export interface BadgeDefinition {
+  id: number
+  name: string
+  slug: string
+  description: string
+  icon: string
+}
+
+export interface UserBadgeItem {
+  id: number
+  badge: BadgeDefinition
+  awarded_at: string
+}
+
 export interface LearningStreakData {
   current_streak_days: number
   longest_streak_days: number
