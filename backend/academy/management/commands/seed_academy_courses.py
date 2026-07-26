@@ -95,6 +95,11 @@ class Command(BaseCommand):
             ('karate-training-methods', self._seed_karate_training_methods_course),
             ('powerlifting-training-methods', self._seed_powerlifting_training_methods_course),
             ('weightlifting-training-methods', self._seed_weightlifting_training_methods_course),
+            ('football-testing-assessment', self._seed_football_testing_course),
+            ('volleyball-testing-assessment', self._seed_volleyball_testing_course),
+            ('judo-testing-assessment', self._seed_judo_testing_course),
+            ('cycling-testing-assessment', self._seed_cycling_testing_course),
+            ('athletics-testing-assessment', self._seed_athletics_testing_course),
         ]
 
         created = 0
@@ -3595,6 +3600,216 @@ class Command(BaseCommand):
                 common_mistakes='Increasing training load on a fixed schedule regardless of whether technique at the current load is actually consistent and correct.',
                 safety_considerations='Given the high technical complexity and injury risk of these lifts, load progression decisions should involve a qualified weightlifting coach.',
                 summary='Load progression in weightlifting should be gated by demonstrated technical competency at the current load, not a fixed schedule — technique quality comes first.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_football_testing_course(self, author):
+        sport = Sport.objects.get(slug='football')
+        category = CourseCategory.objects.get(sport=sport, slug='testing')
+        course = Course.objects.create(
+            title='Football: Testing & Assessment',
+            subtitle='Which tests actually reflect football\'s real demands',
+            description='A guide to selecting physical tests that meaningfully reflect football\'s mixed sprint, endurance, and change-of-direction demands.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Testing Basics', order=1)
+        lessons = [
+            dict(
+                title='Testing Football\'s Repeated-Sprint Demand',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why repeated-sprint ability, not single-sprint speed alone, matters for football testing.',
+                content='A single maximal sprint test captures top speed, but football demands repeated sprints with incomplete recovery across a match, which single-sprint testing doesn\'t reflect.',
+                scientific_explanation='Repeated-sprint ability tests (e.g., multiple short sprints with brief recovery between them) capture how well an athlete maintains sprint performance under football-realistic fatigue, a quality single maximal-sprint tests cannot reveal on their own, since two athletes with identical single-sprint times can differ substantially in repeated-sprint fatigue resistance.',
+                practical_application='Include a repeated-sprint test (not just a single maximal sprint) in football testing batteries to capture fatigue resistance specifically relevant to match demands.',
+                key_coaching_points='Single-sprint speed and repeated-sprint fatigue resistance are different qualities — test both if possible.',
+                common_mistakes='Testing only single maximal sprint time and assuming it reflects match-relevant repeated-sprint capacity.',
+                safety_considerations='',
+                summary='Football testing should include repeated-sprint ability, not just single maximal sprint speed, since match demand involves repeated efforts with incomplete recovery.',
+                references='General football testing-methodology literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Building a Football-Specific Test Battery',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Outline a compact, football-relevant test battery covering the sport\'s main demand qualities.',
+                content='A practical football test battery balances a small number of tests against covering the sport\'s genuinely mixed demand profile.',
+                scientific_explanation='Because football combines aerobic endurance, repeated sprints, agility, and jumping/power qualities, a battery drawing one test from each category (e.g., an aerobic field test, a repeated-sprint test, an agility test, and a vertical jump) captures the sport\'s multi-dimensional demand more efficiently than many tests within just one quality.',
+                practical_application='Select one representative test per key quality (aerobic endurance, repeated-sprint ability, agility, power) rather than testing many variations within a single quality and neglecting others.',
+                key_coaching_points='Breadth across football\'s different demand qualities matters more than depth within just one.',
+                common_mistakes='Building a test battery weighted heavily toward one quality (e.g., several speed tests) while neglecting others football also demands.',
+                safety_considerations='',
+                summary='A compact football test battery should sample across the sport\'s mixed demand qualities (aerobic, repeated-sprint, agility, power) rather than testing deeply within just one.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_volleyball_testing_course(self, author):
+        sport = Sport.objects.get(slug='volleyball')
+        category = CourseCategory.objects.get(sport=sport, slug='testing')
+        course = Course.objects.create(
+            title='Volleyball: Testing & Assessment',
+            subtitle='Testing the jump-power quality that defines the sport',
+            description='A guide to testing volleyball\'s defining jump-power and reactive-agility qualities.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Testing Basics', order=1)
+        lessons = [
+            dict(
+                title='Vertical Jump Testing for Volleyball',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why vertical jump testing is a central assessment in volleyball and how to track it meaningfully.',
+                content='Given how central jumping is to attacking, blocking, and serving in volleyball, vertical jump height is one of the sport\'s most relevant and commonly tracked test measures.',
+                scientific_explanation='Both standing (countermovement) vertical jump and approach-jump height (with a running start, as used in actual attacking/blocking) are commonly tested, since approach-jump height reflects the sport-specific skill of converting horizontal approach speed into vertical power, which standing jump alone doesn\'t fully capture.',
+                practical_application='Test both standing vertical jump (a general power marker) and approach-jump height (a more sport-specific measure) rather than relying on standing jump alone.',
+                key_coaching_points='Approach-jump height captures something standing vertical jump testing alone misses — the skill of converting approach speed into vertical power.',
+                common_mistakes='Testing only standing vertical jump and assuming it fully reflects an athlete\'s actual in-game attacking/blocking jump capability.',
+                safety_considerations='',
+                summary='Both standing and approach-jump height are relevant volleyball tests — approach-jump specifically captures the sport-specific skill standing jump testing alone cannot.',
+                references='General volleyball testing-methodology literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Tracking Cumulative Jump Load Alongside Testing',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why jump-height testing should be interpreted alongside cumulative jump-load monitoring.',
+                content='A drop in jump-test performance can reflect accumulated fatigue rather than a genuine loss of underlying power capacity, especially in a jump-heavy sport like volleyball.',
+                scientific_explanation='Jump height is sensitive to acute neuromuscular fatigue, so a lower test result shortly after a high-jump-volume competition period may reflect temporary fatigue rather than a real decline in the athlete\'s underlying power — interpreting jump-test trends alongside recent cumulative jump-count data helps distinguish a genuine trend from a temporary fatigue dip.',
+                practical_application='Note recent cumulative jump volume (recent tournament load) when interpreting a jump test result, and avoid over-reacting to a single lower result that coincides with a heavy recent competition period.',
+                key_coaching_points='Always interpret a jump-test result in the context of recent cumulative jump load, not in isolation.',
+                common_mistakes='Interpreting a single lower jump-test result as a genuine performance decline without considering recent cumulative jump load.',
+                safety_considerations='',
+                summary='Jump-test results should be interpreted alongside recent cumulative jump-load data to distinguish genuine trends from temporary fatigue-driven dips.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_judo_testing_course(self, author):
+        sport = Sport.objects.get(slug='judo')
+        category = CourseCategory.objects.get(sport=sport, slug='testing')
+        course = Course.objects.create(
+            title='Judo: Testing & Assessment',
+            subtitle='Testing grip endurance and repeated-effort capacity',
+            description='A guide to testing the grip-endurance and repeated-effort qualities specific to judo.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Testing Basics', order=1)
+        lessons = [
+            dict(
+                title='Testing Grip Endurance',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe how grip-endurance testing relates to judo-specific demands.',
+                content='Since sustained grip-fighting is central to judo, grip-endurance testing (such as a timed judogi dead-hang or grip-hold test) is a commonly used, sport-relevant assessment.',
+                scientific_explanation='A timed hold using a judogi or similarly thick grip implement more closely reflects the specific grip demand of judo than a standard hand-dynamometer grip-strength test, which measures maximal grip force rather than sustained grip-endurance capacity — the two are related but distinct qualities.',
+                practical_application='Use a sport-specific sustained grip-hold test (using a judogi or similar thick material) rather than relying solely on a standard maximal grip-strength dynamometer test, since judo demands endurance under sustained grip more than a single maximal squeeze.',
+                key_coaching_points='Maximal grip strength and grip endurance are different qualities — test the one more relevant to judo\'s actual demand (endurance).',
+                common_mistakes='Testing only maximal grip strength (dynamometer) and assuming it reflects judo-specific grip-endurance capacity.',
+                safety_considerations='',
+                summary='Grip-endurance testing using judo-specific implements (judogi holds) is more sport-relevant than standard maximal grip-strength testing alone.',
+                references='General judo testing-methodology literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='The Special Judo Fitness Test Concept',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe the general concept behind repeated-throw fitness tests used in judo.',
+                content='Some judo-specific fitness tests use repeated throwing of training partners within a set time to assess the combined strength-endurance and repeated-effort capacity the sport demands.',
+                scientific_explanation='A repeated-throw test (performing as many throws as possible in a fixed time, sometimes with a heart-rate-recovery component) combines aspects of strength, power, and metabolic conditioning in a single sport-specific assessment, reflecting judo\'s combination of explosive effort and repeated-exchange endurance more directly than an isolated strength or endurance test alone.',
+                practical_application='Consider a repeated-throw-style test as a combined sport-specific fitness assessment, understanding it reflects multiple qualities together rather than isolating one specific quality precisely.',
+                key_coaching_points='A combined sport-specific test like repeated throws is useful precisely because it mirrors real judo demand, even though it doesn\'t isolate one single physical quality.',
+                common_mistakes='Expecting a combined sport-specific test to precisely isolate one single physical quality the way a dedicated strength or endurance test would.',
+                safety_considerations='Repeated-throw testing should only be conducted by those with adequate throwing/falling technique already established, given the physical demands involved.',
+                summary='Repeated-throw fitness tests combine several judo-relevant qualities into one sport-specific assessment, reflecting real judo demand more directly than isolated single-quality tests.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_cycling_testing_course(self, author):
+        sport = Sport.objects.get(slug='cycling')
+        category = CourseCategory.objects.get(sport=sport, slug='testing')
+        course = Course.objects.create(
+            title='Cycling: Testing & Assessment',
+            subtitle='Functional threshold power testing and its practical use',
+            description='A guide to testing functional threshold power (FTP) and using it to set meaningful training zones in cycling.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Testing Basics', order=1)
+        lessons = [
+            dict(
+                title='Testing Functional Threshold Power',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe how functional threshold power (FTP) is commonly estimated and why it matters for training prescription.',
+                content='Functional threshold power (FTP), the highest power a rider can sustain for approximately an hour, is the central reference value most cycling training zones are built around.',
+                scientific_explanation='Rather than requiring an actual hour-long maximal effort, FTP is commonly estimated from shorter field tests (e.g., a 20-minute maximal effort, with a percentage adjustment applied), since a full hour-long maximal test is demanding and impractical to repeat frequently for ongoing monitoring.',
+                practical_application='Use a shorter, practical field test (such as a 20-minute maximal effort with an adjustment factor) to estimate FTP periodically, rather than requiring a full hour-long maximal test each time.',
+                key_coaching_points='FTP doesn\'t need to be measured via an actual hour-long test each time — practical shorter field tests are the standard approach.',
+                common_mistakes='Assuming FTP testing requires an actual full hour-long maximal effort every time, discouraging regular retesting.',
+                safety_considerations='Maximal-effort testing should be preceded by an adequate warm-up given the near-maximal sustained effort involved.',
+                summary='FTP is cycling\'s central training-zone reference value, practically estimated through shorter field tests rather than requiring a full hour-long maximal effort each time.',
+                references='General cycling testing-methodology literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Retesting Frequency and Zone Updates',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why training zones need periodic updating as fitness changes.',
+                content='FTP-based training zones become less accurate as an athlete\'s fitness changes, meaning periodic retesting is necessary to keep training zones meaningful.',
+                scientific_explanation='As aerobic fitness improves (or declines during a break), the athlete\'s actual FTP shifts, meaning zones calculated from an outdated FTP value would misrepresent current intensity — periodic retesting (commonly every several weeks to a few months, more often around key training blocks) keeps zone-based prescription accurate to current fitness.',
+                practical_application='Retest FTP periodically (e.g., every 6-8 weeks or after a significant training block) and update training zones accordingly, rather than using one FTP value indefinitely.',
+                key_coaching_points='Training zones based on an outdated FTP value become progressively less accurate as fitness changes — periodic retesting keeps them meaningful.',
+                common_mistakes='Using an FTP value from months ago to set current training zones without periodic retesting.',
+                safety_considerations='',
+                summary='FTP-based training zones require periodic retesting to remain accurate, since fitness changes over time make an outdated FTP value progressively less representative.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_athletics_testing_course(self, author):
+        sport = Sport.objects.get(slug='athletics')
+        category = CourseCategory.objects.get(sport=sport, slug='testing')
+        course = Course.objects.create(
+            title='Athletics: Testing & Assessment',
+            subtitle='Testing that matches the athlete\'s specific event group',
+            description='A guide to selecting physical tests appropriate to athletics\' very different event groups, from sprints to distance to throws.',
+            category=category, level='beginner', status='published', estimated_hours=0.4, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Testing Basics', order=1)
+        lessons = [
+            dict(
+                title='Event-Group-Specific Testing',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why testing batteries in athletics should be built around the athlete\'s specific event group.',
+                content='Because athletics spans sprints, distance, jumps, and throws with very different demand profiles, a sensible testing battery looks quite different for each event group.',
+                scientific_explanation='A sprinter\'s relevant tests (short sprint times, jump power) reflect neuromuscular power and rate of force development, while a distance runner\'s relevant tests (time trials, aerobic field tests) reflect aerobic capacity and running economy, and a thrower\'s relevant tests (medicine ball throws, weighted implement throws) reflect rotational power — applying one generic "athletics" test battery across all event groups would poorly reflect most athletes\' actual event demands.',
+                practical_application='Build the test battery around the athlete\'s specific event group rather than applying one standard athletics test battery to sprinters, distance runners, jumpers, and throwers alike.',
+                key_coaching_points='"Athletics testing" should always specify which event group it is designed for.',
+                common_mistakes='Applying one generic athletics test battery across athletes competing in very different event groups.',
+                safety_considerations='',
+                summary='Athletics testing should be built around the athlete\'s specific event group, since sprints, distance, jumps, and throws have genuinely different relevant test qualities.',
+                references='General athletics testing-methodology literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Using Time Trials for Distance Runners',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe how time trials are used as a practical fitness assessment for distance runners.',
+                content='For distance runners, a time trial over a set distance is a simple, practical way to assess current fitness and set training paces.',
+                scientific_explanation='A recent time trial result over a known distance provides a direct, practical basis for calculating training paces across different intensity zones (easy, threshold, interval pace), commonly using established pace-calculation methods that scale a range of training paces from one or two reference performances.',
+                practical_application='Use a periodic time trial (or recent race result) over a standard distance to recalculate training paces across zones, rather than using outdated pace references from much earlier in the season.',
+                key_coaching_points='Training paces should be refreshed periodically from recent time trial or race data, not fixed indefinitely from an old reference performance.',
+                common_mistakes='Continuing to use training paces calculated from a time trial or race result from much earlier in the season without updating them as fitness changes.',
+                safety_considerations='',
+                summary='Periodic time trials give distance runners a practical, direct basis for setting and updating training paces across intensity zones as fitness changes.',
                 references='',
                 faqs=[],
             ),
