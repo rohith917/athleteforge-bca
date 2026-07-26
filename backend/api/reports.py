@@ -131,6 +131,131 @@ def generate_injuries_pdf(injuries):
     return buffer
 
 
+def generate_academy_pdf(enrollments):
+    """Generate PDF report of Academy course enrollments and completions."""
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=landscape(A4))
+    elements = []
+    styles = getSampleStyleSheet()
+
+    elements.append(Paragraph('Academy Enrollment & Completion Report', styles['Heading1']))
+    elements.append(Paragraph(f'Generated: {datetime.now().strftime("%d-%m-%Y %H:%M")}', styles['Normal']))
+    elements.append(Spacer(1, 20))
+
+    data = [['Student', 'Course', 'Status', 'Progress', 'Enrolled', 'Completed']]
+    for e in enrollments:
+        name = f'{e.user.first_name} {e.user.last_name}'.strip() or e.user.username
+        data.append([
+            name, e.course.title, 'Completed' if e.completed_at else 'In Progress',
+            f'{e.progress_percent}%', e.enrolled_at.strftime('%d-%m-%Y'),
+            e.completed_at.strftime('%d-%m-%Y') if e.completed_at else '-',
+        ])
+
+    table = Table(data, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a5276')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 9),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0f3f4')]),
+    ]))
+    elements.append(table)
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer
+
+
+def generate_academy_excel(enrollments):
+    """Export Academy enrollment/completion data to Excel."""
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Academy Enrollments'
+
+    headers = ['Student', 'Course', 'Status', 'Progress %', 'Enrolled', 'Completed']
+    for col, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col, value=header)
+        cell.font = _excel_header_style()
+        cell.fill = _excel_header_fill()
+
+    for row_idx, e in enumerate(enrollments, 2):
+        name = f'{e.user.first_name} {e.user.last_name}'.strip() or e.user.username
+        ws.cell(row=row_idx, column=1, value=name)
+        ws.cell(row=row_idx, column=2, value=e.course.title)
+        ws.cell(row=row_idx, column=3, value='Completed' if e.completed_at else 'In Progress')
+        ws.cell(row=row_idx, column=4, value=float(e.progress_percent))
+        ws.cell(row=row_idx, column=5, value=str(e.enrolled_at.date()))
+        ws.cell(row=row_idx, column=6, value=str(e.completed_at.date()) if e.completed_at else '')
+
+    for col in ws.columns:
+        ws.column_dimensions[col[0].column_letter].width = 20
+
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    return buffer
+
+
+def generate_training_excel(programs, wellness_checkins, session_rpes):
+    """Export Training Program Builder + Athlete Monitoring data to Excel (two sheets)."""
+    wb = Workbook()
+
+    ws1 = wb.active
+    ws1.title = 'Training Programs'
+    headers1 = ['Program', 'Athlete', 'Coach', 'Sport', 'Status', 'Start Date', 'End Date', 'Days']
+    for col, header in enumerate(headers1, 1):
+        cell = ws1.cell(row=1, column=col, value=header)
+        cell.font = _excel_header_style()
+        cell.fill = _excel_header_fill()
+    for row_idx, p in enumerate(programs, 2):
+        coach_name = ''
+        if p.coach:
+            coach_name = f'{p.coach.first_name} {p.coach.last_name}'.strip() or p.coach.username
+        ws1.cell(row=row_idx, column=1, value=p.name)
+        ws1.cell(row=row_idx, column=2, value=p.athlete.full_name)
+        ws1.cell(row=row_idx, column=3, value=coach_name)
+        ws1.cell(row=row_idx, column=4, value=p.sport)
+        ws1.cell(row=row_idx, column=5, value=p.status)
+        ws1.cell(row=row_idx, column=6, value=str(p.start_date) if p.start_date else '')
+        ws1.cell(row=row_idx, column=7, value=str(p.end_date) if p.end_date else '')
+        ws1.cell(row=row_idx, column=8, value=p.days.count())
+    for col in ws1.columns:
+        ws1.column_dimensions[col[0].column_letter].width = 18
+
+    ws2 = wb.create_sheet('Wellness & Training Load')
+    headers2 = ['Athlete', 'Date', 'Wellness Score', 'Sleep Hrs', 'Fatigue', 'Soreness', 'Stress', 'Mood', 'Session Date', 'RPE', 'Duration (min)', 'Training Load']
+    for col, header in enumerate(headers2, 1):
+        cell = ws2.cell(row=1, column=col, value=header)
+        cell.font = _excel_header_style()
+        cell.fill = _excel_header_fill()
+    row_idx = 2
+    for w in wellness_checkins:
+        ws2.cell(row=row_idx, column=1, value=w.athlete.full_name)
+        ws2.cell(row=row_idx, column=2, value=str(w.date))
+        ws2.cell(row=row_idx, column=3, value=w.wellness_score)
+        ws2.cell(row=row_idx, column=4, value=float(w.sleep_hours) if w.sleep_hours else '')
+        ws2.cell(row=row_idx, column=5, value=w.fatigue)
+        ws2.cell(row=row_idx, column=6, value=w.soreness)
+        ws2.cell(row=row_idx, column=7, value=w.stress)
+        ws2.cell(row=row_idx, column=8, value=w.mood)
+        row_idx += 1
+    row_idx = 2
+    for r in session_rpes:
+        ws2.cell(row=row_idx, column=9, value=str(r.session_date))
+        ws2.cell(row=row_idx, column=10, value=r.rpe)
+        ws2.cell(row=row_idx, column=11, value=r.duration_minutes)
+        ws2.cell(row=row_idx, column=12, value=r.training_load)
+        row_idx += 1
+    for col in ws2.columns:
+        ws2.column_dimensions[col[0].column_letter].width = 16
+
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    return buffer
+
+
 def _excel_header_style():
     return Font(bold=True, color='FFFFFF', size=11)
 

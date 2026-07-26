@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FileText, FileSpreadsheet, Download, HeartPulse, ClipboardCheck } from 'lucide-react'
+import { FileText, FileSpreadsheet, Download, HeartPulse, ClipboardCheck, GraduationCap, Dumbbell } from 'lucide-react'
 import { downloadReport, getErrorMessage } from '@/services/api'
 import { useToast } from '@/context/ToastContext'
 import { PageHeader } from '@/components/dashboard/PageHeader'
@@ -13,9 +13,12 @@ const REPORTS: ReportDef[] = [
   { type: 'athletes', title: 'Athlete Report', desc: 'Complete roster with contact details and status', format: 'pdf', icon: FileText },
   { type: 'performance', title: 'Performance Report', desc: 'Speed, strength, endurance, agility metrics', format: 'pdf', icon: FileText },
   { type: 'injuries', title: 'Injury Report', desc: 'Severity, recovery status, and medical notes', format: 'pdf', icon: HeartPulse },
+  { type: 'academy', title: 'Academy Report', desc: 'Course enrollments, progress, and completions', format: 'pdf', icon: GraduationCap },
   { type: 'athletes', title: 'Athletes Export', desc: 'Spreadsheet export for roster analysis', format: 'excel', icon: FileSpreadsheet },
   { type: 'performance', title: 'Performance Export', desc: 'All performance metrics in Excel format', format: 'excel', icon: FileSpreadsheet },
   { type: 'attendance', title: 'Attendance Export', desc: 'Session records with dates and status', format: 'excel', icon: ClipboardCheck },
+  { type: 'academy', title: 'Academy Export', desc: 'Enrollment and completion data in Excel format', format: 'excel', icon: GraduationCap },
+  { type: 'training', title: 'Training & Monitoring Export', desc: 'Training programs, wellness check-ins, and session RPE', format: 'excel', icon: Dumbbell },
 ]
 
 export default function Reports() {

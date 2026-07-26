@@ -43,7 +43,8 @@ from .serializers import (
 )
 from .reports import (
     generate_athletes_pdf, generate_performance_pdf, generate_injuries_pdf,
-    generate_athletes_excel, generate_performance_excel, generate_attendance_excel
+    generate_athletes_excel, generate_performance_excel, generate_attendance_excel,
+    generate_academy_pdf, generate_academy_excel, generate_training_excel,
 )
 from .goal_utils import refresh_goal_status
 from .notify import (
@@ -1036,7 +1037,7 @@ def dashboard_stats(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsCoachOrAdmin])
 def export_pdf(request):
-    """Generate PDF reports. ?type=athletes|performance|injuries"""
+    """Generate PDF reports. ?type=athletes|performance|injuries|academy"""
     report_type = request.query_params.get('type', 'athletes')
 
     if report_type == 'athletes':
@@ -1048,6 +1049,10 @@ def export_pdf(request):
     elif report_type == 'injuries':
         buffer = generate_injuries_pdf(Injury.objects.select_related('athlete').all())
         filename = 'injuries_report.pdf'
+    elif report_type == 'academy':
+        from academy.models import Enrollment
+        buffer = generate_academy_pdf(Enrollment.objects.select_related('user', 'course').all())
+        filename = 'academy_report.pdf'
     else:
         return Response({'error': 'Invalid report type'}, status=400)
 
@@ -1059,7 +1064,7 @@ def export_pdf(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsCoachOrAdmin])
 def export_excel(request):
-    """Export data to Excel. ?type=athletes|performance|attendance"""
+    """Export data to Excel. ?type=athletes|performance|attendance|academy|training"""
     report_type = request.query_params.get('type', 'athletes')
 
     if report_type == 'athletes':
@@ -1071,6 +1076,18 @@ def export_excel(request):
     elif report_type == 'attendance':
         buffer = generate_attendance_excel(Attendance.objects.select_related('athlete').all())
         filename = 'attendance_export.xlsx'
+    elif report_type == 'academy':
+        from academy.models import Enrollment
+        buffer = generate_academy_excel(Enrollment.objects.select_related('user', 'course').all())
+        filename = 'academy_export.xlsx'
+    elif report_type == 'training':
+        from training.models import TrainingProgram, WellnessCheckIn, SessionRPE
+        buffer = generate_training_excel(
+            TrainingProgram.objects.select_related('athlete', 'coach').all(),
+            WellnessCheckIn.objects.select_related('athlete').all(),
+            SessionRPE.objects.select_related('athlete').all(),
+        )
+        filename = 'training_export.xlsx'
     else:
         return Response({'error': 'Invalid export type'}, status=400)
 
