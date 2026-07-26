@@ -79,6 +79,11 @@ class Command(BaseCommand):
             ('karate-physical-demands', self._seed_karate_physical_demands_course),
             ('powerlifting-physical-demands', self._seed_powerlifting_physical_demands_course),
             ('weightlifting-physical-demands', self._seed_weightlifting_physical_demands_course),
+            ('football-injury-prevention', self._seed_football_injury_prevention_course),
+            ('basketball-injury-prevention', self._seed_basketball_injury_prevention_course),
+            ('swimming-injury-prevention', self._seed_swimming_injury_prevention_course),
+            ('taekwondo-injury-prevention', self._seed_taekwondo_injury_prevention_course),
+            ('cricket-injury-prevention', self._seed_cricket_injury_prevention_course),
         ]
 
         created = 0
@@ -2907,6 +2912,216 @@ class Command(BaseCommand):
                 common_mistakes='Diagnosing a technique breakdown in the receiving position as purely a strength or coordination issue without first checking underlying mobility restrictions.',
                 safety_considerations='',
                 summary='Weightlifting\'s receiving positions demand substantial ankle, hip, thoracic, and shoulder mobility — restrictions here are a common, underappreciated root cause of technique breakdowns and injury risk.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_football_injury_prevention_course(self, author):
+        sport = Sport.objects.get(slug='football')
+        category = CourseCategory.objects.get(sport=sport, slug='injury-prevention')
+        course = Course.objects.create(
+            title='Football: Injury Prevention',
+            subtitle='Reducing the sport\'s most common, well-documented injury patterns',
+            description='A practical guide to football\'s most frequent injuries and the conditioning approaches most associated with reducing their risk.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Common Injuries and Prevention', order=1)
+        lessons = [
+            dict(
+                title='Hamstring Strains and Eccentric Strength',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why hamstring strains are common in football and how eccentric strength training relates to prevention.',
+                content='Hamstring strains are among the most common non-contact injuries in football, typically occurring during high-speed running.',
+                scientific_explanation='The hamstrings work eccentrically (lengthening under load) to decelerate the lower leg during the late swing phase of sprinting — a demand that eccentric-strength training (e.g., Nordic curls) specifically targets, and research on team-sport athletes has associated regular eccentric hamstring work with reduced hamstring injury rates.',
+                practical_application='Include regular eccentric hamstring exercises (such as Nordic curls) in-season, not just pre-season, since research generally shows protective effects require ongoing exposure.',
+                key_coaching_points='Eccentric hamstring work should continue throughout the season, not stop once pre-season ends.',
+                common_mistakes='Treating eccentric hamstring training as a pre-season-only block rather than an ongoing in-season practice.',
+                safety_considerations='A player with a suspected hamstring strain (sudden posterior thigh pain during sprinting) should stop immediately and be assessed before continuing to train.',
+                summary='Hamstring strains are football\'s most common non-contact injury, and regular eccentric hamstring strength work is one of the better-supported prevention strategies.',
+                references='General football injury-epidemiology and eccentric-training literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='ACL Injury Risk and Landing Mechanics',
+                lesson_type='text', order=2, estimated_minutes=8,
+                learning_objectives='Describe the role of landing and cutting mechanics in ACL injury risk and how movement-quality training relates to prevention.',
+                content='Anterior cruciate ligament (ACL) injuries, while less frequent than hamstring strains, are a serious injury commonly associated with cutting and landing movements in football.',
+                scientific_explanation='ACL injuries commonly occur during non-contact deceleration, cutting, and landing movements, often involving the knee collapsing inward (valgus) under load — structured neuromuscular training programs that emphasize landing and cutting technique, along with hip and core strength, have been associated in research with reduced ACL injury rates in field-sport athletes.',
+                practical_application='Incorporate a structured neuromuscular warm-up program addressing landing mechanics, cutting technique, and hip/core strength, performed consistently rather than occasionally.',
+                key_coaching_points='Consistency of a structured warm-up program matters more than any single drill in isolation.',
+                common_mistakes='Running a neuromuscular prevention warm-up inconsistently or only when time allows, rather than as a standard part of every session.',
+                safety_considerations='A suspected ACL injury (a "pop" sensation, immediate swelling, inability to continue) requires prompt medical assessment and should not be assessed by coaching judgement alone.',
+                summary='Structured, consistent neuromuscular training addressing landing and cutting mechanics is associated with reduced ACL injury risk in field-sport athletes.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_basketball_injury_prevention_course(self, author):
+        sport = Sport.objects.get(slug='basketball')
+        category = CourseCategory.objects.get(sport=sport, slug='injury-prevention')
+        course = Course.objects.create(
+            title='Basketball: Injury Prevention',
+            subtitle='Reducing the sport\'s most common, well-documented injury patterns',
+            description='A practical guide to basketball\'s most frequent injuries and the conditioning approaches most associated with reducing their risk.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Common Injuries and Prevention', order=1)
+        lessons = [
+            dict(
+                title='Ankle Sprains and Balance Training',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why ankle sprains are common in basketball and how balance training relates to prevention.',
+                content='Ankle sprains are the single most common injury in basketball, frequently occurring during landing on another player\'s foot or rapid direction changes.',
+                scientific_explanation='Landing awkwardly or on an uneven surface (such as an opponent\'s foot) can force the ankle beyond its normal range, commonly rolling it inward (inversion). Balance and proprioceptive training has been consistently associated in research with reduced ankle sprain rates, particularly in athletes with a prior sprain history.',
+                practical_application='Include regular balance/proprioceptive training (single-leg balance, wobble board work) as a standard part of the warm-up, especially for athletes with a previous ankle sprain history.',
+                key_coaching_points='A prior ankle sprain is one of the strongest known predictors of a future one — prioritize balance work especially for these athletes.',
+                common_mistakes='Returning an athlete to full-contact play immediately after an ankle sprain without a structured balance-retraining progression.',
+                safety_considerations='A significant ankle sprain (inability to bear weight, substantial swelling) should be assessed by a medical professional before return to play.',
+                summary='Ankle sprains are basketball\'s most common injury, and balance/proprioceptive training is one of the best-supported prevention strategies, especially for athletes with a prior sprain.',
+                references='General basketball injury-epidemiology literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Patellar Tendinopathy ("Jumper\'s Knee")',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe why repeated jumping creates patellar tendon overuse risk and how load management relates to prevention.',
+                content='Basketball\'s very high jump volume across practices and games creates cumulative load on the patellar tendon, commonly leading to overuse injury ("jumper\'s knee") if not managed.',
+                scientific_explanation='Patellar tendinopathy develops from cumulative, repeated tendon loading outpacing the tendon\'s capacity to adapt and recover — tracking total jump volume across practice and games (not games alone) and ensuring adequate recovery between high-jump-volume sessions is a commonly recommended prevention approach.',
+                practical_application='Track cumulative jump volume across the full week (practice plus games), not games alone, and build in lower-jump-volume recovery days when volume has been high.',
+                key_coaching_points='Total weekly jump volume, not just game-day jumps, drives patellar tendon load.',
+                common_mistakes='Monitoring jump counts only on game day while ignoring high jump volume accumulated across practices.',
+                safety_considerations='Persistent anterior knee pain that doesn\'t settle with reduced load warrants assessment rather than being pushed through.',
+                summary='Patellar tendinopathy results from cumulative jump load outpacing tendon recovery capacity — tracking total weekly jump volume and managing recovery is the key prevention approach.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_swimming_injury_prevention_course(self, author):
+        sport = Sport.objects.get(slug='swimming')
+        category = CourseCategory.objects.get(sport=sport, slug='injury-prevention')
+        course = Course.objects.create(
+            title='Swimming: Injury Prevention',
+            subtitle='Reducing the sport\'s most common, well-documented injury patterns',
+            description='A practical guide to swimming\'s most frequent injuries and the conditioning approaches most associated with reducing their risk.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Common Injuries and Prevention', order=1)
+        lessons = [
+            dict(
+                title='Swimmer\'s Shoulder and Stroke Volume',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why the shoulder is swimming\'s most commonly affected joint and how load management and technique relate to prevention.',
+                content='"Swimmer\'s shoulder" (a general term for shoulder pain from overuse) is the most commonly reported injury in competitive swimming, reflecting the very high repetition count of the stroke cycle.',
+                scientific_explanation='Competitive swimmers can perform tens of thousands of shoulder rotations per week, placing high cumulative demand on the rotator cuff and surrounding structures — risk is commonly associated with both high training volume and stroke technique flaws (such as poor body rotation forcing extra shoulder strain), making both load management and technique review relevant prevention levers.',
+                practical_application='Monitor total weekly stroke volume alongside shoulder-specific strength and stability work, and have technique reviewed periodically, since poor rotation technique can compound the effect of high volume.',
+                key_coaching_points='Both volume and technique quality independently affect shoulder-injury risk — address both, not just one.',
+                common_mistakes='Managing training volume carefully while never reviewing stroke technique for compensations that increase shoulder strain.',
+                safety_considerations='Persistent shoulder pain during or after swimming sessions is a common early-warning sign in this sport worth assessing rather than swimming through.',
+                summary='Swimmer\'s shoulder reflects the sport\'s very high repetition count — managing total volume and reviewing stroke technique are both relevant prevention levers.',
+                references='General swimming injury-epidemiology literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Breaststroke and Knee Stress',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe why breaststroke specifically stresses the knee and how technique and load management relate to prevention.',
+                content='Breaststroke\'s whip-kick action places rotational stress on the knee that isn\'t present in the same way in other strokes, giving breaststroke specialists a distinct injury profile.',
+                scientific_explanation='The breaststroke kick requires rapid hip and knee rotation with the knee in a partially bent position, placing shear and rotational stress through the knee\'s medial structures — commonly associated with "breaststroker\'s knee" in athletes who swim high volumes of this stroke specifically.',
+                practical_application='Monitor breaststroke-specific volume separately from overall swimming volume for specialists, and include hip mobility and knee-stabilizing strength work alongside kick-technique review.',
+                key_coaching_points='Breaststroke specialists warrant stroke-specific volume tracking, not just total swimming volume.',
+                common_mistakes='Tracking only total pool volume without distinguishing how much is breaststroke-specific for athletes who specialize in that stroke.',
+                safety_considerations='Persistent medial knee pain in a breaststroke specialist is a well-documented, sport-specific pattern worth assessing promptly.',
+                summary='Breaststroke\'s whip-kick creates a distinct knee-stress pattern — stroke-specific volume tracking and targeted strength/mobility work are the key prevention levers for specialists.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_taekwondo_injury_prevention_course(self, author):
+        sport = Sport.objects.get(slug='taekwondo')
+        category = CourseCategory.objects.get(sport=sport, slug='injury-prevention')
+        course = Course.objects.create(
+            title='Taekwondo: Injury Prevention',
+            subtitle='Reducing the sport\'s most common, well-documented injury patterns',
+            description='A practical guide to taekwondo\'s most frequent injuries and the conditioning approaches most associated with reducing their risk.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Common Injuries and Prevention', order=1)
+        lessons = [
+            dict(
+                title='Lower-Limb Contact Injuries in Sparring',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Describe the common lower-limb injury patterns in taekwondo sparring and how conditioning and protective equipment relate to prevention.',
+                content='Taekwondo\'s kick-based scoring system means the lower limbs (particularly the lower leg and foot) absorb frequent contact during sparring, both delivering and receiving kicks.',
+                scientific_explanation='Repeated kicking and blocking contact places the shin, foot, and ankle at risk of both acute contusion injuries and cumulative overuse — approved protective equipment (shin guards, foot protectors) used in competition and sparring practice is a well-established, sport-mandated prevention measure alongside conditioning.',
+                practical_application='Ensure protective equipment is worn consistently in sparring practice (not only in competition), and build lower-leg conditioning progressively rather than exposing athletes to full-contact sparring volume too early.',
+                key_coaching_points='Protective equipment use in training sparring, not just competition, is a basic and important prevention practice.',
+                common_mistakes='Treating protective equipment as necessary only for competition while skipping it in regular sparring practice.',
+                safety_considerations='This course covers general conditioning only — sparring safety rules and equipment requirements should follow official taekwondo federation guidelines.',
+                summary='Taekwondo\'s kick-based sparring creates frequent lower-limb contact — consistent protective equipment use in training (not just competition) and progressive conditioning are key prevention practices.',
+                references='General taekwondo injury-epidemiology literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Hip Flexibility and Kicking Technique',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Explain why hip flexibility relates to both kicking performance and groin/hip injury prevention in taekwondo.',
+                content='High, fast kicks in taekwondo demand substantial hip flexibility, and limitations here are commonly associated with both reduced kicking performance and increased groin/hip strain risk.',
+                scientific_explanation='Attempting a high kick beyond the athlete\'s current hip range of motion often forces compensation elsewhere (such as excessive lower-back rotation) and increases strain risk in the hip flexors and groin — progressive hip-mobility development is generally recommended to support both kick height and joint health together, rather than pursuing kick height through compensation.',
+                practical_application='Develop hip flexibility progressively and specifically for the kicking patterns used in the sport, rather than allowing athletes to compensate with lower-back rotation to achieve kick height beyond their current hip mobility.',
+                key_coaching_points='Kick height achieved through hip mobility is safer than kick height achieved through lower-back compensation.',
+                common_mistakes='Encouraging maximal kick height before adequate hip mobility has been developed, leading to compensatory movement patterns.',
+                safety_considerations='Groin or hip strain from kicking is a common injury pattern worth addressing through mobility work rather than pushing through discomfort.',
+                summary='Hip flexibility supports both kick performance and injury prevention together — kick height should be developed through mobility progression, not lower-back compensation.',
+                references='',
+                faqs=[],
+            ),
+        ]
+        self._create_lessons(module, lessons)
+
+    def _seed_cricket_injury_prevention_course(self, author):
+        sport = Sport.objects.get(slug='cricket')
+        category = CourseCategory.objects.get(sport=sport, slug='injury-prevention')
+        course = Course.objects.create(
+            title='Cricket: Injury Prevention',
+            subtitle='Reducing the sport\'s most common, well-documented injury patterns',
+            description='A practical guide to cricket\'s most frequent injuries and the conditioning approaches most associated with reducing their risk.',
+            category=category, level='beginner', status='published', estimated_hours=0.5, created_by=author,
+        )
+        module = CourseModule.objects.create(course=course, title='Common Injuries and Prevention', order=1)
+        lessons = [
+            dict(
+                title='Fast Bowling Workload Management',
+                lesson_type='text', order=1, estimated_minutes=8,
+                learning_objectives='Explain why fast bowling carries elevated lower-back injury risk and how workload management relates to prevention.',
+                content='Fast bowling is cricket\'s most injury-associated discipline, with lower back stress injuries (including in young, still-developing bowlers) being a particularly well-documented concern.',
+                scientific_explanation='The fast bowling action combines high-force, repeated spinal rotation and extension, and research has consistently associated rapid increases in bowling workload (deliveries bowled) — rather than high workload reached gradually — with elevated injury risk, especially in junior bowlers whose spines are still developing.',
+                practical_application='Track and progress bowling workload (delivery counts) gradually using established age-appropriate guidelines, being especially cautious with rapid workload increases after a break or during a return from injury.',
+                key_coaching_points='Workload management (gradual progression, not sudden spikes) is the single most well-established fast-bowling-specific injury-prevention practice.',
+                common_mistakes='Allowing a rapid increase in bowling workload after a break (off-season, injury, illness) without a structured gradual build-up.',
+                safety_considerations='Persistent lower back pain in a young fast bowler is a well-documented, serious injury pattern requiring prompt medical assessment, not being managed through coaching judgement alone.',
+                summary='Fast bowling\'s repeated spinal loading makes gradual, well-managed workload progression the single most important prevention practice, especially for junior bowlers.',
+                references='General cricket fast-bowling workload literature used in sport-specific conditioning practice.',
+                faqs=[],
+            ),
+            dict(
+                title='Fielding and Throwing Shoulder Care',
+                lesson_type='text', order=2, estimated_minutes=7,
+                learning_objectives='Describe the shoulder demands of fielding and throwing in cricket and how conditioning relates to prevention.',
+                content='Repeated fielding throws, across a long innings or match, place cumulative demand on the throwing shoulder that is sometimes overlooked relative to bowling-focused injury prevention.',
+                scientific_explanation='Forceful overhead and side-arm throwing actions, repeated many times across a match, load the shoulder\'s rotator cuff and surrounding structures in a manner similar in principle to other throwing and overhead sports — shoulder-specific strength and mobility work is a relevant, sometimes under-prioritized, conditioning need for all fielders, not just bowlers.',
+                practical_application='Include shoulder-specific strength and mobility work for all players who field and throw regularly, not only for specialist bowlers, given the cumulative throwing demand across a match.',
+                key_coaching_points='Shoulder conditioning shouldn\'t be reserved only for bowlers — regular fielders and throwers share this demand.',
+                common_mistakes='Directing all shoulder-injury-prevention attention toward bowlers while overlooking cumulative fielding-throw demand on other players.',
+                safety_considerations='Persistent shoulder pain following repeated match-day throwing is worth assessing rather than assuming it will resolve on its own.',
+                summary='Repeated fielding throws create real cumulative shoulder demand across a match — shoulder conditioning is a relevant need for all regular fielders and throwers, not only specialist bowlers.',
                 references='',
                 faqs=[],
             ),
