@@ -41,6 +41,16 @@ def serve_frontend_image(request, path):
 
 
 def serve_spa(request):
+    # Root-level public/ files (favicon.svg, icons.svg, ...) land directly in
+    # frontend_dist/ — the catch-all otherwise routes everything except
+    # assets/, images/, api/, admin/, static/, media/ to index.html, which
+    # would silently serve HTML in place of these files.
+    requested = request.path.lstrip('/')
+    if requested:
+        candidate = _dist() / requested
+        if candidate.is_file() and candidate.resolve().parent == _dist().resolve():
+            return FileResponse(open(candidate, 'rb'), content_type=_content_type_for(requested))
+
     index = _dist() / 'index.html'
     if not index.is_file():
         return HttpResponse(

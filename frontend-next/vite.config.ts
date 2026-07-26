@@ -2,9 +2,22 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import { copyFileSync } from 'fs'
+import { resolve } from 'path'
+
+/** Copy index.html → 404.html so Render's static site serves the SPA for unknown (client-routed) paths. */
+function spa404Plugin() {
+  return {
+    name: 'spa-404',
+    closeBundle() {
+      const dist = resolve('dist')
+      copyFileSync(resolve(dist, 'index.html'), resolve(dist, '404.html'))
+    },
+  }
+}
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), spa404Plugin()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -31,11 +44,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          three: ['three', '@react-three/fiber', '@react-three/drei'],
-          motion: ['gsap', 'framer-motion', 'motion', '@studio-freight/lenis'],
-          charts: ['chart.js', 'react-chartjs-2'],
+        manualChunks(id: string) {
+          if (!id.includes('node_modules')) return undefined
+          if (id.includes('react-router-dom') || id.includes('/react/') || id.includes('/react-dom/')) return 'vendor'
+          if (id.includes('three') || id.includes('@react-three')) return 'three'
+          if (id.includes('gsap') || id.includes('framer-motion') || id.includes('/motion/') || id.includes('@studio-freight/lenis')) return 'motion'
+          if (id.includes('chart.js') || id.includes('react-chartjs-2')) return 'charts'
+          return undefined
         },
       },
     },
