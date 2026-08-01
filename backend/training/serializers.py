@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import (
     TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion,
-    WellnessCheckIn, SessionRPE, TestProtocol, TestResult,
+    WellnessCheckIn, SessionRPE, NutritionLog, TestProtocol, TestResult,
 )
 
 
@@ -111,6 +111,19 @@ class SessionRPESerializer(serializers.ModelSerializer):
         fields = [
             'id', 'athlete', 'athlete_name', 'session_date', 'rpe', 'duration_minutes',
             'session_type', 'notes', 'training_load', 'created_at',
+        ]
+        read_only_fields = ['athlete']
+
+
+class NutritionLogSerializer(serializers.ModelSerializer):
+    athlete_name = serializers.CharField(source='athlete.full_name', read_only=True)
+    total_macros_g = serializers.ReadOnlyField()
+
+    class Meta:
+        model = NutritionLog
+        fields = [
+            'id', 'athlete', 'athlete_name', 'date', 'water_intake_ml', 'calories',
+            'protein_g', 'carbs_g', 'fat_g', 'notes', 'total_macros_g', 'created_at',
         ]
         read_only_fields = ['athlete']
 

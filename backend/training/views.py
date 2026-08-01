@@ -12,12 +12,12 @@ from api.permissions import IsCoachOrAdmin, is_staff_role, get_athlete_for_user
 from .generator import GOAL_TEMPLATES, generate_training_program, get_generator_status
 from .models import (
     TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion,
-    WellnessCheckIn, SessionRPE, TestProtocol, TestResult,
+    WellnessCheckIn, SessionRPE, NutritionLog, TestProtocol, TestResult,
 )
 from .serializers import (
     TrainingProgramListSerializer, TrainingProgramDetailSerializer,
     ProgramDaySerializer, ProgramBlockSerializer, ProgramExerciseSerializer,
-    WellnessCheckInSerializer, SessionRPESerializer,
+    WellnessCheckInSerializer, SessionRPESerializer, NutritionLogSerializer,
     TestProtocolSerializer, TestResultSerializer,
 )
 
@@ -243,6 +243,30 @@ class SessionRPEViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = SessionRPE.objects.select_related('athlete').all()
+        user = self.request.user
+        if not is_staff_role(user):
+            athlete = get_athlete_for_user(user)
+            qs = qs.filter(athlete=athlete) if athlete else qs.none()
+        athlete_id = self.request.query_params.get('athlete_id')
+        if athlete_id:
+            qs = qs.filter(athlete_id=athlete_id)
+        return qs
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if is_staff_role(user):
+            athlete = Athlete.objects.filter(id=self.request.data.get('athlete')).first()
+        else:
+            athlete = get_athlete_for_user(user)
+        serializer.save(athlete=athlete)
+
+
+class NutritionLogViewSet(viewsets.ModelViewSet):
+    serializer_class = NutritionLogSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        qs = NutritionLog.objects.select_related('athlete').all()
         user = self.request.user
         if not is_staff_role(user):
             athlete = get_athlete_for_user(user)

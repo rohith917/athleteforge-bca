@@ -202,6 +202,41 @@ class SessionRPE(models.Model):
         return self.rpe * self.duration_minutes
 
 
+class NutritionLog(models.Model):
+    """
+    Daily athlete self-report of hydration and macronutrient intake, one
+    per athlete per day — same shape as WellnessCheckIn. Every intake
+    field is optional per-entry: manual nutrition tracking is naturally
+    partial (an athlete might log water but skip macros that day).
+    """
+
+    athlete = models.ForeignKey('api.Athlete', on_delete=models.CASCADE, related_name='nutrition_logs')
+    date = models.DateField()
+    water_intake_ml = models.PositiveIntegerField(null=True, blank=True)
+    calories = models.PositiveIntegerField(null=True, blank=True)
+    protein_g = models.DecimalField(max_digits=6, decimal_places=1, null=True, blank=True)
+    carbs_g = models.DecimalField(max_digits=6, decimal_places=1, null=True, blank=True)
+    fat_g = models.DecimalField(max_digits=6, decimal_places=1, null=True, blank=True)
+    notes = models.TextField(blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'training_nutrition_logs'
+        ordering = ['-date']
+        constraints = [
+            models.UniqueConstraint(fields=['athlete', 'date'], name='unique_nutrition_log_per_day'),
+        ]
+
+    def __str__(self):
+        return f'{self.athlete.full_name} - {self.date}'
+
+    @property
+    def total_macros_g(self):
+        """Sum of logged macros in grams; None if none of the three were entered."""
+        logged = [p for p in (self.protein_g, self.carbs_g, self.fat_g) if p is not None]
+        return sum(logged) if logged else None
+
+
 # ==================== Performance Testing ====================
 
 class TestProtocol(models.Model):

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (
     TrainingProgram, ProgramDay, ProgramBlock, ProgramExercise, ExerciseCompletion,
-    WellnessCheckIn, SessionRPE,
+    WellnessCheckIn, SessionRPE, NutritionLog,
 )
 
 
@@ -56,4 +56,11 @@ class WellnessCheckInAdmin(admin.ModelAdmin):
 class SessionRPEAdmin(admin.ModelAdmin):
     list_display = ('athlete', 'session_date', 'rpe', 'duration_minutes', 'session_type')
     list_filter = ('session_date',)
+    search_fields = ('athlete__first_name', 'athlete__last_name')
+
+
+@admin.register(NutritionLog)
+class NutritionLogAdmin(admin.ModelAdmin):
+    list_display = ('athlete', 'date', 'water_intake_ml', 'calories', 'protein_g', 'carbs_g', 'fat_g')
+    list_filter = ('date',)
     search_fields = ('athlete__first_name', 'athlete__last_name')
